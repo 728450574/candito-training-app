@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en" class="light" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>暂停周期</title>
+    <style id="theme-vars">
+/* ============================================
+   Candito Training — Brand Design Tokens
+   Apple Human Interface Guidelines
+   ============================================ */
+
+:root {
+  /* ── Brand Identity ── */
+  --color-primary: #1D1D1F;
+  --color-primary-light: #86868B;
+  --color-primary-subtle: #F5F5F7;
+  --color-surface: #FFFFFF;
+  --color-surface-raised: #FAFAFA;
+  --color-surface-muted: #F5F5F7;
+  --color-border: #E5E5EA;
+  --color-border-light: #F0F0F5;
+
+  /* ── State Colors (Apple HIG system colors) ── */
+  --state-success: #34C759;
+  --state-success-bg: rgba(52, 199, 89, 0.08);
+  --state-warning: #FF9F0A;
+  --state-warning-bg: rgba(255, 159, 10, 0.08);
+  --state-error: #FF3B30;
+  --state-error-bg: rgba(255, 59, 48, 0.08);
+  --state-info: #007AFF;
+  --state-info-bg: rgba(0, 122, 255, 0.08);
+
+  /* ── Accent (Apple brand blue) ── */
+  --color-training-main: #007AFF;
+  --color-training-assist: #5E5CE6;
+  --color-training-optional: #34C759;
+  --color-training-rest: #86868B;
+
+  /* ── Warmth Accent ── */
+  --color-warm: #FF6B35;
+  --color-warm-light: rgba(255, 107, 53, 0.10);
+
+  /* ── Typography Scale ── */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'SF Mono', 'Menlo', 'Consolas', monospace;
+
+  --text-xs: 0.6875rem;
+  --text-sm: 0.75rem;
+  --text-base: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.75rem;
+  --text-4xl: 2rem;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.65;
+
+  /* ── Spacing Scale ── */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* ── Radius Scale ── */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* ── Surface Depth (Apple whisper-light shadows) ── */
+  --shadow-card: 0 0 0 1px var(--color-border-light);
+  --shadow-elevated: 0 1px 2px rgba(0,0,0,0.04), 0 1px 3px -1px rgba(0,0,0,0.05);
+  --shadow-float: 0 2px 4px -1px rgba(0,0,0,0.06), 0 1px 2px -1px rgba(0,0,0,0.05);
+
+  /* ── Transition (Apple spring curve) ── */
+  --ease-default: cubic-bezier(0.32, 0.72, 0, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+}
+
+/* ── Utility Classes ── */
+.typography-hero {
+  font-family: var(--font-sans);
+  font-size: var(--text-4xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.02em;
+  color: var(--color-primary);
+}
+
+.typography-title {
+  font-family: var(--font-sans);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.01em;
+  color: var(--color-primary);
+}
+
+.typography-subtitle {
+  font-family: var(--font-sans);
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--leading-tight);
+  color: var(--color-primary);
+}
+
+.typography-body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--leading-normal);
+  color: var(--color-primary);
+}
+
+.typography-caption {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--leading-normal);
+  color: var(--color-primary-light);
+}
+
+.typography-data {
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+.typography-data-lg {
+  font-family: var(--font-mono);
+  font-size: var(--text-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  letter-spacing: -0.02em;
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-primary: var(--color-primary);
+    --color-border: var(--color-border);
+  }
+  @layer base {
+    body { background: var(--color-surface); color: var(--color-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+    <main class="max-w-lg mx-auto px-4 pb-8">
+        <!-- Status Bar Spacer -->
+        <div class="h-11"></div>
+
+        <!-- Top Navigation -->
+        <header class="flex items-center h-11 px-1 mb-2">
+            <button data-dom-id="back-cycle" class="inline-flex items-center justify-center w-8 h-8 -ml-1" aria-label="返回" style="color: var(--color-training-main);">
+                <i data-lucide="chevron-left" class="w-5 h-5"></i>
+            </button>
+            <h1 class="flex-1 text-center font-semibold truncate" style="font-family: var(--font-sans); font-size: var(--text-md); color: var(--color-primary);">暂停周期</h1>
+            <div class="w-8"></div>
+        </header>
+
+        <!-- Context Card -->
+        <section class="px-1 mt-2 mb-5">
+            <div class="rounded-[var(--radius-lg)] px-4 py-3" style="background: var(--color-surface-muted);">
+                <p class="truncate" style="font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-primary-light);">当前进度</p>
+                <p class="font-semibold truncate mt-0.5" style="font-family: var(--font-sans); font-size: var(--text-base); color: var(--color-primary);">第2周 · Day2 · 下肢训练</p>
+            </div>
+        </section>
+
+        <!-- Pause Reason (iOS-style grouped list) -->
+        <section class="px-1 mb-5">
+            <p class="px-3 mb-2 font-medium" style="font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-primary-light);">暂停原因</p>
+            <div class="rounded-[var(--radius-lg)] overflow-hidden" style="background: var(--color-surface); box-shadow: var(--shadow-card);">
+                <!-- Row 1: 小长假/假期 -->
+                <button data-reason="holiday" class="reason-option w-full flex items-center gap-3 px-4 py-3.5 text-left border-b" style="border-color: var(--color-border-light);">
+                    <i data-lucide="calendar" class="w-5 h-5 shrink-0" style="color: var(--color-primary-light);"></i>
+                    <span class="flex-1 truncate" style="font-family: var(--font-sans); font-size: var(--text-base); color: var(--color-primary);">小长假 / 假期</span>
+                    <i data-lucide="check" class="reason-check hidden w-5 h-5 shrink-0" style="color: var(--color-training-main);"></i>
+                </button>
+                <!-- Row 2: 出差/旅行 -->
+                <button data-reason="travel" class="reason-option w-full flex items-center gap-3 px-4 py-3.5 text-left border-b" style="border-color: var(--color-border-light);">
+                    <i data-lucide="briefcase" class="w-5 h-5 shrink-0" style="color: var(--color-primary-light);"></i>
+                    <span class="flex-1 truncate" style="font-family: var(--font-sans); font-size: var(--text-base); color: var(--color-primary);">出差 / 旅行</span>
+                    <i data-lucide="check" class="reason-check hidden w-5 h-5 shrink-0" style="color: var(--color-training-main);"></i>
+                </button>
+                <!-- Row 3: 身体不适/受伤 -->
+                <button data-reason="injury" class="reason-option w-full flex items-center gap-3 px-4 py-3.5 text-left border-b" style="border-color: var(--color-border-light);">
+                    <i data-lucide="heart-pulse" class="w-5 h-5 shrink-0" style="color: var(--color-primary-light);"></i>
+                    <span class="flex-1 truncate" style="font-family: var(--font-sans); font-size: var(--text-base); color: var(--color-primary);">身体不适 / 受伤</span>
+                    <i data-lucide="check" class="reason-check hidden w-5 h-5 shrink-0" style="color: var(--color-training-main);"></i>
+                </button>
+                <!-- Row 4: 其他 -->
+                <button data-reason="other" class="reason-option w-full flex items-center gap-3 px-4 py-3.5 text-left">
+                    <i data-lucide="more-horizontal" class="w-5 h-5 shrink-0" style="color: var(--color-primary-light);"></i>
+                    <span class="flex-1 truncate" style="font-family: var(--font-sans); font-size: var(--text-base); color: var(--color-primary);">其他</span>
+                    <i data-lucide="check" class="reason-check hidden w-5 h-5 shrink-0" style="color: var(--color-training-main);"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- Custom Reason Input (hidden by default, shown when "其他" selected) -->
+        <section id="custom-reason-section" class="px-1 mb-5 hidden">
+            <div class="rounded-[var(--radius-lg)] px-4 py-3" style="background: var(--color-surface); box-shadow: var(--shadow-card);">
+                <input type="text" id="custom-reason-input" placeholder="请输入暂停原因（选填）" class="w-full outline-none bg-transparent" style="font-family: var(--font-sans); font-size: var(--text-base); color: var(--color-primary);">
+            </div>
+        </section>
+
+        <!-- Date Range -->
+        <section class="px-1 mb-5">
+            <p class="px-3 mb-2 font-medium" style="font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-primary-light);">预计暂停时长</p>
+
+            <!-- Quick options -->
+            <div class="flex gap-2 mb-3 px-1">
+                <button data-days="3" class="days-option flex-1 rounded-[var(--radius-lg)] py-2.5 text-center font-medium transition-colors" style="font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-primary); background: var(--color-surface); box-shadow: var(--shadow-card);">3天</button>
+                <button data-days="5" class="days-option days-option-selected flex-1 rounded-[var(--radius-lg)] py-2.5 text-center font-medium transition-colors" style="font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-surface);">5天</button>
+                <button data-days="7" class="days-option flex-1 rounded-[var(--radius-lg)] py-2.5 text-center font-medium transition-colors" style="font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-primary); background: var(--color-surface); box-shadow: var(--shadow-card);">7天</button>
+                <button data-days="custom" class="days-option flex-1 rounded-[var(--radius-lg)] py-2.5 text-center font-medium transition-colors" style="font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-primary); background: var(--color-surface); box-shadow: var(--shadow-card);">自定义</button>
+            </div>
+
+            <!-- Custom Date Range (shown when "自定义" selected) -->
+            <div id="custom-date-range" class="hidden px-1">
+                <div class="flex items-center gap-3 rounded-[var(--radius-lg)] p-3" style="background: var(--color-surface); box-shadow: var(--shadow-card);">
+                    <div class="flex-1 text-center">
+                        <p style="font-family: var(--font-sans); font-size: var(--text-xs); color: var(--color-primary-light);">开始</p>
+                        <p class="font-semibold mt-0.5" style="font-family: var(--font-sans); font-size: var(--text-base); color: var(--color-primary);">7月5日</p>
+                    </div>
+                    <i data-lucide="arrow-right" class="w-4 h-4 shrink-0" style="color: var(--color-primary-light);"></i>
+                    <div class="flex-1 text-center">
+                        <p style="font-family: var(--font-sans); font-size: var(--text-xs); color: var(--color-primary-light);">结束</p>
+                        <p class="font-semibold mt-0.5" style="font-family: var(--font-sans); font-size: var(--text-base); color: var(--color-primary);">7月9日</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calculated total -->
+            <div id="days-total" class="px-1 mt-3 text-center">
+                <p style="font-family: var(--font-mono); font-size: var(--text-lg); font-weight: var(--font-weight-semibold); color: var(--color-training-main);">共 5 天</p>
+            </div>
+        </section>
+
+        <!-- Affected Training Preview -->
+        <section class="px-1 mb-8">
+            <div class="rounded-[var(--radius-lg)] p-4" style="background: var(--color-surface); box-shadow: var(--shadow-card);">
+                <p class="font-semibold mb-3" style="font-family: var(--font-sans); font-size: var(--text-base); color: var(--color-primary);">受影响训练: 3个训练日</p>
+                <!-- Day list -->
+                <div class="space-y-2">
+                    <div class="flex items-center gap-3 py-1.5">
+                        <span class="inline-flex items-center shrink-0 rounded-[var(--radius-sm)] px-2 py-0.5 font-medium whitespace-nowrap" style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-training-main); background: var(--state-info-bg);">W2D2</span>
+                        <span class="flex-1 truncate" style="font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-primary);">7月5日</span>
+                    </div>
+                    <div class="flex items-center gap-3 py-1.5">
+                        <span class="inline-flex items-center shrink-0 rounded-[var(--radius-sm)] px-2 py-0.5 font-medium whitespace-nowrap" style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-training-main); background: var(--state-info-bg);">W2D3</span>
+                        <span class="flex-1 truncate" style="font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-primary);">7月7日</span>
+                    </div>
+                    <div class="flex items-center gap-3 py-1.5">
+                        <span class="inline-flex items-center shrink-0 rounded-[var(--radius-sm)] px-2 py-0.5 font-medium whitespace-nowrap" style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-training-main); background: var(--state-info-bg);">W2D4</span>
+                        <span class="flex-1 truncate" style="font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-primary);">7月9日</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Button -->
+        <section class="px-1 mb-4">
+            <button data-dom-id="confirm-pause" class="w-full flex items-center justify-center rounded-[var(--radius-full)] px-6 py-3.5 font-semibold" style="font-family: var(--font-sans); font-size: var(--text-md); color: var(--color-surface); background-color: var(--color-training-main);">
+                确认暂停
+            </button>
+        </section>
+    </main>
+
+    <!-- Interactive Script -->
+    <script>
+    (function() {
+        var reasonOptions = document.querySelectorAll('.reason-option');
+        var customReasonSection = document.getElementById('custom-reason-section');
+        var daysOptions = document.querySelectorAll('.days-option');
+        var customDateRange = document.getElementById('custom-date-range');
+        var daysTotal = document.getElementById('days-total');
+
+        // Reason selection
+        reasonOptions.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                reasonOptions.forEach(function(b) {
+                    b.querySelector('.reason-check').classList.add('hidden');
+                    b.style.background = '';
+                });
+                this.querySelector('.reason-check').classList.remove('hidden');
+                this.style.background = 'var(--state-info-bg)';
+
+                if (this.getAttribute('data-reason') === 'other') {
+                    customReasonSection.classList.remove('hidden');
+                } else {
+                    customReasonSection.classList.add('hidden');
+                }
+            });
+        });
+
+        // Days quick options
+        daysOptions.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                daysOptions.forEach(function(b) {
+                    b.classList.remove('days-option-selected');
+                    b.style.color = 'var(--color-primary)';
+                    b.style.background = 'var(--color-surface)';
+                    b.style.boxShadow = 'var(--shadow-card)';
+                });
+                this.classList.add('days-option-selected');
+                this.style.color = 'var(--color-surface)';
+                this.style.background = 'var(--color-training-main)';
+                this.style.boxShadow = 'none';
+
+                var days = this.getAttribute('data-days');
+                if (days === 'custom') {
+                    customDateRange.classList.remove('hidden');
+                    daysTotal.innerHTML = '共 5 天';
+                } else {
+                    customDateRange.classList.add('hidden');
+                    daysTotal.innerHTML = '共 ' + days + ' 天';
+                }
+            });
+        });
+
+        // Initialize default: 5 days selected
+        var defaultSelected = document.querySelector('.days-option-selected');
+        if (defaultSelected) {
+            defaultSelected.style.color = 'var(--color-surface)';
+            defaultSelected.style.background = 'var(--color-training-main)';
+        }
+    })();
+    </script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

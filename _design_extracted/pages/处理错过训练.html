@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en" class="light" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>处理错过训练</title>
+    <style id="theme-vars">
+/* ============================================
+   Candito Training — Brand Design Tokens
+   Apple Human Interface Guidelines
+   ============================================ */
+
+:root {
+  /* ── Brand Identity ── */
+  --color-primary: #1D1D1F;
+  --color-primary-light: #86868B;
+  --color-primary-subtle: #F5F5F7;
+  --color-surface: #FFFFFF;
+  --color-surface-raised: #FAFAFA;
+  --color-surface-muted: #F5F5F7;
+  --color-border: #E5E5EA;
+  --color-border-light: #F0F0F5;
+
+  /* ── State Colors (Apple HIG system colors) ── */
+  --state-success: #34C759;
+  --state-success-bg: rgba(52, 199, 89, 0.08);
+  --state-warning: #FF9F0A;
+  --state-warning-bg: rgba(255, 159, 10, 0.08);
+  --state-error: #FF3B30;
+  --state-error-bg: rgba(255, 59, 48, 0.08);
+  --state-info: #007AFF;
+  --state-info-bg: rgba(0, 122, 255, 0.08);
+
+  /* ── Accent (Apple brand blue) ── */
+  --color-training-main: #007AFF;
+  --color-training-assist: #5E5CE6;
+  --color-training-optional: #34C759;
+  --color-training-rest: #86868B;
+
+  /* ── Warmth Accent ── */
+  --color-warm: #FF6B35;
+  --color-warm-light: rgba(255, 107, 53, 0.10);
+
+  /* ── Typography Scale ── */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'SF Mono', 'Menlo', 'Consolas', monospace;
+
+  --text-xs: 0.6875rem;
+  --text-sm: 0.75rem;
+  --text-base: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.75rem;
+  --text-4xl: 2rem;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.65;
+
+  /* ── Spacing Scale ── */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* ── Radius Scale ── */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* ── Surface Depth (Apple whisper-light shadows) ── */
+  --shadow-card: 0 0 0 1px var(--color-border-light);
+  --shadow-elevated: 0 1px 2px rgba(0,0,0,0.04), 0 1px 3px -1px rgba(0,0,0,0.05);
+  --shadow-float: 0 2px 4px -1px rgba(0,0,0,0.06), 0 1px 2px -1px rgba(0,0,0,0.05);
+
+  /* ── Transition (Apple spring curve) ── */
+  --ease-default: cubic-bezier(0.32, 0.72, 0, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+}
+
+/* ── Utility Classes ── */
+.typography-hero {
+  font-family: var(--font-sans);
+  font-size: var(--text-4xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.02em;
+  color: var(--color-primary);
+}
+
+.typography-title {
+  font-family: var(--font-sans);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.01em;
+  color: var(--color-primary);
+}
+
+.typography-subtitle {
+  font-family: var(--font-sans);
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--leading-tight);
+  color: var(--color-primary);
+}
+
+.typography-body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--leading-normal);
+  color: var(--color-primary);
+}
+
+.typography-caption {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--leading-normal);
+  color: var(--color-primary-light);
+}
+
+.typography-data {
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+.typography-data-lg {
+  font-family: var(--font-mono);
+  font-size: var(--text-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  letter-spacing: -0.02em;
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-primary: var(--color-primary);
+    --color-border: var(--color-border);
+  }
+  @layer base {
+    body { background: var(--color-surface); color: var(--color-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+    <main class="max-w-lg mx-auto px-4 pb-8">
+        <!-- Status Bar Spacer -->
+        <div class="h-11"></div>
+
+        <!-- Top Navigation -->
+        <header class="flex items-center h-11 px-1 mb-2">
+            <button data-dom-id="back-today" class="inline-flex items-center justify-center w-8 h-8 -ml-1" aria-label="返回" style="color: var(--color-training-main);">
+                <i data-lucide="chevron-left" class="w-5 h-5"></i>
+            </button>
+            <h1 class="flex-1 text-center font-semibold truncate" style="font-family: var(--font-sans); font-size: var(--text-md); color: var(--color-primary);">处理错过训练</h1>
+            <div class="w-8"></div>
+        </header>
+
+        <!-- Alert Banner -->
+        <section class="px-1 mb-5">
+            <div class="flex items-center gap-3 rounded-[var(--radius-lg)] px-4 py-3" style="background: var(--state-warning-bg); border: 1px solid rgba(255, 159, 10, 0.15);">
+                <i data-lucide="info" class="w-5 h-5 shrink-0" style="color: var(--state-warning);"></i>
+                <p class="font-medium" style="font-family: var(--font-sans); font-size: var(--text-sm); color: var(--state-warning);">
+                    检测到 <span class="font-semibold">3</span> 个错过的训练日
+                </p>
+            </div>
+        </section>
+
+        <!-- Missed Days List -->
+        <section class="px-1 mb-5 space-y-3">
+
+            <!-- Day 1 Card -->
+            <div class="rounded-[var(--radius-lg)] p-4" style="background: var(--color-surface); box-shadow: var(--shadow-card);">
+                <!-- Header row -->
+                <div class="flex items-center justify-between mb-1.5">
+                    <h3 class="font-semibold truncate min-w-0 flex-1 mr-2" style="font-family: var(--font-sans); font-size: var(--text-base); color: var(--color-primary);">W2D2 · 下肢训练</h3>
+                    <span class="inline-flex items-center shrink-0 rounded-[var(--radius-sm)] px-2 py-0.5 font-medium whitespace-nowrap" style="font-family: var(--font-sans); font-size: var(--text-xs); color: var(--state-warning); background: var(--state-warning-bg);">未完成</span>
+                </div>
+                <!-- Date -->
+                <p style="font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-primary-light);">7月5日 (3天前)</p>
+                <!-- Action buttons -->
+                <div class="flex gap-2 mt-3">
+                    <button data-action="makeup" class="missed-action-btn flex-1 rounded-[var(--radius-full)] py-1.5 text-center font-medium whitespace-nowrap transition-colors" style="font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-primary); background: var(--color-surface-muted);">补练</button>
+                    <button data-action="skip" class="missed-action-btn flex-1 rounded-[var(--radius-full)] py-1.5 text-center font-medium whitespace-nowrap transition-colors" style="font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-primary); background: var(--color-surface-muted);">跳过</button>
+                    <button data-action="postpone" class="missed-action-btn flex-1 rounded-[var(--radius-full)] py-1.5 text-center font-medium whitespace-nowrap transition-colors" style="font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-primary); background: var(--color-surface-muted);">顺延</button>
+                </div>
+            </div>
+
+            <!-- Day 2 Card -->
+            <div class="rounded-[var(--radius-lg)] p-4" style="background: var(--color-surface); box-shadow: var(--shadow-card);">
+                <!-- Header row -->
+                <div class="flex items-center justify-between mb-1.5">
+                    <h3 class="font-semibold truncate min-w-0 flex-1 mr-2" style="font-family: var(--font-sans); font-size: var(--text-base); color: var(--color-primary);">W2D3 · 上肢训练</h3>
+                    <span class="inline-flex items-center shrink-0 rounded-[var(--radius-sm)] px-2 py-0.5 font-medium whitespace-nowrap" style="font-family: var(--font-sans); font-size: var(--text-xs); color: var(--state-warning); background: var(--state-warning-bg);">未完成</span>
+                </div>
+                <!-- Date -->
+                <p style="font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-primary-light);">7月7日 (1天前)</p>
+                <!-- Action buttons -->
+                <div class="flex gap-2 mt-3">
+                    <button data-action="makeup" class="missed-action-btn flex-1 rounded-[var(--radius-full)] py-1.5 text-center font-medium whitespace-nowrap transition-colors" style="font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-primary); background: var(--color-surface-muted);">补练</button>
+                    <button data-action="skip" class="missed-action-btn flex-1 rounded-[var(--radius-full)] py-1.5 text-center font-medium whitespace-nowrap transition-colors" style="font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-primary); background: var(--color-surface-muted);">跳过</button>
+                    <button data-action="postpone" class="missed-action-btn flex-1 rounded-[var(--radius-full)] py-1.5 text-center font-medium whitespace-nowrap transition-colors" style="font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-primary); background: var(--color-surface-muted);">顺延</button>
+                </div>
+            </div>
+
+            <!-- Day 3 Card -->
+            <div class="rounded-[var(--radius-lg)] p-4" style="background: var(--color-surface); box-shadow: var(--shadow-card);">
+                <!-- Header row -->
+                <div class="flex items-center justify-between mb-1.5">
+                    <h3 class="font-semibold truncate min-w-0 flex-1 mr-2" style="font-family: var(--font-sans); font-size: var(--text-base); color: var(--color-primary);">W2D4 · 下肢训练</h3>
+                    <span class="inline-flex items-center shrink-0 rounded-[var(--radius-sm)] px-2 py-0.5 font-medium whitespace-nowrap" style="font-family: var(--font-sans); font-size: var(--text-xs); color: var(--state-warning); background: var(--state-warning-bg);">未完成</span>
+                </div>
+                <!-- Date -->
+                <p style="font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-primary-light);">7月8日 (昨天)</p>
+                <!-- Action buttons -->
+                <div class="flex gap-2 mt-3">
+                    <button data-action="makeup" class="missed-action-btn flex-1 rounded-[var(--radius-full)] py-1.5 text-center font-medium whitespace-nowrap transition-colors" style="font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-primary); background: var(--color-surface-muted);">补练</button>
+                    <button data-action="skip" class="missed-action-btn flex-1 rounded-[var(--radius-full)] py-1.5 text-center font-medium whitespace-nowrap transition-colors" style="font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-primary); background: var(--color-surface-muted);">跳过</button>
+                    <button data-action="postpone" class="missed-action-btn flex-1 rounded-[var(--radius-full)] py-1.5 text-center font-medium whitespace-nowrap transition-colors" style="font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-primary); background: var(--color-surface-muted);">顺延</button>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="px-1 mb-5">
+            <!-- 出差跳过 button -->
+            <button id="travel-skip-btn" class="w-full flex items-center gap-3 rounded-[var(--radius-lg)] px-4 py-3 mb-2 text-left" style="background: var(--color-surface); box-shadow: var(--shadow-card);">
+                <i data-lucide="briefcase" class="w-5 h-5 shrink-0" style="color: var(--color-primary-light);"></i>
+                <span class="flex-1 truncate font-medium" style="font-family: var(--font-sans); font-size: var(--text-base); color: var(--color-primary);">出差跳过</span>
+                <i data-lucide="chevron-down" id="travel-chevron" class="w-4 h-4 shrink-0 transition-transform" style="color: var(--color-primary-light);"></i>
+            </button>
+
+            <!-- Date Range Picker (expands when "出差跳过" clicked) -->
+            <div id="travel-date-range" class="hidden mb-2 rounded-[var(--radius-lg)] p-3" style="background: var(--color-surface); box-shadow: var(--shadow-card);">
+                <p class="mb-2" style="font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-primary-light);">选择跳过日期范围</p>
+                <div class="flex items-center gap-3">
+                    <div class="flex-1 text-center">
+                        <p style="font-family: var(--font-sans); font-size: var(--text-xs); color: var(--color-primary-light);">开始</p>
+                        <p class="font-semibold mt-0.5" style="font-family: var(--font-sans); font-size: var(--text-base); color: var(--color-primary);">7月5日</p>
+                    </div>
+                    <i data-lucide="arrow-right" class="w-4 h-4 shrink-0" style="color: var(--color-primary-light);"></i>
+                    <div class="flex-1 text-center">
+                        <p style="font-family: var(--font-sans); font-size: var(--text-xs); color: var(--color-primary-light);">结束</p>
+                        <p class="font-semibold mt-0.5" style="font-family: var(--font-sans); font-size: var(--text-base); color: var(--color-primary);">7月9日</p>
+                    </div>
+                </div>
+                <button id="apply-travel-skip" class="w-full mt-3 rounded-[var(--radius-full)] py-2.5 text-center font-medium" style="font-family: var(--font-sans); font-size: var(--text-sm); color: var(--color-surface); background-color: var(--color-training-main);">应用</button>
+            </div>
+
+            <!-- 全部顺延 link -->
+            <button id="postpone-all" class="w-full flex items-center gap-3 rounded-[var(--radius-lg)] px-4 py-3 mb-2 text-left" style="background: var(--color-surface); box-shadow: var(--shadow-card);">
+                <i data-lucide="arrow-right" class="w-5 h-5 shrink-0" style="color: var(--color-primary-light);"></i>
+                <span class="flex-1 truncate font-medium" style="font-family: var(--font-sans); font-size: var(--text-base); color: var(--color-primary);">全部顺延</span>
+                <i data-lucide="chevron-right" class="w-4 h-4 shrink-0" style="color: var(--color-primary-light);"></i>
+            </button>
+
+            <!-- 全部跳过 link -->
+            <button id="skip-all" class="w-full flex items-center gap-3 rounded-[var(--radius-lg)] px-4 py-3 text-left" style="background: var(--color-surface); box-shadow: var(--shadow-card);">
+                <i data-lucide="x" class="w-5 h-5 shrink-0" style="color: var(--color-primary-light);"></i>
+                <span class="flex-1 truncate font-medium" style="font-family: var(--font-sans); font-size: var(--text-base); color: var(--color-primary);">全部跳过</span>
+                <i data-lucide="chevron-right" class="w-4 h-4 shrink-0" style="color: var(--color-primary-light);"></i>
+            </button>
+        </section>
+
+        <!-- CTA Button -->
+        <section class="px-1 mb-4">
+            <button data-dom-id="confirm-missed" class="w-full flex items-center justify-center rounded-[var(--radius-full)] px-6 py-3.5 font-semibold" style="font-family: var(--font-sans); font-size: var(--text-md); color: var(--color-surface); background-color: var(--color-training-main);">
+                确认处理
+            </button>
+        </section>
+    </main>
+
+    <!-- Interactive Script -->
+    <script>
+    (function() {
+        // Action button selection within each day card
+        var allActionBtns = document.querySelectorAll('.missed-action-btn');
+        allActionBtns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                // Find sibling buttons within the same card
+                var siblings = this.parentElement.querySelectorAll('.missed-action-btn');
+                siblings.forEach(function(sib) {
+                    sib.style.color = 'var(--color-primary)';
+                    sib.style.background = 'var(--color-surface-muted)';
+                });
+                this.style.color = 'var(--color-surface)';
+                this.style.background = 'var(--color-training-main)';
+            });
+        });
+
+        // Travel skip toggle
+        var travelSkipBtn = document.getElementById('travel-skip-btn');
+        var travelDateRange = document.getElementById('travel-date-range');
+        var travelChevron = document.getElementById('travel-chevron');
+
+        travelSkipBtn.addEventListener('click', function() {
+            if (travelDateRange.classList.contains('hidden')) {
+                travelDateRange.classList.remove('hidden');
+                travelChevron.style.transform = 'rotate(180deg)';
+            } else {
+                travelDateRange.classList.add('hidden');
+                travelChevron.style.transform = 'rotate(0deg)';
+            }
+        });
+
+        // Apply travel skip
+        var applyTravelSkip = document.getElementById('apply-travel-skip');
+        applyTravelSkip.addEventListener('click', function() {
+            // Mark all days as "跳过"
+            allActionBtns.forEach(function(btn) {
+                if (btn.getAttribute('data-action') === 'skip') {
+                    btn.click();
+                }
+            });
+            travelDateRange.classList.add('hidden');
+            travelChevron.style.transform = 'rotate(0deg)';
+        });
+
+        // Postpone all
+        var postponeAll = document.getElementById('postpone-all');
+        postponeAll.addEventListener('click', function() {
+            allActionBtns.forEach(function(btn) {
+                if (btn.getAttribute('data-action') === 'postpone') {
+                    btn.click();
+                }
+            });
+        });
+
+        // Skip all
+        var skipAll = document.getElementById('skip-all');
+        skipAll.addEventListener('click', function() {
+            allActionBtns.forEach(function(btn) {
+                if (btn.getAttribute('data-action') === 'skip') {
+                    btn.click();
+                }
+            });
+        });
+    })();
+    </script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

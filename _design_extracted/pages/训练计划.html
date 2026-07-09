@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en" class="light" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>训练计划</title>
+    <style id="theme-vars">
+/* ============================================
+   Candito Training — Brand Design Tokens
+   Apple-style Minimal White
+   ============================================ */
+
+:root {
+  /* ── Brand Identity ── */
+  --color-primary: #1D1D1F;
+  --color-primary-light: #86868B;
+  --color-primary-subtle: #F5F5F7;
+  --color-surface: #FFFFFF;
+  --color-surface-raised: #FAFAFA;
+  --color-surface-muted: #F5F5F7;
+  --color-border: #E5E5EA;
+  --color-border-light: #F0F0F5;
+
+  /* ── State Colors ── */
+  --state-success: #30D158;
+  --state-success-bg: rgba(48, 209, 88, 0.08);
+  --state-warning: #FF9F0A;
+  --state-warning-bg: rgba(255, 159, 10, 0.08);
+  --state-error: #FF3B30;
+  --state-error-bg: rgba(255, 59, 48, 0.08);
+  --state-info: #0A84FF;
+  --state-info-bg: rgba(10, 132, 255, 0.08);
+
+  /* ── Accent (training-specific) ── */
+  --color-training-main: #0A84FF;
+  --color-training-assist: #5E5CE6;
+  --color-training-optional: #30D158;
+  --color-training-rest: #86868B;
+
+  /* ── Warmth Accent ── */
+  --color-warm: #FF6B35;
+  --color-warm-light: rgba(255, 107, 53, 0.10);
+
+  /* ── Typography Scale ── */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'SF Mono', 'Menlo', 'Consolas', monospace;
+
+  --text-xs: 0.6875rem;      /* 11px */
+  --text-sm: 0.75rem;         /* 12px */
+  --text-base: 0.875rem;      /* 14px */
+  --text-md: 1rem;             /* 16px */
+  --text-lg: 1.125rem;        /* 18px */
+  --text-xl: 1.25rem;         /* 20px */
+  --text-2xl: 1.5rem;         /* 24px */
+  --text-3xl: 1.75rem;        /* 28px */
+  --text-4xl: 2rem;           /* 32px */
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.65;
+
+  /* ── Spacing Scale ── */
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;       /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;       /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+
+  /* ── Radius Scale ── */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* ── Surface Depth (border-first, minimal shadow) ── */
+  --shadow-card: 0 0 0 1px var(--color-border-light);
+  --shadow-elevated: 0 2px 8px rgba(0, 0, 0, 0.04), 0 0 0 1px var(--color-border-light);
+  --shadow-float: 0 8px 24px rgba(0, 0, 0, 0.08), 0 0 0 1px var(--color-border-light);
+
+  /* ── Transition ── */
+  --ease-default: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+}
+
+/* ── Utility Classes ── */
+.typography-hero {
+  font-family: var(--font-sans);
+  font-size: var(--text-4xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.02em;
+  color: var(--color-primary);
+}
+
+.typography-title {
+  font-family: var(--font-sans);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.01em;
+  color: var(--color-primary);
+}
+
+.typography-subtitle {
+  font-family: var(--font-sans);
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--leading-tight);
+  color: var(--color-primary);
+}
+
+.typography-body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--leading-normal);
+  color: var(--color-primary);
+}
+
+.typography-caption {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--leading-normal);
+  color: var(--color-primary-light);
+}
+
+.typography-data {
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+.typography-data-lg {
+  font-family: var(--font-mono);
+  font-size: var(--text-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  letter-spacing: -0.02em;
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-primary: var(--color-primary);
+    --color-border: var(--color-border);
+  }
+  @layer base {
+    body { background: var(--color-surface); color: var(--color-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+    <main class="md:max-w-lg md:mx-auto">
+        <!-- Top Navigation Bar -->
+        <header class="sticky top-0 z-30 bg-[var(--color-surface)]/95 backdrop-blur border-b border-[var(--color-border-light)]">
+            <div class="flex h-11 items-center px-4">
+                <button data-dom-id="back-today" class="inline-flex h-8 w-8 items-center justify-center -ml-1" aria-label="返回">
+                    <i data-lucide="chevron-left" class="h-5 w-5" style="color: var(--color-training-main);"></i>
+                </button>
+                <div class="min-w-0 flex-1 text-center text-[17px] font-semibold tracking-[-0.02em]" style="color: var(--color-primary);">训练计划</div>
+                <div class="w-8"></div>
+            </div>
+        </header>
+
+        <!-- Current Position Banner -->
+        <div class="mx-4 mt-4 rounded-lg px-4 py-2.5 flex items-center justify-between" style="background: var(--color-surface-muted);">
+            <div class="flex items-center gap-2 min-w-0">
+                <span class="text-xs font-medium whitespace-nowrap" style="color: var(--color-primary-light);">当前</span>
+                <span class="text-sm font-semibold truncate" style="color: var(--color-primary);">第2周 · 肌肉调理/增肌</span>
+            </div>
+            <div class="flex items-center gap-1 shrink-0 ml-3">
+                <span class="inline-block w-1.5 h-1.5 rounded-full" style="background: var(--color-training-main);"></span>
+                <span class="inline-block w-1.5 h-1.5 rounded-full" style="background: var(--color-training-main);"></span>
+                <span class="inline-block w-1.5 h-1.5 rounded-full" style="background: var(--color-border);"></span>
+                <span class="inline-block w-1.5 h-1.5 rounded-full" style="background: var(--color-border);"></span>
+                <span class="inline-block w-1.5 h-1.5 rounded-full" style="background: var(--color-border);"></span>
+                <span class="inline-block w-1.5 h-1.5 rounded-full" style="background: var(--color-border);"></span>
+            </div>
+        </div>
+
+        <!-- Week Selector -->
+        <div class="mt-4 overflow-x-auto no-scrollbar">
+            <div class="flex flex-nowrap gap-1 px-4 min-w-min">
+                <div class="shrink-0 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap flex items-center gap-1" style="color: var(--state-success);">
+                    <i data-lucide="check" class="h-3 w-3"></i>
+                    W1
+                </div>
+                <div class="shrink-0 px-3 py-2 text-xs font-semibold whitespace-nowrap border-b-2" style="color: var(--color-training-main); border-color: var(--color-training-main);">
+                    W2
+                </div>
+                <div class="shrink-0 px-3 py-2 text-xs font-medium whitespace-nowrap" style="color: var(--color-primary-light);">W3</div>
+                <div class="shrink-0 px-3 py-2 text-xs font-medium whitespace-nowrap" style="color: var(--color-primary-light);">W4</div>
+                <div class="shrink-0 px-3 py-2 text-xs font-medium whitespace-nowrap" style="color: var(--color-primary-light);">W5</div>
+                <div class="shrink-0 px-3 py-2 text-xs font-medium whitespace-nowrap" style="color: var(--color-primary-light);">W6</div>
+            </div>
+        </div>
+
+        <!-- Week Content: W2 -->
+        <section class="px-4 mt-4 pb-8">
+            <h2 class="text-base font-semibold mb-3 tracking-[-0.01em]" style="color: var(--color-primary);">第2周 · 肌肉调理/增肌</h2>
+
+            <!-- Day 1 Card -->
+            <div data-dom-id="goto-day-detail-1" class="rounded-lg p-4 mb-3 border-l-[3px]" style="box-shadow: var(--shadow-elevated); border-left-color: var(--state-success); background: var(--color-surface);">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap px-2 py-0.5 rounded-md" style="color: var(--state-success); background: var(--state-success-bg);">
+                        <i data-lucide="check" class="h-3 w-3"></i>
+                        已完成
+                    </span>
+                    <span class="text-xs font-medium whitespace-nowrap" style="color: var(--color-primary-light);">周二 · 65分钟</span>
+                </div>
+                <p class="text-sm font-semibold truncate mb-2" style="color: var(--color-primary);">下肢训练</p>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="truncate min-w-0 flex-1 mr-2" style="color: var(--color-primary);">深蹲 MR10</span>
+                        <span class="font-mono font-semibold whitespace-nowrap shrink-0 text-sm" style="color: var(--color-primary);">80kg</span>
+                    </div>
+                    <div style="height: 1px; background: var(--color-border-light);"></div>
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="truncate min-w-0 flex-1 mr-2" style="color: var(--color-primary);">硬拉变式 8×3组</span>
+                        <span class="font-mono font-semibold whitespace-nowrap shrink-0 text-sm" style="color: var(--color-primary);">65kg</span>
+                    </div>
+                    <div style="height: 1px; background: var(--color-border-light);"></div>
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="truncate min-w-0 flex-1 mr-2" style="color: var(--color-primary);">坐姿哑铃推举</span>
+                        <span class="whitespace-nowrap shrink-0 text-sm" style="color: var(--color-primary-light);">&mdash;</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Day 2 Card -->
+            <div data-dom-id="goto-day-detail-2" class="rounded-lg p-4 mb-3 border-l-[3px]" style="box-shadow: var(--shadow-elevated); border-left-color: var(--state-success); background: var(--color-surface);">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap px-2 py-0.5 rounded-md" style="color: var(--state-success); background: var(--state-success-bg);">
+                        <i data-lucide="check" class="h-3 w-3"></i>
+                        已完成
+                    </span>
+                    <span class="text-xs font-medium whitespace-nowrap" style="color: var(--color-primary-light);">周四 · 60分钟</span>
+                </div>
+                <p class="text-sm font-semibold truncate mb-2" style="color: var(--color-primary);">上肢训练</p>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="truncate min-w-0 flex-1 mr-2" style="color: var(--color-primary);">卧推 MR10</span>
+                        <span class="font-mono font-semibold whitespace-nowrap shrink-0 text-sm" style="color: var(--color-primary);">70kg</span>
+                    </div>
+                    <div style="height: 1px; background: var(--color-border-light);"></div>
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="truncate min-w-0 flex-1 mr-2" style="color: var(--color-primary);">杠铃划船 8×3组</span>
+                        <span class="font-mono font-semibold whitespace-nowrap shrink-0 text-sm" style="color: var(--color-primary);">60kg</span>
+                    </div>
+                    <div style="height: 1px; background: var(--color-border-light);"></div>
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="truncate min-w-0 flex-1 mr-2" style="color: var(--color-primary);">哑铃侧平举</span>
+                        <span class="whitespace-nowrap shrink-0 text-sm" style="color: var(--color-primary-light);">&mdash;</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Day 3 Card -->
+            <div data-dom-id="goto-day-detail-3" class="rounded-lg p-4 mb-3 border-l-[3px]" style="box-shadow: var(--shadow-elevated); border-left-color: var(--color-training-main); background: var(--color-surface);">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap px-2 py-0.5 rounded-md" style="color: var(--state-info); background: var(--state-info-bg);">
+                        <span class="inline-block w-1.5 h-1.5 rounded-full" style="background: var(--state-info);"></span>
+                        进行中
+                    </span>
+                    <span class="text-xs font-medium whitespace-nowrap" style="color: var(--color-primary-light);">周六 · 70分钟</span>
+                </div>
+                <p class="text-sm font-semibold truncate mb-2" style="color: var(--color-primary);">下肢训练</p>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="truncate min-w-0 flex-1 mr-2" style="color: var(--color-primary);">深蹲 加重组</span>
+                        <span class="font-mono font-semibold whitespace-nowrap shrink-0 text-sm" style="color: var(--color-training-main);">85kg</span>
+                    </div>
+                    <div style="height: 1px; background: var(--color-border-light);"></div>
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="truncate min-w-0 flex-1 mr-2" style="color: var(--color-primary);">硬拉变式 8×3组</span>
+                        <span class="font-mono font-semibold whitespace-nowrap shrink-0 text-sm" style="color: var(--color-training-main);">67.5kg</span>
+                    </div>
+                    <div style="height: 1px; background: var(--color-border-light);"></div>
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="truncate min-w-0 flex-1 mr-2" style="color: var(--color-primary);">腿部辅助</span>
+                        <span class="whitespace-nowrap shrink-0 text-sm" style="color: var(--color-primary-light);">&mdash;</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Day 4 Card -->
+            <div class="rounded-lg p-4 mb-3 border-l-[3px]" style="box-shadow: var(--shadow-elevated); border-left-color: var(--color-border); background: var(--color-surface);">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="inline-flex items-center text-xs font-medium whitespace-nowrap px-2 py-0.5 rounded-md" style="color: var(--color-primary-light); background: var(--color-primary-subtle);">
+                        待训练
+                    </span>
+                    <span class="text-xs font-medium whitespace-nowrap" style="color: var(--color-primary-light);">周一 (W3) · 65分钟</span>
+                </div>
+                <p class="text-sm font-semibold truncate mb-2" style="color: var(--color-primary);">上肢训练</p>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="truncate min-w-0 flex-1 mr-2" style="color: var(--color-primary);">卧推 加重组</span>
+                        <span class="font-mono font-semibold whitespace-nowrap shrink-0 text-sm" style="color: var(--color-primary-light);">72.5kg</span>
+                    </div>
+                    <div style="height: 1px; background: var(--color-border-light);"></div>
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="truncate min-w-0 flex-1 mr-2" style="color: var(--color-primary);">杠铃划船 8×3组</span>
+                        <span class="font-mono font-semibold whitespace-nowrap shrink-0 text-sm" style="color: var(--color-primary-light);">62.5kg</span>
+                    </div>
+                    <div style="height: 1px; background: var(--color-border-light);"></div>
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="truncate min-w-0 flex-1 mr-2" style="color: var(--color-primary);">肩部</span>
+                        <span class="whitespace-nowrap shrink-0 text-sm" style="color: var(--color-primary-light);">&mdash;</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script>lucide.createIcons();</script>
+</body>
+</html>
