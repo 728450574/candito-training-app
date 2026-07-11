@@ -1,18 +1,3 @@
-export interface PlannedSet {
-  setNumber: number
-  targetWeight?: number
-  targetReps?: string
-  isAMRAP?: boolean
-}
-
-export interface PlannedExercise {
-  id: string
-  name: string
-  type: 'main' | 'assistance' | 'optional'
-  sets: PlannedSet[]
-  notes?: string
-}
-
 export interface SetRecord {
   setNumber: number
   targetWeight?: number
