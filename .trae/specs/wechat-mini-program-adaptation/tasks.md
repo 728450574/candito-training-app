@@ -84,25 +84,51 @@
   - [ ] SubTask 16.3: 导入使用 `wx.chooseMessageFile` 读取文件并解析还原
   - [ ] SubTask 16.4: 端到端验证：导出 → 导入数据完整还原
 
-## 阶段八：样式适配
-- [ ] Task 17: 全局样式适配
-  - [ ] SubTask 17.1: 将 `theme.css` 转写为 `app.wxss` + `theme.wxss`，CSS 变量挂在 `page` 选择器
-  - [ ] SubTask 17.2: 处理小程序不支持的 CSS 特性（`backdrop-filter` 降级为纯色、`*` 通配符替换）
-  - [ ] SubTask 17.3: 关键 px 单位转 rpx（按 375pt 设计稿基准，1px = 2rpx）
-- [ ] Task 18: 页面级样式适配
-  - [ ] SubTask 18.1: 各页面 `index.wxss` 中 Tailwind 类名替换为等价 WXSS
-  - [ ] SubTask 18.2: 验证各页面视觉与原设计稿基本一致
+## 阶段八：样式适配（UI 1:1 保真）
+- [ ] Task 17: 设计 token 完整迁移
+  - [ ] SubTask 17.1: 将 `theme.css` 全部 CSS 变量转写到 `miniprogram/assets/styles/theme.wxss`，挂在 `page` 选择器下（颜色/字号/字重/行高/间距/圆角/阴影/缓动全量迁移，值不得改动）
+  - [ ] SubTask 17.2: 迁移排版工具类 `.typography-hero/title/subtitle/body/caption/data/data-lg`，字号/字重/行高/字距与原值一致
+  - [ ] SubTask 17.3: 保留字体栈 `-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei'`，数据元素使用 `'SF Mono','Menlo'`
+  - [ ] SubTask 17.4: 在 `app.wxss` 中 `@import` theme.wxss，并设置 `page` 默认 `background:#FFFFFF; color:#1D1D1F; font-family` 等
+- [ ] Task 18: 不支持 CSS 特性降级
+  - [ ] SubTask 18.1: `backdrop-filter` 降级为 `rgba(255,255,255,0.92)` + `border-top:1px solid #F0F0F5`（TabBar 等）
+  - [ ] SubTask 18.2: `*` 通配符、不支持伪类替换为等价 class 选择器
+  - [ ] SubTask 18.3: `env(safe-area-inset-bottom)` 改为 `calc(0.5rem + env(safe-area-inset-bottom))` 或 `padding-bottom: constant/env` 兼容写法
+- [ ] Task 19: 单位换算
+  - [ ] SubTask 19.1: 全局 px → rpx 按 `1px = 2rpx`（375pt 基准）换算，建立换算对照表
+  - [ ] SubTask 19.2: 设计稿关键值示例：16px字号→32rpx、8px圆角→16rpx、12px间距→24rpx、4px圆角→8rpx
+- [ ] Task 20: 页面级样式适配
+  - [ ] SubTask 20.1: 各页面 `index.wxss` 中 Tailwind 类名替换为等价 WXSS，颜色/间距/圆角引用全局变量
+  - [ ] SubTask 20.2: 卡片样式统一使用 `--shadow-card` / `--shadow-elevated` / `--shadow-float`，不自行写阴影
+- [ ] Task 21: 逐页视觉对照验收
+  - [ ] SubTask 21.1: 今日训练（含休息日状态）对照 `今日训练.html` + `休息日.html`
+  - [ ] SubTask 21.2: 训练日历对照 `训练日历.html`
+  - [ ] SubTask 21.3: 进度统计对照 `进度统计.html`（图表配色/线宽/数据点）
+  - [ ] SubTask 21.4: 设置与导出对照 `设置与导出.html`
+  - [ ] SubTask 21.5: 开始训练对照 `开始训练.html`
+  - [ ] SubTask 21.6: 训练执行对照 `训练执行.html`（计时器、逐组记录）
+  - [ ] SubTask 21.7: 训练完成总结对照 `训练完成总结.html`
+  - [ ] SubTask 21.8: 训练详情对照 `训练详情.html`
+  - [ ] SubTask 21.9: 训练计划对照 `训练计划.html`
+  - [ ] SubTask 21.10: 周期管理对照 `周期管理.html`
+  - [ ] SubTask 21.11: 1RM 设置对照 `1RM 设置.html`
+  - [ ] SubTask 21.12: 暂停周期对照 `暂停周期.html`
+  - [ ] SubTask 21.13: 处理错过训练对照 `处理错过训练.html`
+  - [ ] SubTask 21.14: 第6周决策对照 `第6周决策.html`
+  - [ ] SubTask 21.15: 体重记录对照 `体重记录.html`
+  - [ ] SubTask 21.16: 自定义动作对照 `自定义动作.html`
 
 ## 阶段九：CloudBase 集成与验证
-- [ ] Task 19: CloudBase 集成
-  - [ ] SubTask 19.1: 在 `app.ts` 中初始化 `wx.cloud`（或 `@cloudbase/wx-cloud-sdk`），环境 ID 可配置
-  - [ ] SubTask 19.2: 验证 CloudBase Skills 可在工程中调用
-  - [ ] SubTask 19.3: （可选）接入一个云函数或云存储示例验证链路
-- [ ] Task 20: 编译与运行验证
-  - [ ] SubTask 20.1: 微信开发者工具打开仓库根目录，编译通过
-  - [ ] SubTask 20.2: 逐页面验证渲染、导航、数据读写、导入导出功能
-  - [ ] SubTask 20.3: 验证 tabBar 4 个 tab 切换正常
-  - [ ] SubTask 20.4: 验证计时器、触摸交互在小程序中行为正常
+- [ ] Task 22: CloudBase 集成
+  - [ ] SubTask 22.1: 在 `app.ts` 中初始化 `wx.cloud`（或 `@cloudbase/wx-cloud-sdk`），环境 ID 可配置
+  - [ ] SubTask 22.2: 验证 CloudBase Skills 可在工程中调用
+  - [ ] SubTask 22.3: （可选）接入一个云函数或云存储示例验证链路
+- [ ] Task 23: 编译与运行验证
+  - [ ] SubTask 23.1: 微信开发者工具打开仓库根目录，编译通过
+  - [ ] SubTask 23.2: 逐页面验证渲染、导航、数据读写、导入导出功能
+  - [ ] SubTask 23.3: 验证 tabBar 4 个 tab 切换正常
+  - [ ] SubTask 23.4: 验证计时器、触摸交互在小程序中行为正常
+  - [ ] SubTask 23.5: 逐页 UI 视觉对照设计稿（Task 21 验收结果汇总）
 
 # Task Dependencies
 - Task 2 依赖 Task 1（同分支环境下安装 Skills）
@@ -112,6 +138,8 @@
 - Task 9（图标）、Task 10（组件）可并行，且须先于页面迁移（Task 11 ~ 14）
 - Task 11 ~ 14 可并行（不同页面互不依赖），但都依赖 Task 4、Task 8、Task 9、Task 10
 - Task 16（导入导出）依赖 Task 8（stores）完成
-- Task 17、Task 18（样式）可与页面迁移并行，但需在 Task 20 前完成
-- Task 19 依赖 Task 2 与 Task 4
-- Task 20 依赖所有前置任务完成
+- Task 17（token 迁移）须先于 Task 20（页面级样式）完成，且强烈建议先于页面迁移完成以提供样式基础
+- Task 18、Task 19（降级/单位换算）依赖 Task 17
+- Task 21（逐页视觉对照）依赖对应页面迁移完成与 Task 17 ~ 20
+- Task 22 依赖 Task 2 与 Task 4
+- Task 23 依赖所有前置任务完成（含 Task 21 逐页 UI 验收）

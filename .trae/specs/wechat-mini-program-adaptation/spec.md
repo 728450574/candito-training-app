@@ -19,6 +19,12 @@
   - `FileReader` 导入 → `wx.chooseMessageFile`（小程序内选文件）
 - 替换 Lucide DOM 图标方案（`createIcons`）为 iconfont 字体图标
 - 将 Tailwind CSS / `theme.css` 转写为小程序 WXSS（rpx 单位、`page` 选择器定义 CSS 变量）
+- **UI 1:1 保真**：以 `_design_extracted/pages/` 下 17 个设计稿 HTML 为唯一视觉基准，小程序各页面须像素级还原设计稿
+  - 完整迁移 `theme.css` 中的设计 token（颜色、字号、字重、行高、间距、圆角、阴影、缓动）
+  - Apple 极简白色设计风格：主色 `#1D1D1F`、训练主色 `#0A84FF`、背景 `#FFFFFF / #F5F5F7`、圆角 `4/8/12/16px`、卡片阴影 `0 0 0 1px #F0F0F5` 等
+  - 字体栈保留 `-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei'`（小程序 WXSS 支持 `font-family`）
+  - 数据展示使用等宽字体 `SF Mono / Menlo` 以保证数字对齐
+  - `backdrop-filter` 模糊毛玻璃效果在小程序中降级为半透明纯色（保留 TabBar 88% 白色 + 模糊的视觉意图）
 - 改造 `AppTabBar` 为小程序原生 `tabBar`（`app.json` 中配置 `tabBar` 字段，使用 iconfont 或图片资源）
 - 路由模型：Vue Router → `app.json` `pages` 注册 + `wx.navigateTo / wx.switchTab / wx.navigateBack`
 - 接入 `@cloudbase/wx-cloud-sdk` 或使用 `wx.cloud` 原生能力，为后续云函数/云存储/云数据库预留入口
@@ -109,6 +115,48 @@
 ```
 
 ## ADDED Requirements
+
+### Requirement: UI 1:1 保真
+系统 SHALL 以 `_design_extracted/pages/` 下 17 个设计稿 HTML 为唯一视觉基准，在小程序中像素级还原 Apple 极简白色设计风格。设计 token 必须完整迁移，不得自行发挥或简化视觉。
+
+#### Scenario: 设计 token 迁移
+- **WHEN** 查看 `miniprogram/app.wxss` 与 `theme.wxss`
+- **THEN** 包含原 `theme.css` 的全部 token：
+  - 颜色：`--color-primary: #1D1D1F`、`--color-primary-light: #86868B`、`--color-surface: #FFFFFF`、`--color-surface-muted: #F5F5F7`、`--color-border: #E5E5EA`、`--color-border-light: #F0F0F5`
+  - 训练色：`--color-training-main: #0A84FF`、`--color-training-assist: #5E5CE6`、`--color-training-optional: #30D158`、`--color-training-rest: #86868B`
+  - 状态色：success `#30D158`、warning `#FF9F0A`、error `#FF3B30`、info `#0A84FF`（含 8% 半透明背景）
+  - 字号：`xs 0.6875rem / sm 0.75rem / base 0.875rem / md 1rem / lg 1.125rem / xl 1.25rem / 2xl 1.5rem / 3xl 1.75rem / 4xl 2rem`
+  - 字重：`400 / 500 / 600 / 700`
+  - 行高：`1.2 / 1.5 / 1.65`
+  - 间距：`0.25 / 0.5 / 0.75 / 1 / 1.25 / 1.5 / 2 / 2.5 / 3 / 4rem`
+  - 圆角：`4 / 8 / 12 / 16px / 9999px`
+  - 阴影：`--shadow-card: 0 0 0 1px #F0F0F5`、`--shadow-elevated: 0 2px 8px rgba(0,0,0,0.04), 0 0 0 1px #F0F0F5`、`--shadow-float: 0 8px 24px rgba(0,0,0,0.08), 0 0 0 1px #F0F0F5`
+  - 缓动：`--ease-default: cubic-bezier(0.25,0.1,0.25,1)`、`--duration-fast: 150ms`、`--duration-normal: 250ms`
+
+#### Scenario: 字体栈保留
+- **WHEN** 查看 `app.wxss` 的 `page` 或 `body` 选择器
+- **THEN** `font-family` 包含 `-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei'`，数据展示元素使用 `'SF Mono', 'Menlo', 'Consolas'` 等宽字体
+
+#### Scenario: 排版工具类保留
+- **WHEN** 查看 WXSS
+- **THEN** 保留原 `theme.css` 的工具类：`.typography-hero`（4xl/bold/字距-0.02em）、`.typography-title`、`.typography-subtitle`、`.typography-body`、`.typography-caption`、`.typography-data`、`.typography-data-lg`，字号/字重/行高/字距与原值一致
+
+#### Scenario: 单位换算
+- **WHEN** 将设计稿 px 值写入 WXSS
+- **THEN** 按 `1px = 2rpx`（375pt 设计稿基准）换算，例如设计稿 `16px` 字号 → `32rpx`，`8px` 圆角 → `16rpx`，`12px` 间距 → `24rpx`
+
+#### Scenario: 逐页视觉对照
+- **WHEN** 在微信开发者工具中打开任一页面
+- **THEN** 与 `_design_extracted/pages/` 下对应设计稿 HTML 逐项对照：背景色、卡片样式、按钮样式、列表项、间距、字号、字重、颜色、圆角、阴影均一致
+- **AND** 17 个设计稿均有对应页面覆盖（休息日状态合并到今日训练页）
+
+#### Scenario: 毛玻璃降级
+- **WHEN** 渲染 TabBar 或需毛玻璃效果的元素
+- **THEN** 因小程序不支持 `backdrop-filter`，使用 `background: rgba(255,255,255,0.92)` + `border-top: 1px solid #F0F0F5` 降级，保留原设计"半透明白色 + 顶部细线"的视觉意图
+
+#### Scenario: 图表视觉
+- **WHEN** 渲染进度统计页的图表
+- **THEN** 原 SVG 图表改为 `canvas` 或 `echarts-for-weixin` 实现，配色、线宽、数据点样式与设计稿一致（训练主色 `#0A84FF` 折线、辅助色 `#5E5CE6` 等）
 
 ### Requirement: 小程序分支与工具链
 系统 SHALL 在当前 git 仓库中创建独立的微信小程序适配分支，并安装 CloudBase Skills 工具链以支持后续云开发能力接入。
