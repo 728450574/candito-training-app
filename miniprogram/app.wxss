@@ -1,6 +1,7 @@
 /* app.wxss — 全局样式入口 */
 @import "./assets/styles/theme.wxss";
-@import "./assets/iconfont/iconfont.css";
+/* iconfont 暂未启用：需在 iconfont.cn 生成 woff2 后再引入 */
+/* @import "./assets/iconfont/iconfont.css"; */
 
 page {
   background: var(--color-surface);

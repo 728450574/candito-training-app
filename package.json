@@ -5,7 +5,8 @@
   "description": "Candito 训练小程序 - 微信小程序原生工程",
   "scripts": {
     "tsc": "tsc --noEmit",
-    "ci": "tsc --noEmit"
+    "ci": "tsc --noEmit",
+    "build": "tsc"
   },
   "dependencies": {
     "@types/uuid": "^10.0.0",
