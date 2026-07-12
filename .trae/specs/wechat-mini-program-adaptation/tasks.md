@@ -89,12 +89,15 @@
   - [ ] SubTask 15.3: 页面间 `router.push` → `wx.navigateTo`，tab 页跳转 → `wx.switchTab`
   - [ ] SubTask 15.4: 页面 `onLoad/onShow` 中订阅所需 store，`onHide/onUnload` 取消订阅
 
-## 阶段七：文件导入导出适配
-- [ ] Task 16: 重写 `exportService.ts`
-  - [ ] SubTask 16.1: 导出 JSON/CSV 使用 `wx.getFileSystemManager().writeFile` 写入到用户目录
-  - [ ] SubTask 16.2: 调用 `wx.openDocument` 预览或 `wx.shareFileMessage` 分享
-  - [ ] SubTask 16.3: 导入使用 `wx.chooseMessageFile` 读取文件并解析还原
-  - [ ] SubTask 16.4: 端到端验证：导出 → 导入数据完整还原
+## 阶段七：文件导入导出适配（业务逻辑 1:1 保真）
+- [ ] Task 16: 重写 `exportService.ts`（业务逻辑逐行等价，仅替换 IO）
+  - [ ] SubTask 16.1: `ExportData` 结构（version/exportedAt/checksum/data）与原 H5 一致，`EXPORT_VERSION = '1.0.0'`
+  - [ ] SubTask 16.2: `simpleHash` 校验和算法逐行等价（`((hash << 5) - hash) + char`，`hash |= 0`，转无符号 16 进制补 0 到 8 位）
+  - [ ] SubTask 16.3: `calculateChecksum` 使用 `simpleHash`，与原逻辑一致
+  - [ ] SubTask 16.4: 导出 JSON/CSV 使用 `wx.getFileSystemManager().writeFile` 写入到用户目录（IO 层替换）
+  - [ ] SubTask 16.5: 调用 `wx.openDocument` 预览或 `wx.shareFileMessage` 分享
+  - [ ] SubTask 16.6: 导入使用 `wx.chooseMessageFile` 读取文件并解析还原（IO 层替换，解析逻辑与原一致）
+  - [ ] SubTask 16.7: 端到端验证：H5 导出 JSON → 小程序导入完整还原；小程序导出 JSON → H5 导入完整还原
 
 ## 阶段 7.5：设置页存储模式切换
 - [ ] Task 16A: 实现存储模式切换 UI 与逻辑
