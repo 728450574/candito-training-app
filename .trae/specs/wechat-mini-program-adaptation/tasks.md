@@ -158,13 +158,14 @@
 - Task 2 依赖 Task 1（同分支环境下安装 Skills）
 - Task 3 ~ Task 4 为工程骨架，须先于其他开发任务完成
 - Task 5（类型）、Task 6（纯逻辑 services）须先于 Task 8（stores）完成
+- Task 6A（业务逻辑等价性验证）依赖 Task 6 完成，且验证通过后方可进入 stores 开发
 - Task 7（存储抽象层）须先于 Task 8 完成
 - Task 9（图标）、Task 10（组件）可并行，且须先于页面迁移（Task 11 ~ 14）
 - Task 11 ~ 14 可并行（不同页面互不依赖），但都依赖 Task 4、Task 8、Task 9、Task 10
-- Task 16（导入导出）依赖 Task 8（stores）完成
+- Task 16（导入导出）依赖 Task 8（stores）完成，且导出格式与原 H5 一致（Task 6A 验证）
 - Task 16A（存储模式切换）依赖 Task 7、Task 8、Task 22（CloudBase 初始化）与设置页迁移完成
 - Task 17（token 迁移）须先于 Task 20（页面级样式）完成，且强烈建议先于页面迁移完成以提供样式基础
 - Task 18、Task 19（降级/单位换算）依赖 Task 17
 - Task 21（逐页视觉对照）依赖对应页面迁移完成与 Task 17 ~ 20，含 Task 16A 的设置页存储区块验收
 - Task 22 依赖 Task 2 与 Task 4
-- Task 23 依赖所有前置任务完成（含 Task 21 逐页 UI 验收）
+- Task 23 依赖所有前置任务完成（含 Task 6A 业务逻辑等价性验证与 Task 21 逐页 UI 验收）

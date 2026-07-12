@@ -16,19 +16,26 @@
 - [ ] `miniprogram/app.ts` 含 `onLaunch`，初始化 stores 与 `wx.cloud`
 - [ ] `miniprogram/app.wxss` 定义全局 CSS 变量（`page` 选择器）
 
-## 类型与纯逻辑复用
-- [ ] `miniprogram/types/` 包含 `cycle.ts`、`record.ts`、`bodyMetric.ts`、`settings.ts`，字段与 H5 版本一致
-- [ ] `miniprogram/services/dateService.ts`、`planGenerator.ts`、`statsService.ts` 核心算法与 H5 版本一致
+## 类型与纯逻辑复用（业务逻辑 1:1 保真，硬性验收门槛）
+- [ ] `miniprogram/types/` 包含 `cycle.ts`、`record.ts`、`bodyMetric.ts`、`settings.ts`，字段/枚举/接口与 H5 版本完全一致，不得改动
+- [ ] `miniprogram/services/dateService.ts`、`planGenerator.ts`、`statsService.ts` 业务算法逐行等价，禁止改写或"优化"
+- [ ] `planGenerator.ts`：`roundWeight`、`pct`、`mainSet/mainSets/amrapSet`、`buildAssistanceExercises`、6 周 WeekTemplate 与原一致
+- [ ] `statsService.ts`：`epley1RM`（`weight*(1+reps/30)`）、`ONE_RM_MULTIPLIERS {1:1.00,2:1.03,3:1.06,4:1.09}`、`calculateVolume`、`calculateTotalVolume`、`calculateWeeklyCompletion` 与原一致
 - [ ] services 中无浏览器 API 引用（`localStorage`、`document`、`window`、`Blob` 等）
+- [ ] **等价性验证**：相同输入下，小程序版本与 H5 版本输出完全一致（已记录对照用例与验证结果）
+- [ ] `simpleHash`/`calculateChecksum` 校验和算法逐行等价（`((hash << 5) - hash) + char`，`hash |= 0`，转无符号 16 进制补 0 到 8 位）
+- [ ] 任一算法输出不一致即视为未完成，不得进入发布流程
 
-## 状态管理与存储抽象层
+## 状态管理与存储抽象层（业务逻辑 1:1 保真）
 - [ ] `miniprogram/utils/storage/StorageAdapter.ts` 定义统一接口（`get/set/remove/list/clear`，异步 Promise）
-- [ ] `LocalStorageAdapter.ts` 基于 `wx.setStorageSync / getStorageSync`，key 与 H5 版本一致
+- [ ] `LocalStorageAdapter.ts` 基于 `wx.setStorageSync / getStorageSync`，key 与 H5 版本一致（`candito_cycles`、`candito_active_cycle`、`candito_records`、`candito_body_metrics`、`candito_settings`）
 - [ ] `CloudStorageAdapter.ts` 基于 CloudBase 云数据库，按 openid 隔离
 - [ ] `storageManager.ts` 管理 `getActiveAdapter / setMode / onModeChange`
 - [ ] `miniprogram/stores/` 包含 `cycleStore.ts`、`recordStore.ts`、`bodyMetricStore.ts`、`settingsStore.ts` 单例模块
 - [ ] 各 store 通过 `storageManager.getActiveAdapter()` 读写，不直接调用具体后端
 - [ ] 各 store 支持 `subscribe` 订阅模式
+- [ ] `cycleStore.ts`：`activeCycle` 计算逻辑（排除 terminated/completed）与原 H5 一致
+- [ ] `cycleStore.ts`：周期状态机方法（create/pause/resume/terminate/restart/week6Decision/markMissed/makeup）逻辑与原逐行等价
 - [ ] 各 store 在 `app.ts` `onLaunch` 中根据 `settingsStore.storageMode` 初始化对应 adapter 并 `init()` 加载
 - [ ] storage key 命名与 JSON 结构与 H5 版本一致（保证数据迁移兼容）
 
@@ -59,11 +66,13 @@
 - [ ] 页面 `onLoad/onShow` 订阅 store，`onHide/onUnload` 取消订阅
 - [ ] 页面中无 `document`、`window`、`router.push`、`useRouter` 等浏览器/Vue 残留
 
-## 文件导入导出
-- [ ] `miniprogram/services/exportService.ts` 使用 `wx.getFileSystemManager().writeFile` 实现导出
+## 文件导入导出（业务逻辑 1:1 保真）
+- [ ] `miniprogram/services/exportService.ts` `ExportData` 结构（version/exportedAt/checksum/data）与原 H5 一致，`EXPORT_VERSION = '1.0.0'`
+- [ ] `simpleHash`/`calculateChecksum` 校验和算法逐行等价
+- [ ] 导出 JSON/CSV 使用 `wx.getFileSystemManager().writeFile`（IO 层替换，业务逻辑不变）
 - [ ] 导出后调用 `wx.openDocument` 或 `wx.shareFileMessage`
-- [ ] 导入使用 `wx.chooseMessageFile` 读取文件
-- [ ] 端到端验证：导出 JSON/CSV → 导入还原数据完整
+- [ ] 导入使用 `wx.chooseMessageFile`（IO 层替换，解析逻辑与原一致）
+- [ ] **双向兼容验证**：H5 导出 JSON → 小程序导入完整还原；小程序导出 JSON → H5 导入完整还原
 
 ## 样式适配（UI 1:1 保真，硬性验收门槛）
 - [ ] `theme.css` 已转写为 `app.wxss` + `theme.wxss`，全部设计 token（颜色/字号/字重/行高/间距/圆角/阴影/缓动）值不得改动
