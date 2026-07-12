@@ -1,0 +1,457 @@
+/* 1RM 设置页样式 — 1:1 迁移自 OneRMSetup.vue
+   px → rpx 按 1px = 2rpx 换算 */
+
+.page {
+  min-height: 100vh;
+  background: var(--color-surface);
+}
+
+/* ── 导航栏 ── */
+.nav-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 88rpx;
+  padding: 0 32rpx;
+  border-bottom: 2rpx solid var(--color-border);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.nav-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: var(--radius-md);
+}
+
+.nav-back-icon {
+  font-size: 40rpx;
+  color: var(--color-primary);
+}
+
+.nav-title {
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.01em;
+  color: var(--color-primary);
+}
+
+.nav-placeholder {
+  width: 72rpx;
+}
+
+.page-body {
+  padding: 32rpx;
+}
+
+/* ── 单位切换 ── */
+.unit-switch {
+  display: flex;
+  border-radius: var(--radius-lg);
+  padding: 8rpx;
+  background: var(--color-surface-muted);
+  box-shadow: var(--shadow-card);
+}
+
+.unit-btn {
+  flex: 1;
+  padding: 16rpx 0;
+  text-align: center;
+  font-size: var(--text-sm);
+}
+
+/* ── 1RM 输入卡片 ── */
+.lift-list {
+  margin-top: 40rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.lift-card {
+  border-radius: 24rpx;
+  padding: 32rpx;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-elevated);
+}
+
+.lift-card-head {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.lift-icon-box {
+  display: flex;
+  width: 80rpx;
+  height: 80rpx;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  background: var(--state-info-bg);
+  border-radius: var(--radius-md);
+}
+
+/* 深蹲图标 */
+.lift-icon-squat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--color-training-main);
+}
+
+.squat-circle {
+  width: 24rpx;
+  height: 24rpx;
+  border-radius: var(--radius-full);
+  border: 4rpx solid var(--color-training-main);
+  box-sizing: border-box;
+}
+
+.squat-arrow {
+  font-size: 28rpx;
+  margin-top: -12rpx;
+  color: var(--color-training-main);
+}
+
+/* 卧推图标 */
+.lift-icon-bench {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+  color: var(--color-training-main);
+}
+
+.bench-bar {
+  height: 4rpx;
+  width: 40rpx;
+  background: var(--color-training-main);
+}
+
+.bench-plate {
+  height: 20rpx;
+  width: 20rpx;
+  border-radius: 4rpx;
+  background: var(--color-training-main);
+  opacity: 0.6;
+}
+
+/* 硬拉图标 */
+.lift-icon-deadlift {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--color-training-main);
+}
+
+.deadlift-bar {
+  height: 32rpx;
+  width: 4rpx;
+  background: var(--color-training-main);
+}
+
+.deadlift-plate {
+  height: 20rpx;
+  width: 20rpx;
+  border-radius: 4rpx;
+  margin-top: -4rpx;
+  background: var(--color-training-main);
+  opacity: 0.6;
+}
+
+.lift-name-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.lift-name {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+.lift-en {
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+}
+
+/* 重量输入 */
+.weight-input-wrap {
+  margin-top: 32rpx;
+  padding-bottom: 8rpx;
+  border-bottom: 3rpx solid var(--color-primary);
+}
+
+.weight-input-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12rpx;
+}
+
+.weight-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  font-size: 64rpx;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+  font-family: var(--font-mono);
+  color: var(--color-primary);
+  line-height: 1.1;
+}
+
+.weight-unit {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-mono);
+  color: var(--color-primary-light);
+}
+
+/* 调整按钮 */
+.adjust-row {
+  margin-top: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+}
+
+.adjust-btn {
+  display: flex;
+  height: 64rpx;
+  width: 112rpx;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  font-family: var(--font-mono);
+}
+
+.adjust-btn-minus5 { color: var(--state-error); }
+.adjust-btn-minus25 { color: var(--state-error); }
+.adjust-btn-plus25 { color: var(--color-primary); }
+.adjust-btn-plus5 { color: var(--state-success); }
+
+/* 周重量预览 */
+.week-preview {
+  margin-top: 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
+  color: var(--color-primary-light);
+}
+
+.week-preview-sep {
+  color: var(--color-border);
+}
+
+/* ── 辅助训练配置 ── */
+.assistance-section {
+  margin-top: 48rpx;
+}
+
+.assistance-head {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 0;
+}
+
+.assistance-title {
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.01em;
+  color: var(--color-primary);
+}
+
+.assistance-arrow {
+  font-size: 32rpx;
+  color: var(--color-primary-light);
+  transition: transform var(--duration-normal) var(--ease-default);
+}
+
+.assistance-list {
+  display: flex;
+  flex-direction: column;
+  border-radius: 24rpx;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-elevated);
+}
+
+.assistance-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 32rpx;
+}
+
+.assistance-item-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.assistance-item-cn {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-primary);
+}
+
+.assistance-item-en {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+}
+
+.assistance-item-current {
+  font-size: var(--text-sm);
+  color: var(--color-primary);
+  margin-left: 24rpx;
+}
+
+.assistance-switch-btn {
+  flex-shrink: 0;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-training-main);
+  margin-left: 8rpx;
+}
+
+.assistance-custom-row {
+  margin-top: 16rpx;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.assistance-custom-btn {
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-training-main);
+}
+
+/* ── 6周计划预览 ── */
+.preview-section {
+  margin-top: 48rpx;
+}
+
+.preview-title {
+  display: block;
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.01em;
+  margin-bottom: 24rpx;
+  color: var(--color-primary);
+}
+
+.preview-card {
+  border-radius: 24rpx;
+  padding: 32rpx;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-elevated);
+}
+
+.preview-table {
+  width: 100%;
+}
+
+.preview-row {
+  display: flex;
+  align-items: center;
+}
+
+.preview-row-head {
+  border-bottom: 2rpx solid var(--color-border);
+}
+
+.preview-cell {
+  padding: 16rpx 0;
+}
+
+.preview-cell-label {
+  width: 112rpx;
+  text-align: left;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+}
+
+.preview-cell-week {
+  flex: 1;
+  text-align: center;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-mono);
+  color: var(--color-primary-light);
+}
+
+.preview-cell-data {
+  flex: 1;
+  text-align: center;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+  font-family: var(--font-mono);
+}
+
+.preview-legend {
+  margin-top: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24rpx;
+  font-size: var(--text-xs);
+  font-family: var(--font-mono);
+  color: var(--color-primary-light);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.legend-dot {
+  display: inline-block;
+  height: 12rpx;
+  width: 12rpx;
+  border-radius: var(--radius-full);
+}
+
+.legend-dot-accum {
+  background: var(--color-primary);
+}
+
+.legend-dot-intensity {
+  background: var(--color-training-main);
+}
+
+/* ── 保存按钮 ── */
+.save-section {
+  margin-top: 48rpx;
+}
+
+.save-btn {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 28rpx 0;
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+  background: var(--color-training-main);
+  color: var(--color-surface);
+  border-radius: var(--radius-full);
+}

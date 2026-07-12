@@ -1,0 +1,238 @@
+<!-- 周期管理页 — 1:1 迁移自 CycleManagement.vue -->
+<view class="page">
+  <view class="page-inner">
+    <view class="page-header">
+      <text class="typography-title">周期管理</text>
+      <text class="typography-caption page-subtitle">Candito 6-Week 力量举计划</text>
+    </view>
+
+    <!-- 有活跃周期 -->
+    <block wx:if="{{hasActiveCycle}}">
+      <!-- 当前周期卡片 -->
+      <view class="active-card">
+        <view class="active-card-head">
+          <text class="active-card-name">{{activeCycleName}}</text>
+          <text class="status-badge" style="{{statusBadgeStyle}}">{{statusLabel}}</text>
+        </view>
+
+        <!-- 进度 -->
+        <view class="progress-wrap">
+          <view class="progress-row">
+            <text class="progress-text">{{progressText}}</text>
+            <text class="progress-percent">{{progressPercent}}%</text>
+          </view>
+          <view class="progress-bar">
+            <view class="progress-bar-inner" style="width: {{progressPercent}}%;"></view>
+          </view>
+        </view>
+
+        <!-- 开始日期 -->
+        <view class="start-date-row">
+          <text class="iconfont icon-calendar start-date-icon"></text>
+          <text class="start-date-text">开始日期: {{formattedStartDate}}</text>
+        </view>
+
+        <!-- 1RM 卡片 -->
+        <view class="onerm-row">
+          <view wx:for="{{oneRMCards}}" wx:key="key" class="onerm-card">
+            <text class="onerm-card-name">{{item.name}}</text>
+            <text class="onerm-card-value">{{item.value}}{{unit}}</text>
+          </view>
+        </view>
+
+        <!-- 操作按钮 -->
+        <view class="action-row" wx:if="{{canOperate}}">
+          <view class="action-btn action-btn-sub" bindtap="goPause">
+            <text class="iconfont icon-pause action-btn-icon"></text>
+            <text>暂停周期</text>
+          </view>
+          <view class="action-btn action-btn-primary" bindtap="goOneRM">
+            <text class="iconfont icon-dumbbell action-btn-icon"></text>
+            <text>设置1RM</text>
+          </view>
+        </view>
+        <view class="action-row" wx:else>
+          <view class="action-btn action-btn-primary" bindtap="goStart">
+            <text class="iconfont icon-dumbbell action-btn-icon"></text>
+            <text>创建新周期</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 训练周进度时间线 -->
+      <view class="section">
+        <text class="section-title">训练周进度</text>
+        <view class="timeline">
+          <view class="timeline-line"></view>
+          <view wx:for="{{weekTimeline}}" wx:key="weekNumber" class="timeline-item">
+            <!-- 节点 -->
+            <view wx:if="{{item.state === 'completed'}}" class="timeline-node timeline-node-completed">
+              <text class="iconfont icon-check timeline-node-icon"></text>
+            </view>
+            <view wx:elif="{{item.state === 'in-progress'}}" class="timeline-node timeline-node-progress"></view>
+            <view wx:else class="timeline-node timeline-node-pending"></view>
+
+            <view class="timeline-card" style="{{item.cardStyle}}">
+              <view class="timeline-card-head">
+                <text class="timeline-card-title" style="{{item.titleStyle}}">W{{item.weekNumber}} {{item.theme}}</text>
+                <text wx:if="{{item.state === 'completed'}}" class="timeline-card-tag tag-completed">完成</text>
+                <text wx:elif="{{item.state === 'in-progress'}}" class="timeline-card-tag tag-progress">进行中</text>
+                <text wx:elif="{{item.weekNumber === 6}}" class="timeline-card-tag tag-waiting">等待决策</text>
+                <text wx:else class="timeline-card-tag tag-pending">未开始</text>
+              </view>
+              <view wx:if="{{item.totalDays > 0}}" class="timeline-card-days">
+                <text class="timeline-days-text">{{item.completedDays}}/{{item.totalDays}}天</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 暂停记录 -->
+      <view wx:if="{{pauseHistoryDisplay.length > 0}}" class="section">
+        <view class="collapse-btn" bindtap="togglePauseHistory">
+          <view class="collapse-btn-left">
+            <text class="iconfont icon-clock collapse-icon"></text>
+            <text class="collapse-label">暂停记录</text>
+          </view>
+          <text class="iconfont icon-chevron-down collapse-arrow" style="transform: rotate({{showPauseHistory ? 180 : 0}}deg);"></text>
+        </view>
+        <view wx:if="{{showPauseHistory}}" class="pause-history-list">
+          <view wx:for="{{pauseHistoryDisplay}}" wx:key="id" class="pause-history-item">
+            <text class="iconfont icon-calendar-off pause-history-icon"></text>
+            <view class="pause-history-info">
+              <text class="pause-history-label">{{item.label}}</text>
+              <text class="pause-history-range">{{item.range}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 历史周期 -->
+    <view class="section">
+      <view class="history-head">
+        <text class="history-title">历史周期</text>
+        <text class="typography-caption">共 {{historicalCycles.length}} 个</text>
+      </view>
+
+      <view wx:for="{{historicalCycles}}" wx:key="id" class="history-card" bindtap="goCycleDetail" data-cycle="{{item}}">
+        <view class="history-card-head">
+          <view class="history-card-head-left">
+            <text class="history-status-badge" style="{{item.statusBadgeStyle}}">{{item.statusLabel}}</text>
+            <text class="history-card-name">{{item.name}}</text>
+          </view>
+          <text class="iconfont icon-chevron-right history-arrow"></text>
+        </view>
+        <view class="history-card-date">
+          <text>{{item.dateRange}}</text>
+          <text class="history-card-sep">|</text>
+          <text>{{item.subtitle}}</text>
+        </view>
+        <view class="history-card-onerm">
+          <text class="history-onerm-text">深蹲 {{item.squat}}</text>
+          <text class="history-onerm-text">卧推 {{item.bench}}</text>
+          <text class="history-onerm-text">硬拉 {{item.deadlift}}</text>
+          <text class="history-onerm-unit">{{item.unit}}</text>
+        </view>
+      </view>
+
+      <view wx:if="{{historicalCycles.length === 0}}" class="empty-state">
+        <text class="typography-caption">暂无历史周期</text>
+      </view>
+    </view>
+
+    <!-- 重新开始 / 暂停 / 终止 -->
+    <block wx:if="{{hasActiveCycle && canOperate}}">
+      <view class="section">
+        <text class="section-title">重新开始</text>
+        <view class="restart-list">
+          <view class="restart-item" bindtap="restartCurrent">
+            <view class="restart-item-left">
+              <text class="iconfont icon-rotate-ccw restart-icon"></text>
+              <text>从当前周重新开始</text>
+            </view>
+            <text class="iconfont icon-chevron-right restart-arrow"></text>
+          </view>
+          <view class="restart-item" bindtap="openRestartModal">
+            <view class="restart-item-left">
+              <text class="iconfont icon-undo-2 restart-icon"></text>
+              <text>从指定周重新开始 + 调整1RM</text>
+            </view>
+            <text class="iconfont icon-chevron-right restart-arrow"></text>
+          </view>
+        </view>
+      </view>
+
+      <view class="section">
+        <view class="restart-item" bindtap="goPause">
+          <view class="restart-item-left">
+            <text class="iconfont icon-pause-circle restart-icon pause-icon"></text>
+            <text>暂停周期</text>
+          </view>
+          <view class="restart-item-right">
+            <text class="restart-item-hint">小长假/出差/受伤</text>
+            <text class="iconfont icon-chevron-right restart-arrow"></text>
+          </view>
+        </view>
+      </view>
+
+      <view class="terminate-section">
+        <view class="terminate-btn" bindtap="handleTerminate">
+          <text class="iconfont icon-octagon-x terminate-icon"></text>
+          <text>终止周期</text>
+        </view>
+        <text class="terminate-hint">终止后训练数据保留为只读</text>
+      </view>
+    </block>
+
+    <!-- 无活跃周期 -->
+    <view wx:if="{{!hasActiveCycle}}" class="no-cycle">
+      <text class="typography-caption no-cycle-text">没有活跃的训练周期</text>
+      <view class="create-btn" bindtap="goStart">创建训练周期</view>
+    </view>
+  </view>
+</view>
+
+<!-- 重新开始弹窗 -->
+<view wx:if="{{showRestartModal}}" class="modal-mask" bindtap="closeRestartModal">
+  <view class="modal-sheet" catchtap="noop">
+    <text class="modal-title">重新开始 · 指定周</text>
+
+    <view class="modal-block">
+      <text class="modal-block-label">选择起始周</text>
+      <view class="week-pick-row">
+        <view
+          wx:for="{{[1,2,3,4,5,6]}}"
+          wx:key="*this"
+          class="week-pick-btn"
+          style="{{restartWeek === item ? 'background: var(--color-training-main); color: var(--color-surface);' : 'background: var(--color-surface-muted); color: var(--color-primary);'}}"
+          bindtap="selectRestartWeek"
+          data-week="{{item}}"
+        >{{item}}</view>
+      </view>
+    </view>
+
+    <view class="modal-block">
+      <text class="modal-block-label">1RM（可选调整）</text>
+      <view class="onerm-input-list">
+        <view wx:for="{{restartLifts}}" wx:key="key" class="onerm-input-row">
+          <text class="onerm-input-label">{{item.cn}}</text>
+          <input
+            class="onerm-input"
+            type="digit"
+            value="{{restartOneRM[item.key]}}"
+            data-key="{{item.key}}"
+            bindinput="inputRestartOneRM"
+          />
+          <text class="onerm-input-unit">{{unit}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="modal-actions">
+      <view class="modal-btn modal-btn-cancel" bindtap="closeRestartModal">取消</view>
+      <view class="modal-btn modal-btn-confirm" bindtap="confirmRestart">确认重新开始</view>
+    </view>
+  </view>
+</view>

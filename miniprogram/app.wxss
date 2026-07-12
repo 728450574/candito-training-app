@@ -1,0 +1,9 @@
+/* app.wxss — 全局样式入口 */
+@import "./assets/styles/theme.wxss";
+@import "./assets/iconfont/iconfont.css";
+
+page {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  font-family: var(--font-sans);
+}

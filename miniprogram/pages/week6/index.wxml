@@ -1,0 +1,119 @@
+<!-- 第6周决策页 — 1:1 迁移自 Week6Decision.vue -->
+<view class="page">
+  <!-- 顶部导航栏 -->
+  <view class="nav-header">
+    <view class="nav-back-wrap">
+      <view class="nav-back" bindtap="goBack">
+        <text class="iconfont icon-chevron-left nav-back-icon"></text>
+      </view>
+    </view>
+    <text class="nav-title">第6周决策</text>
+    <view class="nav-back-wrap"></view>
+  </view>
+
+  <!-- 无活跃周期 -->
+  <view wx:if="{{!hasActiveCycle}}" class="empty-state">
+    <text class="typography-caption">没有活跃的训练周期</text>
+  </view>
+
+  <!-- 无第5周数据 -->
+  <view wx:elif="{{liftData.length === 0}}" class="empty-state">
+    <text class="typography-caption empty-hint">未找到第5周训练数据</text>
+    <view class="direct-btn" bindtap="handleDirectNewCycle">直接开始新周期</view>
+  </view>
+
+  <block wx:else>
+    <!-- 标题 -->
+    <view class="header-section">
+      <view class="header-title-row">
+        <text class="iconfont icon-trophy header-trophy"></text>
+        <text class="header-title">恭喜完成第5周！</text>
+      </view>
+      <text class="typography-caption header-subtitle">第5周训练数据回顾</text>
+    </view>
+
+    <!-- 第5周数据卡片 -->
+    <view class="lift-data-row">
+      <view wx:for="{{liftData}}" wx:key="key" class="lift-data-card">
+        <text class="typography-caption lift-data-name">{{item.name}}</text>
+        <text class="lift-data-weight">{{item.weightDisplay}}</text>
+        <text class="lift-data-reps">x {{item.reps}}次</text>
+      </view>
+    </view>
+
+    <!-- 预估新 1RM -->
+    <view class="estimate-card">
+      <view class="estimate-head">
+        <view class="estimate-head-left">
+          <text class="iconfont icon-trending-up estimate-icon"></text>
+          <text class="estimate-title">预估新 1RM</text>
+        </view>
+      </view>
+      <text class="typography-caption estimate-subtitle">基于第5周完成次数自动预估</text>
+      <view class="estimate-list">
+        <view
+          wx:for="{{liftData}}"
+          wx:key="key"
+          class="estimate-item"
+          style="{{index < liftData.length - 1 ? 'border-bottom: 1rpx solid var(--color-border-light);' : ''}}"
+        >
+          <text class="estimate-item-name">{{item.name}}</text>
+          <view class="estimate-item-right">
+            <text class="estimate-item-calc">{{item.weightDisplay}} x {{item.multiplier}} =</text>
+            <text class="estimate-item-value">{{item.estimated1RMDisplay}} {{unit}}</text>
+          </view>
+        </view>
+      </view>
+      <text class="estimate-note">完成2次 x 1.03, 3次 x 1.06, 4次 x 1.09</text>
+    </view>
+
+    <!-- 决策选项 -->
+    <view class="decision-section">
+      <text class="decision-section-title">选择你的下一步</text>
+      <view class="decision-list">
+        <!-- 直接开始新周期 -->
+        <view class="decision-card" style="{{decisionCardStyleNewCycle}}" bindtap="selectDecision" data-value="new_cycle">
+          <view class="decision-card-inner">
+            <view class="radio-outer" style="{{radioStyleNewCycle}}">
+              <view wx:if="{{selectedDecision === 'new_cycle'}}" class="radio-inner"></view>
+            </view>
+            <view class="decision-card-body">
+              <view class="decision-card-title-row">
+                <text class="decision-card-title">直接开始新周期</text>
+                <text class="decision-card-badge">推荐</text>
+              </view>
+              <text class="typography-caption decision-card-desc">使用预估1RM直接开始下一轮6周计划</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 减载周 -->
+        <view class="decision-card" style="{{decisionCardStyleDeload}}" bindtap="selectDecision" data-value="deload">
+          <view class="decision-card-inner">
+            <view class="radio-outer radio-outer-border" style="{{radioStyleDeload}}"></view>
+            <view class="decision-card-body">
+              <text class="decision-card-title">减载周</text>
+              <text class="typography-caption decision-card-desc">先做一周减载训练（重做第1周，降低容量），再开始新周期</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 实测1RM -->
+        <view class="decision-card" style="{{decisionCardStyleTest1rm}}" bindtap="selectDecision" data-value="test_1rm">
+          <view class="decision-card-inner">
+            <view class="radio-outer radio-outer-border" style="{{radioStyleTest1rm}}"></view>
+            <view class="decision-card-body">
+              <text class="decision-card-title">实测1RM</text>
+              <text class="typography-caption decision-card-desc">本周实测最大重量，获得准确新1RM后再决定</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 确认按钮 -->
+    <view class="confirm-section">
+      <view class="confirm-btn" bindtap="handleConfirm">确认选择</view>
+    </view>
+  </block>
+</view>

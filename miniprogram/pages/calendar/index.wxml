@@ -1,0 +1,102 @@
+<!-- 训练日历页 — tab
+     迁移自 TrainingCalendar.vue
+     设计基准：_design_extracted/pages/训练日历.html
+     结构：头部月份切换 + 周视图（毛玻璃降级）+ 月历网格 + 图例 + 选中日期详情 -->
+<view class="page">
+
+  <!-- ========== 头部 ========== -->
+  <view class="header">
+    <text class="header-title typography-hero">训练日历</text>
+    <view class="month-nav">
+      <view class="nav-btn" bindtap="prevMonth">
+        <text class="iconfont icon-chevron-left nav-icon"></text>
+      </view>
+      <text class="month-label">{{currentYear}}年{{currentMonthLabel}}月</text>
+      <view class="nav-btn" bindtap="nextMonth">
+        <text class="iconfont icon-chevron-right nav-icon"></text>
+      </view>
+    </view>
+    <view wx:if="{{activeCycle}}" class="cycle-pill-wrap">
+      <view class="cycle-pill">
+        <text>{{cycleStatusText}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========== 周视图（毛玻璃降级为 rgba） ========== -->
+  <view class="week-view">
+    <view class="week-row">
+      <view wx:for="{{weekRowDays}}" wx:key="abbr" class="week-cell">
+        <text class="week-abbr {{item.isToday ? 'week-abbr--today' : ''}}">{{item.abbr}}</text>
+        <text class="week-date {{item.isToday ? 'week-date--today' : (item.isCurrentMonth ? 'week-date--current' : 'week-date--other')}}">{{item.date}}</text>
+        <view wx:if="{{item.hasTraining}}" class="week-dot {{item.dotClass}}"></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========== 月历网格 ========== -->
+  <view class="cal-grid">
+    <!-- 星期表头 -->
+    <view class="cal-header-row">
+      <view wx:for="{{weekdayHeaders}}" wx:key="*this" class="cal-header-cell">
+        <text class="cal-header-text">{{item}}</text>
+      </view>
+    </view>
+    <!-- 日期行 -->
+    <view wx:for="{{calendarRows}}" wx:for-item="row" wx:for-index="rowIdx" wx:key="rowIdx" class="cal-row">
+      <view wx:for="{{row}}" wx:for-item="cell" wx:for-index="cellIdx" wx:key="dateStr"
+            class="cal-cell {{cellIdx === 6 ? '' : 'cal-cell--br'}} {{rowIdx === lastRowIndex ? '' : 'cal-cell--bb'}}"
+            data-date="{{cell.dateStr}}"
+            bindtap="selectDay">
+        <text class="cal-date {{cell.dateClass}}">{{cell.day}}</text>
+        <view wx:if="{{cell.trainingStatus}}" class="cal-dot {{cell.dotClass}}"></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========== 图例 ========== -->
+  <view class="legend">
+    <view class="legend-item">
+      <view class="legend-dot legend-dot--completed"></view>
+      <text class="legend-text">已完成</text>
+    </view>
+    <view class="legend-item">
+      <view class="legend-dot legend-dot--today"></view>
+      <text class="legend-text">今日</text>
+    </view>
+    <view class="legend-item">
+      <view class="legend-dot legend-dot--upcoming"></view>
+      <text class="legend-text">待训练</text>
+    </view>
+    <view class="legend-item">
+      <view class="legend-dot legend-dot--missed"></view>
+      <text class="legend-text">未完成</text>
+    </view>
+  </view>
+
+  <!-- ========== 选中日期详情卡 ========== -->
+  <view wx:if="{{selectedDayInfo}}" class="detail-card">
+    <view class="detail-header">
+      <text class="detail-date">{{selectedDayInfo.displayDate}}</text>
+      <view class="detail-pill" style="color: {{selectedDayInfo.statusPillColor}}; background: {{selectedDayInfo.statusPillBg}};">
+        <text>{{selectedDayInfo.statusLabel}}</text>
+      </view>
+    </view>
+    <view class="detail-body">
+      <block wx:if="{{selectedDayInfo.workoutType}}">
+        <view class="detail-type-row">
+          <text class="detail-type">{{selectedDayInfo.workoutType}} · W{{selectedDayInfo.weekNum}}D{{selectedDayInfo.dayNum}}</text>
+        </view>
+        <text class="detail-exercises">{{selectedDayInfo.exercisesSummary}}</text>
+        <view class="detail-btn" bindtap="goToDetail">
+          <text class="detail-btn-text">查看详情</text>
+          <text class="iconfont icon-chevron-right detail-btn-icon"></text>
+        </view>
+      </block>
+      <block wx:else>
+        <text class="detail-rest typography-caption">休息日</text>
+      </block>
+    </view>
+  </view>
+
+</view>

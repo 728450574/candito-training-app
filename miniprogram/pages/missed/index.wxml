@@ -1,0 +1,106 @@
+<!-- 处理错过训练页 — 1:1 迁移自 MissedWorkouts.vue -->
+<view class="page">
+  <view class="nav-spacer"></view>
+
+  <view class="nav-bar">
+    <view class="nav-back" bindtap="goBack">
+      <text class="iconfont icon-chevron-left nav-back-icon"></text>
+    </view>
+    <text class="nav-title">处理错过训练</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <!-- 无活跃周期 -->
+  <view wx:if="{{!hasActiveCycle}}" class="empty-state">
+    <text class="typography-caption">没有活跃的训练周期</text>
+  </view>
+
+  <!-- 无错过训练 -->
+  <view wx:elif="{{missedCount === 0}}" class="empty-state">
+    <text class="typography-caption">没有错过的训练日</text>
+  </view>
+
+  <block wx:else>
+    <!-- 提示横幅 -->
+    <view class="section">
+      <view class="alert-banner">
+        <text class="iconfont icon-info alert-icon"></text>
+        <text class="alert-text">检测到 <text class="alert-count">{{missedCount}}</text> 个错过的训练日</text>
+      </view>
+    </view>
+
+    <!-- 错过训练列表 -->
+    <view class="section">
+      <view class="missed-list">
+        <view wx:for="{{missedDayCards}}" wx:key="key" class="missed-card">
+          <view class="missed-card-head">
+            <text class="missed-card-title">{{item.label}} · {{item.typeLabel}}</text>
+            <text class="missed-card-tag">未完成</text>
+          </view>
+          <text class="missed-card-date">{{item.dateDisplay}}</text>
+          <view class="action-row">
+            <view
+              wx:for="{{item.actions}}"
+              wx:for-item="act"
+              wx:key="value"
+              class="action-btn"
+              style="{{act.style}}"
+              bindtap="selectAction"
+              data-key="{{item.key}}"
+              data-action="{{act.value}}"
+            >{{act.label}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 批量操作 -->
+    <view class="section">
+      <!-- 出差跳过 -->
+      <view class="batch-btn" bindtap="toggleTravelSkip">
+        <view class="batch-btn-left">
+          <text class="iconfont icon-briefcase batch-icon"></text>
+          <text class="batch-label">出差跳过</text>
+        </view>
+        <text class="iconfont icon-chevron-down batch-arrow" style="transform: rotate({{travelSkipOpen ? 180 : 0}}deg);"></text>
+      </view>
+
+      <view wx:if="{{travelSkipOpen}}" class="travel-skip-card">
+        <text class="travel-skip-label">选择跳过日期范围</text>
+        <view class="travel-skip-range">
+          <view class="travel-skip-col">
+            <text class="travel-skip-col-label">开始</text>
+            <text class="travel-skip-col-value">{{travelStartDate}}</text>
+          </view>
+          <text class="iconfont icon-arrow-right travel-skip-arrow"></text>
+          <view class="travel-skip-col">
+            <text class="travel-skip-col-label">结束</text>
+            <text class="travel-skip-col-value">{{travelEndDate}}</text>
+          </view>
+        </view>
+        <view class="travel-skip-apply" bindtap="applyTravelSkip">应用</view>
+      </view>
+
+      <view class="batch-btn" bindtap="applyAllPostpone">
+        <view class="batch-btn-left">
+          <text class="iconfont icon-arrow-right batch-icon"></text>
+          <text class="batch-label">全部顺延</text>
+        </view>
+        <text class="iconfont icon-chevron-right batch-arrow"></text>
+      </view>
+
+      <view class="batch-btn" bindtap="applyAllSkip">
+        <view class="batch-btn-left">
+          <text class="iconfont icon-x batch-icon"></text>
+          <text class="batch-label">全部跳过</text>
+        </view>
+        <text class="iconfont icon-chevron-right batch-arrow"></text>
+      </view>
+    </view>
+
+    <!-- 确认按钮 -->
+    <view class="section">
+      <view class="confirm-btn" bindtap="handleConfirm">确认处理</view>
+    </view>
+  </block>
+</view>

@@ -1,0 +1,137 @@
+<!-- 进度统计页 — tab
+     迁移自 ProgressStats.vue
+     设计基准：_design_extracted/pages/进度统计.html
+     结构：头部 + 周期筛选 + 概览卡 + 1RM趋势(stat-chart) + 每周完成 + 体重趋势(stat-chart) -->
+<view class="page">
+
+  <!-- ========== 头部 ========== -->
+  <view class="header">
+    <text class="typography-title">进度统计</text>
+    <text class="typography-caption">第 {{cycleWeeksCount}} 周期</text>
+  </view>
+
+  <!-- ========== 周期筛选 ========== -->
+  <view class="period-nav">
+    <view wx:for="{{periodOptions}}" wx:key="key"
+          class="period-btn {{selectedPeriod === item.key ? 'period-btn--active' : ''}}"
+          data-key="{{item.key}}"
+          bindtap="selectPeriod">
+      <text>{{item.label}}</text>
+    </view>
+  </view>
+  <text class="period-desc">本周期 = 当前6周汇总 | 历史 = 已完成周期列表 | 全部 = 跨周期趋势</text>
+
+  <!-- ========== 概览卡 ========== -->
+  <view class="summary-row">
+    <view class="summary-card">
+      <text class="typography-caption summary-label">总训练</text>
+      <view class="summary-value-row">
+        <text class="typography-data-lg summary-value">{{totalSessions}}</text>
+        <text class="typography-caption summary-unit">次</text>
+      </view>
+    </view>
+    <view class="summary-card">
+      <text class="typography-caption summary-label">总容量</text>
+      <view class="summary-value-row">
+        <text class="typography-data summary-value">{{formattedVolume}}</text>
+        <text class="typography-caption summary-unit">kg</text>
+      </view>
+    </view>
+    <view class="summary-card">
+      <text class="typography-caption summary-label">平均感受</text>
+      <view class="summary-value-row">
+        <text class="typography-data summary-value">{{averageFeeling}}</text>
+        <text class="feeling-stars">{{feelingStars}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========== 1RM 趋势图 ========== -->
+  <view class="chart-card">
+    <view class="chart-header">
+      <text class="typography-subtitle">跨周期 1RM 趋势</text>
+      <text class="typography-caption">单位: kg</text>
+    </view>
+    <view class="chart-legend">
+      <view class="legend-item">
+        <view class="legend-dot legend-dot--squat"></view>
+        <text class="typography-caption">深蹲</text>
+      </view>
+      <view class="legend-item">
+        <view class="legend-dot legend-dot--bench"></view>
+        <text class="typography-caption">卧推</text>
+      </view>
+      <view class="legend-item">
+        <view class="legend-dot legend-dot--deadlift"></view>
+        <text class="typography-caption">硬拉</text>
+      </view>
+    </view>
+    <stat-chart
+      type="line"
+      series="{{rmTrendSeries}}"
+      categories="{{rmTrendCategories}}"
+      yMin="{{rmTrendYMin}}"
+      yMax="{{rmTrendYMax}}"
+      height="{{200}}"
+    />
+  </view>
+
+  <!-- ========== 每周完成 ========== -->
+  <view class="weekly-card">
+    <text class="typography-subtitle weekly-title">每周完成</text>
+    <view wx:for="{{weeklyCompletion}}" wx:key="weekNumber"
+          class="week-row {{!item.isLast ? 'week-row--bordered' : ''}}">
+      <view class="week-main">
+        <view class="week-header">
+          <view class="week-label-row">
+            <text class="week-label">第 {{item.weekNumber}} 周</text>
+            <view wx:if="{{item.isInProgress}}" class="week-badge">
+              <text>进行中</text>
+            </view>
+          </view>
+          <text class="typography-caption">{{item.completed}}/{{item.total}}</text>
+        </view>
+        <view class="progress-track">
+          <view class="progress-fill" style="width: {{item.percent}}%; background: {{item.isInProgress ? 'var(--state-info)' : 'var(--state-success)'}};"></view>
+        </view>
+      </view>
+      <view class="week-dumbbells">
+        <block wx:if="{{item.showDumbbells}}">
+          <text wx:for="{{item.dumbbells}}" wx:for-item="color" wx:key="*this"
+                class="iconfont icon-dumbbell dumbbell-icon"
+                style="color: {{color}};"></text>
+        </block>
+        <text wx:else class="typography-caption week-not-started">未开始</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========== 体重趋势 ========== -->
+  <view class="chart-card">
+    <view class="chart-header">
+      <text class="typography-subtitle">体重记录</text>
+      <text class="typography-caption">kg</text>
+    </view>
+    <stat-chart
+      wx:if="{{hasWeightData}}"
+      type="line"
+      series="{{weightSeries}}"
+      yMin="{{weightYMin}}"
+      yMax="{{weightYMax}}"
+      height="{{60}}"
+    />
+    <view class="weight-latest">
+      <text class="iconfont icon-scale weight-icon"></text>
+      <text class="typography-caption">最新: <text class="typography-data weight-value">{{latestWeight}}</text> kg · {{latestWeightDate}}</text>
+    </view>
+  </view>
+
+  <!-- ========== 记录体重按钮 ========== -->
+  <view class="weight-btn-wrap">
+    <view class="weight-btn" bindtap="goWeight">
+      <text class="iconfont icon-scale weight-btn-icon"></text>
+      <text>记录体重</text>
+    </view>
+  </view>
+
+</view>

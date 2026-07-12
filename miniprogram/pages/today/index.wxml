@@ -1,0 +1,253 @@
+<!-- 今日训练页 — 首页 tab
+     迁移自 TodayTraining.vue
+     合并 5 种状态：无周期 / 已暂停 / 休息日 / 待训练 / 已跳过 / 已完成
+     设计基准：_design_extracted/pages/今日训练.html + 休息日.html -->
+<view class="page">
+
+  <!-- ========== 无活跃周期 ========== -->
+  <view wx:if="{{pageState === 'noCycle'}}" class="no-cycle">
+    <view class="no-cycle-icon-wrap">
+      <text class="iconfont icon-dumbbell no-cycle-icon"></text>
+    </view>
+    <text class="typography-title no-cycle-title">还没有训练周期</text>
+    <text class="typography-caption no-cycle-caption">开始你的第一个 Candito 6周训练计划</text>
+    <view class="btn-primary-full no-cycle-btn" bindtap="goStart">创建训练周期</view>
+  </view>
+
+  <!-- ========== 周期已暂停 ========== -->
+  <view wx:elif="{{pageState === 'paused'}}">
+    <view class="greeting-section">
+      <text class="typography-caption">{{greetingDate}}</text>
+      <text class="typography-title greeting-title">周期已暂停</text>
+    </view>
+    <view class="card card-paused">
+      <view class="card-paused-header">
+        <view class="icon-circle" style="background: var(--state-warning-bg);">
+          <text class="iconfont icon-pause" style="font-size: 40rpx; color: var(--state-warning);"></text>
+        </view>
+        <view class="card-paused-info">
+          <text class="typography-subtitle" style="font-size: var(--text-lg);">当前训练周期已暂停</text>
+          <text class="typography-caption">恢复后即可继续训练</text>
+        </view>
+      </view>
+      <view class="card-paused-footer">
+        <view class="btn-secondary-full" bindtap="goCycle">
+          <text class="iconfont icon-settings" style="font-size: 32rpx; margin-right: 12rpx;"></text>
+          <text>前往周期管理</text>
+        </view>
+      </view>
+    </view>
+    <view class="quick-actions">
+      <view class="quick-action" bindtap="goWeight">
+        <text class="iconfont icon-scale quick-action-icon"></text>
+        <text class="quick-action-label">记录体重</text>
+      </view>
+      <view class="quick-action" bindtap="goStats">
+        <text class="iconfont icon-bar-chart-3 quick-action-icon"></text>
+        <text class="quick-action-label">查看统计</text>
+      </view>
+      <view class="quick-action" bindtap="goCycle">
+        <text class="iconfont icon-list quick-action-icon"></text>
+        <text class="quick-action-label">周期管理</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========== 休息日 ========== -->
+  <view wx:elif="{{pageState === 'rest'}}">
+    <view class="rest-header">
+      <text class="typography-title">今天是休息日</text>
+      <text class="typography-caption rest-subtitle">充分休息，为下次训练做好准备</text>
+    </view>
+    <view class="card card-rest">
+      <block wx:if="{{nextTrainingDay}}">
+        <text class="typography-caption">下次训练</text>
+        <text class="typography-subtitle rest-next-title">{{nextTrainingDay.workoutTypeLabel}} · W{{nextTrainingDay.weekNumber}}D{{nextTrainingDay.dayNumber}}</text>
+        <text class="typography-caption rest-next-date">{{nextTrainingDay.formatDateDisplay}}</text>
+        <text class="rest-countdown">还有 {{countdownDays}} 天</text>
+        <view class="rest-content">
+          <text class="typography-caption">训练内容</text>
+          <view class="rest-exercises">
+            <view wx:for="{{nextTrainingDay.exercises}}" wx:key="id" class="exercise-row-sm">
+              <view class="exercise-dot-sm" style="background-color: {{item.type === 'optional' ? 'var(--color-training-optional)' : 'var(--color-training-main)'}};"></view>
+              <text class="typography-body exercise-name">{{item.name}}</text>
+            </view>
+          </view>
+        </view>
+      </block>
+      <text wx:else class="typography-caption">没有安排训练</text>
+    </view>
+    <view class="quick-actions">
+      <view class="quick-action" bindtap="goWeight">
+        <text class="iconfont icon-scale quick-action-icon"></text>
+        <text class="quick-action-label">记录体重</text>
+      </view>
+      <view class="quick-action" bindtap="goStats">
+        <text class="iconfont icon-bar-chart-3 quick-action-icon"></text>
+        <text class="quick-action-label">查看统计</text>
+      </view>
+      <view class="quick-action" bindtap="goPlan">
+        <text class="iconfont icon-pen-line quick-action-icon"></text>
+        <text class="quick-action-label">训练笔记</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========== 待训练 ========== -->
+  <view wx:elif="{{pageState === 'pending'}}">
+    <view class="greeting-section">
+      <text class="typography-caption">{{greetingDate}}</text>
+      <text class="typography-title greeting-title">准备好了吗？</text>
+    </view>
+    <view class="card card-pending">
+      <view class="card-pending-header">
+        <text class="week-badge">第{{todayDayInfo.weekNumber}}周 · {{todayDayInfo.weekTheme}}</text>
+        <view class="duration-badge">
+          <text class="iconfont icon-clock" style="font-size: 28rpx;"></text>
+          <text class="typography-caption">预计 {{estimatedDuration}} 分钟</text>
+        </view>
+      </view>
+      <text class="typography-subtitle pending-workout-type">{{todayDayInfo.workoutTypeLabel}}</text>
+      <view class="pending-exercises">
+        <view wx:for="{{todayDayInfo.exercises}}" wx:key="id" class="exercise-row">
+          <view class="exercise-dot" style="background-color: {{item.type === 'optional' ? 'var(--color-training-optional)' : 'var(--color-training-main)'}};"></view>
+          <text class="typography-body exercise-name">{{item.name}}</text>
+        </view>
+      </view>
+      <view class="btn-primary-full" bindtap="goExecute">开始训练</view>
+    </view>
+
+    <view class="stats-row">
+      <view class="stat-cell">
+        <text class="stat-value">{{weekCompletedCount}}<text class="stat-value-light">/{{weekTotalDays}}</text></text>
+        <text class="typography-caption stat-label">本周完成</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-cell">
+        <text class="stat-value">{{todayDayInfo.weekNumber}}<text class="stat-value-light">/6</text></text>
+        <text class="typography-caption stat-label">当前周期</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-cell">
+        <text class="stat-value stat-value-accent">{{streakDays}}<text class="typography-caption" style="font-size: var(--text-sm);">天</text></text>
+        <text class="typography-caption stat-label">连续训练</text>
+      </view>
+    </view>
+
+    <view wx:if="{{todayDayInfo.weekNumber === 6}}" class="center-row">
+      <view class="link-btn link-btn-accent" bindtap="goWeek6">
+        <text class="iconfont icon-trophy" style="font-size: 28rpx;"></text>
+        <text>第6周决策</text>
+      </view>
+    </view>
+    <view class="center-row">
+      <view class="link-btn link-btn-muted" bindtap="handleSkipTraining">
+        <text class="iconfont icon-skip-forward" style="font-size: 28rpx;"></text>
+        <text>跳过本次训练</text>
+      </view>
+    </view>
+    <view class="center-row">
+      <view class="link-btn link-btn-warning" bindtap="goMissed">
+        <text class="iconfont icon-alert-triangle" style="font-size: 28rpx;"></text>
+        <text>处理错过训练</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========== 已跳过 ========== -->
+  <view wx:elif="{{pageState === 'skipped'}}">
+    <view class="greeting-section">
+      <text class="typography-caption">{{greetingDate}}</text>
+      <text class="typography-title greeting-title">今日已跳过</text>
+    </view>
+    <view class="card card-skipped">
+      <view class="card-paused-header">
+        <view class="icon-circle" style="background: var(--color-primary-subtle);">
+          <text class="iconfont icon-skip-forward" style="font-size: 40rpx; color: var(--color-primary-light);"></text>
+        </view>
+        <view class="card-paused-info">
+          <text class="typography-subtitle" style="font-size: var(--text-lg);">本次训练已跳过</text>
+          <text class="typography-caption">{{todayDayInfo.workoutTypeLabel}} · W{{todayDayInfo.weekNumber}}D{{todayDayInfo.dayNumber}}</text>
+        </view>
+      </view>
+      <view class="card-skipped-footer">
+        <text class="typography-caption" style="font-size: var(--text-xs);">已标记为跳过，不会影响后续训练计划</text>
+      </view>
+    </view>
+    <view class="quick-actions">
+      <view class="quick-action" bindtap="goWeight">
+        <text class="iconfont icon-scale quick-action-icon"></text>
+        <text class="quick-action-label">记录体重</text>
+      </view>
+      <view class="quick-action" bindtap="goStats">
+        <text class="iconfont icon-bar-chart-3 quick-action-icon"></text>
+        <text class="quick-action-label">查看统计</text>
+      </view>
+      <view class="quick-action" bindtap="goPlan">
+        <text class="iconfont icon-pen-line quick-action-icon"></text>
+        <text class="quick-action-label">训练计划</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========== 已完成 ========== -->
+  <view wx:else>
+    <view class="completed-header">
+      <view class="icon-circle" style="background: var(--state-success-bg);">
+        <text class="iconfont icon-check" style="font-size: 40rpx; color: var(--state-success);"></text>
+      </view>
+      <view class="completed-info">
+        <text class="typography-subtitle" style="font-size: var(--text-lg);">今日训练已完成</text>
+        <text class="typography-caption">{{completedInfo}}</text>
+      </view>
+    </view>
+
+    <view class="card card-completed">
+      <view class="completed-card-header">
+        <text class="completed-card-title">本次训练数据</text>
+        <view class="detail-link" bindtap="goDetail">
+          <text>查看详情</text>
+          <text class="iconfont icon-chevron-right" style="font-size: 24rpx;"></text>
+        </view>
+      </view>
+      <view class="completed-stats">
+        <view class="completed-stat">
+          <text class="stat-value">{{totalVolume}}</text>
+          <text class="completed-stat-label">总容量 {{unit}}</text>
+        </view>
+        <view class="completed-stat">
+          <text class="stat-value">{{totalCompletedSets}}</text>
+          <text class="completed-stat-label">总组数</text>
+        </view>
+        <view class="completed-stat">
+          <text class="stat-value">{{durationMinutes}}</text>
+          <text class="completed-stat-label">分钟</text>
+        </view>
+      </view>
+      <view class="completed-feeling">
+        <text class="completed-feeling-label">训练感受</text>
+        <text class="completed-feeling-value">{{feelingStars}} {{feelingLabel}}</text>
+      </view>
+    </view>
+
+    <view class="body-weight-row">
+      <text class="body-weight-label">记录今日体重</text>
+      <text class="body-weight-value">{{bodyWeightDisplay || '--'}}</text>
+    </view>
+
+    <view wx:if="{{nextTrainingDay}}" class="next-training-card" bindtap="goPlan">
+      <view class="next-training-header">
+        <text class="next-training-title">下次训练</text>
+        <text class="next-training-tomorrow">明天</text>
+      </view>
+      <view class="next-training-body">
+        <view class="next-training-info">
+          <text class="next-training-type">{{nextTrainingDay.workoutTypeLabel}} · W{{nextTrainingDay.weekNumber}}D{{nextTrainingDay.dayNumber}}</text>
+          <text class="next-training-detail">{{nextTrainingDay.formatDateDisplay}} · 预计 {{nextTrainingDay.estimatedDuration}} 分钟</text>
+        </view>
+        <text class="iconfont icon-chevron-right" style="font-size: 32rpx; color: var(--color-primary-light);"></text>
+      </view>
+    </view>
+  </view>
+
+</view>

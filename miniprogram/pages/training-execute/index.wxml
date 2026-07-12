@@ -1,0 +1,169 @@
+<!-- 训练执行页 — 迁移自 TrainingExecution.vue
+     1:1 还原设计稿：顶栏 + 计时器 + 当前动作 + 组列表 + MR10提示 + 下一个动作 + 完成按钮
+     最复杂页面：计时器、逐组记录、MR10动态调整、草稿保存 -->
+<view class="exec-page">
+  <!-- Top Navigation Bar -->
+  <view class="exec-header">
+    <view class="header-back" bindtap="goBack">
+      <text class="iconfont icon-chevron-left header-back-icon"></text>
+    </view>
+    <text class="header-title">{{pageTitle}}</text>
+    <view class="header-pause">
+      <text class="iconfont icon-pause header-pause-icon"></text>
+    </view>
+  </view>
+
+  <!-- Loading -->
+  <view wx:if="{{loading}}" class="exec-loading">
+    <text class="typography-caption">加载中...</text>
+  </view>
+
+  <!-- Error -->
+  <view wx:elif="{{errorMsg}}" class="exec-error">
+    <text class="exec-error-msg">{{errorMsg}}</text>
+    <view class="exec-error-btn" bindtap="goBack">返回今日</view>
+  </view>
+
+  <!-- Main Content -->
+  <view wx:else class="exec-content" bindtouchstart="onTouchStart" bindtouchend="onTouchEnd">
+    <!-- Timer Bar -->
+    <view class="timer-section">
+      <view class="timer-left">
+        <text class="timer-label">训练时长</text>
+        <text class="timer-elapsed">{{elapsedFormatted}}</text>
+      </view>
+      <view class="timer-right">
+        <view class="rest-circle">
+          <text class="rest-circle-text">{{isResting ? restFormatted : '--:--'}}</text>
+        </view>
+        <view class="rest-info">
+          <text class="rest-label">组间休息</text>
+          <text class="rest-value">{{isResting ? restFormatted : '--:--'}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Current Exercise -->
+    <view wx:if="{{currentExerciseName}}" class="current-section">
+      <!-- Exercise Header -->
+      <view class="ex-header">
+        <text class="ex-name">{{currentExerciseName}}</text>
+        <text class="ex-badge" style="{{currentExerciseBadgeStyle}}">{{currentExerciseTypeLabel}}</text>
+      </view>
+      <text class="ex-set-progress">第 {{currentSetDisplayIndex}} 组 / 共 {{currentExerciseTotalSets}} 组</text>
+
+      <!-- Target (main only) -->
+      <view wx:if="{{showTarget}}" class="ex-target">
+        <text class="iconfont icon-target ex-target-icon"></text>
+        <text class="ex-target-label">目标:</text>
+        <text class="ex-target-value">{{targetWeightDisplay}}kg</text>
+        <text class="ex-target-x">×</text>
+        <text class="ex-target-value">{{targetRepsDisplay}}</text>
+      </view>
+
+      <!-- Weight Input -->
+      <view class="weight-input-section">
+        <text class="weight-input-label">实际重量 (kg)</text>
+        <view class="weight-input-row">
+          <input
+            class="weight-input"
+            type="digit"
+            value="{{inputWeightStr}}"
+            bindinput="onWeightInput"
+          />
+          <text class="weight-input-unit">kg</text>
+        </view>
+      </view>
+
+      <!-- Reps Selection -->
+      <view class="reps-section">
+        <text class="reps-label">完成次数</text>
+        <view class="reps-list">
+          <view
+            wx:for="{{repOptionsDisplay}}"
+            wx:key="*this"
+            class="rep-btn {{item.isSelected ? 'rep-btn-selected' : ''}}"
+            bindtap="selectRep"
+            data-rep="{{item.value}}"
+          >{{item.value}}</view>
+        </view>
+      </view>
+
+      <!-- Complete Set CTA -->
+      <view class="complete-set-btn" bindtap="completeCurrentSet">
+        <text class="iconfont icon-check complete-set-icon"></text>
+        <text class="complete-set-text">完成本组</text>
+      </view>
+    </view>
+
+    <!-- Exercise Set List -->
+    <view wx:if="{{currentExerciseName}}" class="set-list-section">
+      <view class="set-list">
+        <view
+          wx:for="{{setsDisplay}}"
+          wx:key="displayNumber"
+          class="set-row"
+          style="{{item.rowStyle}}"
+        >
+          <view class="set-circle" style="{{item.circleStyle}}">
+            <text wx:if="{{item.showCheck}}" class="iconfont icon-check set-check-icon"></text>
+            <text wx:else class="set-circle-text" style="{{item.circleTextStyle}}">{{item.circleText}}</text>
+          </view>
+          <view class="set-label-wrap">
+            <text class="set-label" style="{{item.labelStyle}}">第 {{item.displayNumber}} 组</text>
+          </view>
+          <text class="set-value" style="{{item.valueStyle}}">{{item.displayWeight}}kg × {{item.displayReps}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- MR10 Dynamic Notice -->
+    <view wx:if="{{showMR10Notice}}" class="mr10-notice">
+      <view class="mr10-inner">
+        <text class="iconfont icon-info mr10-icon"></text>
+        <view class="mr10-content">
+          <text class="mr10-title">MR10 动态调整</text>
+          <text class="mr10-desc">{{mr10MainText}}</text>
+          <text wx:if="{{showMr10Hint}}" class="mr10-hint">{{mr10HintText}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Up Next Preview -->
+    <view wx:if="{{nextExerciseName}}" class="next-section">
+      <view class="next-card">
+        <view class="next-left">
+          <text class="iconfont icon-arrow-down-circle next-icon"></text>
+          <text class="next-label">下一个动作</text>
+        </view>
+        <view class="next-right">
+          <text class="next-name">{{nextExerciseName}}</text>
+          <text class="next-badge" style="{{nextExerciseBadgeStyle}}">{{nextExerciseTypeLabel}}</text>
+        </view>
+      </view>
+      <view class="next-target-row">
+        <text class="next-target">{{nextExerciseTargetRepsDisplay}}</text>
+      </view>
+    </view>
+
+    <!-- All exercises completed placeholder -->
+    <view wx:if="{{allExercisesDone}}" class="all-done-section">
+      <view class="all-done-icon-wrap">
+        <text class="iconfont icon-check-circle all-done-icon"></text>
+      </view>
+      <text class="all-done-title">所有动作已完成</text>
+      <text class="all-done-desc">点击下方按钮完成训练</text>
+    </view>
+
+    <!-- Complete Workout Button -->
+    <view class="finish-section">
+      <view
+        class="finish-btn {{allExercisesDone ? 'finish-btn-active' : 'finish-btn-inactive'}}"
+        bindtap="finishWorkout"
+      >
+        <text class="iconfont icon-check-circle finish-btn-icon"></text>
+        <text class="finish-btn-text">完成训练</text>
+      </view>
+    </view>
+  </view>
+</view>

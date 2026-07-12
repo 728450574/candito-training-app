@@ -1,0 +1,294 @@
+/* 开始训练页样式 — 迁移自 StartTraining.vue
+   1:1 还原设计稿，px → rpx (1px = 2rpx)
+   引用全局 CSS 变量 (见 assets/styles/theme.wxss) */
+
+.start-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24rpx 48rpx 48rpx 48rpx;
+  min-height: 100vh;
+  justify-content: space-between;
+}
+
+/* ── Branding Area ── */
+.branding {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+.branding-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  margin-bottom: 4rpx;
+  color: var(--color-training-main);
+}
+
+.branding-logo {
+  font-size: 40rpx;
+  color: var(--color-training-main);
+}
+
+.branding-title {
+  font-family: var(--font-sans);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  letter-spacing: -0.02em;
+}
+
+.branding-subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-primary-light);
+  font-weight: var(--font-weight-medium);
+}
+
+/* ── 1RM Input Card ── */
+.onerm-card {
+  width: 100%;
+  padding: 32rpx;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-elevated);
+  border-radius: var(--radius-lg);
+}
+
+.onerm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32rpx;
+}
+
+.onerm-title {
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+/* Unit Selector */
+.unit-selector {
+  display: flex;
+  border-radius: var(--radius-md);
+  padding: 4rpx;
+  background: var(--color-surface-muted);
+}
+
+.unit-btn {
+  padding: 8rpx 24rpx;
+  border-radius: var(--radius-md);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary-light);
+  white-space: nowrap;
+}
+
+.unit-btn-active {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  box-shadow: var(--shadow-card);
+}
+
+/* 1RM List */
+.onerm-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.onerm-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.onerm-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+  min-width: 80rpx;
+}
+
+.onerm-input-wrap {
+  flex: 1;
+  margin: 0 24rpx;
+  display: flex;
+  align-items: center;
+  border-radius: var(--radius-md);
+  padding: 0 24rpx;
+  height: 80rpx;
+  background: var(--color-surface-muted);
+}
+
+.onerm-input {
+  flex: 1;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+.onerm-placeholder {
+  color: var(--color-primary-light);
+}
+
+.onerm-unit {
+  margin-left: 8rpx;
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+  flex-shrink: 0;
+}
+
+.onerm-hint {
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+  margin-top: 16rpx;
+}
+
+/* ── Assistance Config ── */
+.assistance-section {
+  width: 100%;
+  margin-top: 48rpx;
+}
+
+.assistance-toggle {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 0;
+}
+
+.assistance-title {
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+.assistance-chevron {
+  font-size: 24rpx;
+  color: var(--color-primary-light);
+  transition: transform var(--duration-normal) var(--ease-default);
+}
+
+.chevron-rotated {
+  transform: rotate(180deg);
+}
+
+.assistance-list {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-elevated);
+}
+
+.assistance-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 32rpx;
+}
+
+.item-bordered {
+  border-bottom: 1rpx solid var(--color-border-light);
+}
+
+.assistance-name {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.assistance-current {
+  font-size: var(--text-sm);
+  color: var(--color-primary);
+  flex-shrink: 0;
+  margin-left: 24rpx;
+}
+
+.assistance-switch {
+  flex-shrink: 0;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-training-main);
+  margin-left: 8rpx;
+}
+
+.assistance-custom-row {
+  margin-top: 16rpx;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.assistance-custom-btn {
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-training-main);
+}
+
+/* ── Start Date + CTA ── */
+.cta-section {
+  width: 100%;
+}
+
+.date-row {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-bottom: 32rpx;
+  color: var(--color-primary-light);
+}
+
+.date-icon {
+  font-size: 20rpx;
+  color: var(--color-primary-light);
+}
+
+.date-label {
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+}
+
+.date-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+}
+
+.cta-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 96rpx;
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+  background: var(--color-training-main);
+  color: var(--color-surface);
+  font-size: var(--text-md);
+  font-family: var(--font-sans);
+  border: none;
+  line-height: 96rpx;
+}
+
+.cta-btn::after {
+  border: none;
+}
+
+.cta-btn-disabled {
+  opacity: 0.6;
+}

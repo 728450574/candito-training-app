@@ -1,0 +1,161 @@
+<!-- 1RM 设置页 — 1:1 迁移自 OneRMSetup.vue -->
+<view class="page">
+  <!-- 顶部导航栏 -->
+  <view class="nav-header">
+    <view class="nav-back" bindtap="goBack">
+      <text class="iconfont icon-chevron-left nav-back-icon"></text>
+    </view>
+    <text class="nav-title">设置 1RM</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <view class="page-body">
+    <!-- 单位切换 -->
+    <view class="unit-switch">
+      <view
+        class="unit-btn"
+        style="{{unit === 'kg' ? 'background: var(--color-surface); color: var(--color-training-main); border-radius: var(--radius-md); box-shadow: var(--shadow-elevated); font-family: var(--font-mono); font-weight: 600;' : 'color: var(--color-primary-light); border-radius: var(--radius-md); font-weight: 500;'}}"
+        bindtap="selectUnit"
+        data-unit="kg"
+      >kg</view>
+      <view
+        class="unit-btn"
+        style="{{unit === 'lb' ? 'background: var(--color-surface); color: var(--color-training-main); border-radius: var(--radius-md); box-shadow: var(--shadow-elevated); font-family: var(--font-mono); font-weight: 600;' : 'color: var(--color-primary-light); border-radius: var(--radius-md); font-weight: 500;'}}"
+        bindtap="selectUnit"
+        data-unit="lb"
+      >lb</view>
+    </view>
+
+    <!-- 1RM 输入卡片 -->
+    <view class="lift-list">
+      <view wx:for="{{lifts}}" wx:key="key" class="lift-card">
+        <view class="lift-card-head">
+          <view class="lift-icon-box">
+            <view wx:if="{{item.key === 'squat'}}" class="lift-icon-squat">
+              <view class="squat-circle"></view>
+              <text class="iconfont icon-arrow-down squat-arrow"></text>
+            </view>
+            <view wx:elif="{{item.key === 'bench'}}" class="lift-icon-bench">
+              <view class="bench-bar"></view>
+              <view class="bench-plate"></view>
+            </view>
+            <view wx:else class="lift-icon-deadlift">
+              <view class="deadlift-bar"></view>
+              <view class="deadlift-plate"></view>
+            </view>
+          </view>
+          <view class="lift-name-box">
+            <text class="lift-name">{{item.cn}}</text>
+            <text class="lift-en">{{item.en}}</text>
+          </view>
+        </view>
+
+        <!-- 重量输入 -->
+        <view class="weight-input-wrap">
+          <view class="weight-input-row">
+            <input
+              class="weight-input"
+              type="digit"
+              value="{{item.displayValue}}"
+              data-key="{{item.key}}"
+              bindinput="handleWeightInput"
+            />
+            <text class="weight-unit">{{unit}}</text>
+          </view>
+        </view>
+
+        <!-- 调整按钮 -->
+        <view class="adjust-row">
+          <view class="adjust-btn adjust-btn-minus5" bindtap="adjustWeight" data-key="{{item.key}}" data-delta="-5">-5</view>
+          <view class="adjust-btn adjust-btn-minus25" bindtap="adjustWeight" data-key="{{item.key}}" data-delta="-2.5">-2.5</view>
+          <view class="adjust-btn adjust-btn-plus25" bindtap="adjustWeight" data-key="{{item.key}}" data-delta="2.5">+2.5</view>
+          <view class="adjust-btn adjust-btn-plus5" bindtap="adjustWeight" data-key="{{item.key}}" data-delta="5">+5</view>
+        </view>
+
+        <!-- 周重量预览 -->
+        <view class="week-preview">
+          <text>W1: {{item.w1}}{{unit}}</text>
+          <text class="week-preview-sep">|</text>
+          <text>W3: {{item.w3}}{{unit}}</text>
+          <text class="week-preview-sep">|</text>
+          <text>W5: {{item.w5}}{{unit}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 辅助训练配置 -->
+    <view class="assistance-section">
+      <view class="assistance-head" bindtap="toggleAssistance">
+        <text class="assistance-title">辅助训练配置</text>
+        <text class="iconfont icon-chevron-down assistance-arrow" style="transform: rotate({{showAssistance ? 180 : 0}}deg);"></text>
+      </view>
+
+      <view wx:if="{{showAssistance}}" class="assistance-list">
+        <view
+          wx:for="{{assistanceItems}}"
+          wx:key="key"
+          class="assistance-item"
+          style="{{index < assistanceItems.length - 1 ? 'border-bottom: 1rpx solid var(--color-border-light);' : ''}}"
+        >
+          <view class="assistance-item-info">
+            <text class="assistance-item-cn">{{item.cn}}</text>
+            <text class="assistance-item-en">{{item.en}}</text>
+          </view>
+          <text class="assistance-item-current">{{item.current}}</text>
+          <view class="assistance-switch-btn" bindtap="switchAssistance" data-key="{{item.key}}">切换</view>
+        </view>
+      </view>
+
+      <view class="assistance-custom-row">
+        <view class="assistance-custom-btn" bindtap="goCustom">自定义</view>
+      </view>
+    </view>
+
+    <!-- 6周计划预览 -->
+    <view class="preview-section">
+      <text class="preview-title">6周计划预览</text>
+      <view class="preview-card">
+        <view class="preview-table">
+          <!-- 表头 -->
+          <view class="preview-row preview-row-head">
+            <view class="preview-cell preview-cell-label"></view>
+            <view wx:for="{{[1,2,3,4,5]}}" wx:key="*this" class="preview-cell preview-cell-week">W{{item}}</view>
+          </view>
+          <!-- 数据行 -->
+          <view
+            wx:for="{{previewRows}}"
+            wx:key="key"
+            class="preview-row"
+            style="border-bottom: 1rpx solid var(--color-border-light);"
+          >
+            <view class="preview-cell preview-cell-label">{{item.cn}}</view>
+            <view
+              wx:for="{{item.cells}}"
+              wx:for-item="cell"
+              wx:for-index="ci"
+              wx:key="ci"
+              class="preview-cell preview-cell-data"
+              style="{{ci === 4 ? 'color: var(--color-training-main);' : 'color: var(--color-primary);'}}"
+            >{{cell}}</view>
+          </view>
+        </view>
+
+        <view class="preview-legend">
+          <view class="legend-item">
+            <view class="legend-dot legend-dot-accum"></view>
+            <text>累积周</text>
+          </view>
+          <view class="legend-item">
+            <view class="legend-dot legend-dot-intensity"></view>
+            <text>强度周</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 保存按钮 -->
+    <view class="save-section">
+      <view class="save-btn" bindtap="handleSave">保存并生成计划</view>
+    </view>
+  </view>
+</view>

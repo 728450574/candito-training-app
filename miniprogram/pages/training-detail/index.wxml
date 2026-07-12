@@ -1,0 +1,115 @@
+<!-- 训练详情页 — 迁移自 TrainingDetail.vue
+     1:1 还原设计稿：顶栏、会话头卡、笔记、主项卡片(exercise-card)、辅助项简行、底部统计卡
+     主项使用 exercise-card 组件，辅助项按设计稿渲染为简行 -->
+<view class="detail-page">
+
+  <!-- ── Top Navigation Bar ── -->
+  <view class="detail-header">
+    <view class="header-back" bindtap="goBack">
+      <text class="iconfont icon-chevron-left header-back-icon"></text>
+    </view>
+    <text class="header-title">训练详情</text>
+    <view class="header-right-placeholder"></view>
+  </view>
+
+  <view wx:if="{{!hasRecord}}" class="empty-wrap">
+    <text class="empty-text">未找到训练记录</text>
+    <button class="empty-btn" bindtap="goBack">返回</button>
+  </view>
+
+  <view wx:else class="detail-main">
+
+    <!-- ── Session Header Card ── -->
+    <view class="session-card">
+      <text class="session-date">{{displayDate}}</text>
+      <view class="session-type-row">
+        <text class="session-type">{{workoutTypeLabel}} · W{{weekNum}}D{{dayNum}}</text>
+        <text class="session-status-badge">已完成</text>
+      </view>
+      <view class="session-meta-row">
+        <view class="session-meta-item">
+          <text class="iconfont icon-clock session-meta-icon"></text>
+          <text class="session-meta-value">{{durationMinutes}}分钟</text>
+        </view>
+        <view wx:if="{{showBodyWeight}}" class="session-meta-item">
+          <text class="iconfont icon-scale session-meta-icon"></text>
+          <text class="session-meta-value">{{bodyWeightDisplay}}{{unit}}</text>
+        </view>
+      </view>
+      <view class="session-feeling-row">
+        <text class="session-feeling-stars">{{feelingStars}}</text>
+        <text class="session-feeling-label">{{feelingLabel}}</text>
+      </view>
+    </view>
+
+    <!-- ── Training Notes ── -->
+    <view wx:if="{{showNotes}}" class="notes-card">
+      <view class="notes-header">
+        <text class="iconfont icon-pen-line notes-header-icon"></text>
+        <text class="notes-header-label">训练笔记</text>
+      </view>
+      <text class="notes-content">{{notesContent}}</text>
+    </view>
+
+    <!-- ── Main Exercises Section ── -->
+    <view wx:if="{{mainExercises.length > 0}}" class="section-block">
+      <view class="section-title-row">
+        <view class="section-dot section-dot-main"></view>
+        <text class="section-title">主项训练</text>
+      </view>
+
+      <view class="main-exercises-list">
+        <exercise-card
+          wx:for="{{mainExercises}}"
+          wx:key="exKey"
+          exercise="{{item}}"
+          show-target="{{true}}"
+          class="exercise-card-item"
+        ></exercise-card>
+      </view>
+    </view>
+
+    <!-- ── Assistance Exercises Section ── -->
+    <view wx:if="{{assistanceExercises.length > 0}}" class="section-block">
+      <view class="section-title-row">
+        <view class="section-dot section-dot-assist"></view>
+        <text class="section-title">辅助训练</text>
+      </view>
+
+      <view class="assist-list">
+        <view
+          wx:for="{{assistanceExercises}}"
+          wx:key="exKey"
+          class="assist-row"
+        >
+          <view class="assist-icon-wrap">
+            <text class="iconfont icon-check assist-icon"></text>
+          </view>
+          <text class="assist-name">{{item.name}}</text>
+          <text class="assist-count">{{item.completedCount}}组完成</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ── Session Summary Card ── -->
+    <view class="summary-card">
+      <view class="summary-row">
+        <view class="summary-cell">
+          <text class="summary-value">{{totalVolumeValue}}</text>
+          <text class="summary-label">总容量 kg</text>
+        </view>
+        <view class="summary-divider"></view>
+        <view class="summary-cell">
+          <text class="summary-value">{{totalSetsCount}}</text>
+          <text class="summary-label">总组数</text>
+        </view>
+        <view class="summary-divider"></view>
+        <view class="summary-cell">
+          <text class="summary-value">{{avgRestSeconds}}</text>
+          <text class="summary-label">平均休息 秒</text>
+        </view>
+      </view>
+    </view>
+
+  </view>
+</view>

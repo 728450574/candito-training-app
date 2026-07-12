@@ -1,0 +1,706 @@
+/* 周期管理页样式 — 1:1 迁移自 CycleManagement.vue
+   px → rpx 按 1px = 2rpx 换算 */
+
+.page {
+  min-height: 100vh;
+  background: var(--color-surface);
+}
+
+.page-inner {
+  padding: 48rpx 32rpx 0;
+  max-width: 100%;
+}
+
+.page-header {
+  margin-bottom: 48rpx;
+}
+
+.page-subtitle {
+  display: block;
+  margin-top: 8rpx;
+}
+
+/* ── 当前周期卡片 ── */
+.active-card {
+  border-radius: var(--radius-lg);
+  padding: 32rpx;
+  margin-bottom: 48rpx;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-elevated);
+}
+
+.active-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32rpx;
+}
+
+.active-card-name {
+  font-family: var(--font-sans);
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--leading-tight);
+  color: var(--color-primary);
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  border-radius: var(--radius-full);
+  padding: 4rpx 20rpx;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+/* 进度 */
+.progress-wrap {
+  margin-bottom: 32rpx;
+}
+
+.progress-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.progress-text {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+}
+
+.progress-percent {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary-light);
+}
+
+.progress-bar {
+  height: 12rpx;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  background: var(--color-primary-subtle);
+}
+
+.progress-bar-inner {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--color-training-main);
+}
+
+/* 开始日期 */
+.start-date-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 32rpx;
+}
+
+.start-date-icon {
+  font-size: 28rpx;
+  color: var(--color-primary-light);
+  flex-shrink: 0;
+}
+
+.start-date-text {
+  font-size: var(--text-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-primary-light);
+}
+
+/* 1RM 卡片 */
+.onerm-row {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 32rpx;
+}
+
+.onerm-card {
+  flex: 1;
+  min-width: 0;
+  border-radius: var(--radius-md);
+  padding: 20rpx;
+  text-align: center;
+  background: var(--color-primary-subtle);
+}
+
+.onerm-card-name {
+  display: block;
+  font-size: var(--text-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 4rpx;
+  color: var(--color-primary-light);
+}
+
+.onerm-card-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-primary);
+}
+
+/* 操作按钮 */
+.action-row {
+  display: flex;
+  gap: 16rpx;
+}
+
+.action-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  height: 72rpx;
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+}
+
+.action-btn-sub {
+  background: var(--color-primary-subtle);
+  color: var(--color-primary);
+}
+
+.action-btn-primary {
+  background: var(--color-training-main);
+  color: var(--color-surface);
+}
+
+.action-btn-icon {
+  font-size: 28rpx;
+  flex-shrink: 0;
+}
+
+/* ── 通用 section ── */
+.section {
+  margin-bottom: 48rpx;
+}
+
+.section-title {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--leading-tight);
+  color: var(--color-primary);
+  margin-bottom: 24rpx;
+}
+
+/* ── 时间线 ── */
+.timeline {
+  position: relative;
+  margin-left: 28rpx;
+}
+
+.timeline-line {
+  position: absolute;
+  left: 14rpx;
+  top: 24rpx;
+  bottom: 24rpx;
+  width: 2rpx;
+  background: var(--color-border);
+}
+
+.timeline-item {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 24rpx;
+  padding: 24rpx 0;
+}
+
+.timeline-node {
+  position: relative;
+  z-index: 10;
+  margin-top: 4rpx;
+  width: 30rpx;
+  height: 30rpx;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timeline-node-completed {
+  background: var(--state-success);
+}
+
+.timeline-node-progress {
+  background: var(--color-training-main);
+  box-shadow: 0 0 0 6rpx var(--state-info-bg);
+}
+
+.timeline-node-pending {
+  background: var(--color-surface);
+  border: 4rpx solid var(--color-border);
+  box-sizing: border-box;
+}
+
+.timeline-node-icon {
+  font-size: 20rpx;
+  color: var(--color-surface);
+}
+
+.timeline-card {
+  flex: 1;
+  min-width: 0;
+  border-radius: var(--radius-md);
+  padding: 24rpx;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.timeline-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4rpx;
+}
+
+.timeline-card-title {
+  font-size: var(--text-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.timeline-card-tag {
+  font-size: var(--text-xs);
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: 16rpx;
+}
+
+.tag-completed { color: var(--state-success); font-weight: var(--font-weight-medium); }
+.tag-progress { color: var(--color-training-main); font-weight: var(--font-weight-medium); }
+.tag-waiting { color: var(--state-warning); }
+.tag-pending { color: var(--color-primary-light); }
+
+.timeline-card-days {
+  margin-top: 4rpx;
+}
+
+.timeline-days-text {
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+}
+
+/* ── 暂停记录折叠 ── */
+.collapse-btn {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: var(--radius-lg);
+  padding: 32rpx;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.collapse-btn-left {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.collapse-icon {
+  font-size: 32rpx;
+  color: var(--color-primary-light);
+  flex-shrink: 0;
+}
+
+.collapse-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+.collapse-arrow {
+  font-size: 32rpx;
+  color: var(--color-primary-light);
+  flex-shrink: 0;
+  transition: transform var(--duration-normal) var(--ease-default);
+}
+
+.pause-history-list {
+  margin-top: 16rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.pause-history-item {
+  border-radius: var(--radius-md);
+  padding: 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  background: var(--state-warning-bg);
+}
+
+.pause-history-icon {
+  font-size: 32rpx;
+  color: var(--state-warning);
+  flex-shrink: 0;
+}
+
+.pause-history-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.pause-history-label {
+  display: block;
+  font-size: var(--text-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-primary);
+}
+
+.pause-history-range {
+  display: block;
+  font-size: var(--text-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-primary-light);
+}
+
+/* ── 历史周期 ── */
+.history-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+}
+
+.history-title {
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--leading-tight);
+  color: var(--color-primary);
+}
+
+.history-card {
+  margin-bottom: 24rpx;
+  padding: 32rpx;
+  background: var(--color-surface);
+  border: 2rpx solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+}
+
+.history-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.history-card-head-left {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.history-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4rpx 16rpx;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-full);
+}
+
+.history-card-name {
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+}
+
+.history-arrow {
+  font-size: 32rpx;
+  color: var(--color-primary-light);
+}
+
+.history-card-date {
+  display: flex;
+  align-items: center;
+  gap: 32rpx;
+  font-size: var(--text-sm);
+  color: var(--color-primary-light);
+}
+
+.history-card-sep {
+  color: var(--color-border);
+}
+
+.history-card-onerm {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  margin-top: 16rpx;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+.history-onerm-text {
+  color: var(--color-primary);
+}
+
+.history-onerm-unit {
+  color: var(--color-primary-light);
+}
+
+.empty-state {
+  padding: 64rpx 0;
+  text-align: center;
+}
+
+/* ── 重新开始 / 暂停 / 终止 ── */
+.restart-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.restart-item {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 88rpx;
+  padding: 0 32rpx;
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  color: var(--color-primary);
+}
+
+.restart-item-left {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.restart-item-right {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.restart-icon {
+  font-size: 28rpx;
+  color: var(--color-training-main);
+}
+
+.pause-icon {
+  color: var(--state-warning) !important;
+}
+
+.restart-item-hint {
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+}
+
+.restart-arrow {
+  font-size: 32rpx;
+  color: var(--color-primary-light);
+}
+
+.terminate-section {
+  padding-top: 32rpx;
+  margin-bottom: 16rpx;
+  border-top: 2rpx solid var(--color-border-light);
+}
+
+.terminate-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  height: 80rpx;
+  border-radius: var(--radius-lg);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  color: var(--state-error);
+}
+
+.terminate-icon {
+  font-size: 28rpx;
+  flex-shrink: 0;
+}
+
+.terminate-hint {
+  display: block;
+  text-align: center;
+  margin-top: 16rpx;
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+}
+
+/* ── 无周期 ── */
+.no-cycle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 160rpx 32rpx;
+}
+
+.no-cycle-text {
+  margin-bottom: 32rpx;
+}
+
+.create-btn {
+  padding: 16rpx 48rpx;
+  border-radius: var(--radius-full);
+  background: var(--color-training-main);
+  color: var(--color-surface);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ── 重新开始弹窗 ── */
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.modal-sheet {
+  width: 100%;
+  max-width: 750rpx;
+  background: var(--color-surface);
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 48rpx;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-title {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--leading-tight);
+  color: var(--color-primary);
+  margin-bottom: 32rpx;
+}
+
+.modal-block {
+  margin-bottom: 32rpx;
+}
+
+.modal-block-label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: 16rpx;
+  color: var(--color-primary-light);
+}
+
+.week-pick-row {
+  display: flex;
+  gap: 16rpx;
+  flex-wrap: wrap;
+}
+
+.week-pick-btn {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.onerm-input-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.onerm-input-row {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.onerm-input-label {
+  font-size: var(--text-sm);
+  width: 80rpx;
+  color: var(--color-primary);
+}
+
+.onerm-input {
+  flex: 1;
+  border-radius: var(--radius-lg);
+  padding: 16rpx 24rpx;
+  text-align: right;
+  background: var(--color-surface-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  color: var(--color-primary);
+}
+
+.onerm-input-unit {
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 24rpx;
+  margin-top: 48rpx;
+}
+
+.modal-btn {
+  flex: 1;
+  height: 88rpx;
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-btn-cancel {
+  background: var(--color-surface-muted);
+  color: var(--color-primary);
+}
+
+.modal-btn-confirm {
+  background: var(--color-training-main);
+  color: var(--color-surface);
+  font-weight: var(--font-weight-semibold);
+}

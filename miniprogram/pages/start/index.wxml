@@ -1,0 +1,121 @@
+<!-- 开始训练页 — 迁移自 StartTraining.vue
+     1:1 还原设计稿：品牌区 + 1RM输入卡 + 辅助训练配置 + 开始日期 + CTA -->
+<view class="start-page">
+  <!-- Branding Area -->
+  <view class="branding">
+    <view class="branding-row">
+      <text class="iconfont icon-dumbbell branding-logo"></text>
+      <text class="branding-title">Candito 训练助手</text>
+    </view>
+    <text class="branding-subtitle">6周力量训练计划 · 基于经典Candito6周计划</text>
+  </view>
+
+  <!-- 1RM Input Card -->
+  <view class="onerm-card">
+    <view class="onerm-header">
+      <text class="onerm-title">输入你的 1RM</text>
+      <!-- Unit Selector -->
+      <view class="unit-selector">
+        <view
+          class="unit-btn {{unit === 'kg' ? 'unit-btn-active' : ''}}"
+          bindtap="selectUnit"
+          data-unit="kg"
+        >kg</view>
+        <view
+          class="unit-btn {{unit === 'lb' ? 'unit-btn-active' : ''}}"
+          bindtap="selectUnit"
+          data-unit="lb"
+        >lb</view>
+      </view>
+    </view>
+
+    <view class="onerm-list">
+      <!-- 深蹲 -->
+      <view class="onerm-row">
+        <text class="onerm-label">深蹲</text>
+        <view class="onerm-input-wrap">
+          <input
+            class="onerm-input"
+            type="digit"
+            placeholder="100"
+            placeholder-class="onerm-placeholder"
+            value="{{squatInput}}"
+            bindinput="onSquatInput"
+          />
+          <text class="onerm-unit">{{unit}}</text>
+        </view>
+      </view>
+      <!-- 卧推 -->
+      <view class="onerm-row">
+        <text class="onerm-label">卧推</text>
+        <view class="onerm-input-wrap">
+          <input
+            class="onerm-input"
+            type="digit"
+            placeholder="80"
+            placeholder-class="onerm-placeholder"
+            value="{{benchInput}}"
+            bindinput="onBenchInput"
+          />
+          <text class="onerm-unit">{{unit}}</text>
+        </view>
+      </view>
+      <!-- 硬拉 -->
+      <view class="onerm-row">
+        <text class="onerm-label">硬拉</text>
+        <view class="onerm-input-wrap">
+          <input
+            class="onerm-input"
+            type="digit"
+            placeholder="120"
+            placeholder-class="onerm-placeholder"
+            value="{{deadliftInput}}"
+            bindinput="onDeadliftInput"
+          />
+          <text class="onerm-unit">{{unit}}</text>
+        </view>
+      </view>
+    </view>
+    <text class="onerm-hint">不确定？可输入估算值，后续随时调整</text>
+  </view>
+
+  <!-- Assistance Config -->
+  <view class="assistance-section">
+    <view class="assistance-toggle" bindtap="toggleAssistance">
+      <text class="assistance-title">辅助训练配置</text>
+      <text class="iconfont icon-chevron-down assistance-chevron {{showAssistance ? 'chevron-rotated' : ''}}"></text>
+    </view>
+
+    <view wx:if="{{showAssistance}}" class="assistance-list">
+      <view
+        wx:for="{{assistanceItems}}"
+        wx:key="key"
+        class="assistance-item {{index < assistanceItems.length - 1 ? 'item-bordered' : ''}}"
+      >
+        <text class="assistance-name">{{item.cn}}</text>
+        <text class="assistance-current">{{item.current}}</text>
+        <view class="assistance-switch" bindtap="switchAssistance" data-key="{{item.key}}">切换</view>
+      </view>
+    </view>
+
+    <view class="assistance-custom-row">
+      <view class="assistance-custom-btn" bindtap="goCustom">自定义</view>
+    </view>
+  </view>
+
+  <!-- Start Date + CTA -->
+  <view class="cta-section">
+    <view class="date-row">
+      <text class="iconfont icon-calendar date-icon"></text>
+      <text class="date-label">开始日期</text>
+      <picker mode="date" value="{{startDate}}" bindchange="onDateChange">
+        <text class="date-value">{{todayDisplay}}</text>
+      </picker>
+    </view>
+    <button
+      class="cta-btn {{isSubmitting ? 'cta-btn-disabled' : ''}}"
+      bindtap="handleSubmit"
+      disabled="{{isSubmitting}}"
+    >{{isSubmitting ? '创建中...' : '创建训练周期'}}</button>
+  </view>
+</view>

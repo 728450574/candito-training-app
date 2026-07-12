@@ -1,0 +1,371 @@
+/* 训练详情页样式 — 迁移自 TrainingDetail.vue
+   1:1 还原设计稿，px → rpx (1px = 2rpx)
+   引用全局 CSS 变量 (见 assets/styles/theme.wxss) */
+
+.detail-page {
+  min-height: 100vh;
+  background: var(--color-surface);
+}
+
+/* ── Top Navigation Bar ── */
+.detail-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  height: 96rpx;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32rpx;
+  background: var(--color-surface);
+  border-bottom: 1rpx solid var(--color-border-light);
+}
+
+.header-back {
+  display: inline-flex;
+  height: 64rpx;
+  width: 64rpx;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-back-icon {
+  font-size: 40rpx;
+  color: var(--color-training-main);
+}
+
+.header-title {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header-right-placeholder {
+  width: 64rpx;
+  height: 64rpx;
+}
+
+/* ── Empty ── */
+.empty-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 160rpx 32rpx;
+}
+
+.empty-text {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-primary-light);
+  margin-bottom: 32rpx;
+}
+
+.empty-btn {
+  padding: 16rpx 48rpx;
+  border-radius: var(--radius-full);
+  background: var(--color-training-main);
+  color: var(--color-surface);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.4;
+  border: none;
+}
+
+.empty-btn::after {
+  border: none;
+}
+
+/* ── Main ── */
+.detail-main {
+  max-width: 768rpx;
+  margin: 0 auto;
+}
+
+/* ── Session Header Card ── */
+.session-card {
+  margin: 40rpx 32rpx 24rpx;
+  padding: 32rpx;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-elevated);
+  border-radius: var(--radius-lg);
+}
+
+.session-date {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-primary-light);
+  margin-bottom: 8rpx;
+  white-space: nowrap;
+}
+
+.session-type-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+}
+
+.session-type {
+  font-family: var(--font-sans);
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  letter-spacing: -0.02em;
+  line-height: var(--leading-tight);
+  white-space: nowrap;
+}
+
+.session-status-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--state-success);
+  background: var(--state-success-bg);
+  padding: 4rpx 16rpx;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.session-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.session-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.session-meta-icon {
+  font-size: 28rpx;
+  color: var(--color-primary-light);
+}
+
+.session-meta-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-primary-light);
+  white-space: nowrap;
+}
+
+.session-feeling-row {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.session-feeling-stars {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--state-warning);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.session-feeling-label {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary-light);
+  white-space: nowrap;
+}
+
+/* ── Training Notes ── */
+.notes-card {
+  margin: 0 32rpx 24rpx;
+  padding: 24rpx 32rpx;
+  background: var(--color-surface-muted);
+  border-radius: var(--radius-lg);
+}
+
+.notes-header {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+}
+
+.notes-header-icon {
+  font-size: 28rpx;
+  color: var(--color-primary-light);
+}
+
+.notes-header-label {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary-light);
+  letter-spacing: 0.04em;
+}
+
+.notes-content {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-primary);
+  line-height: var(--leading-relaxed);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+/* ── Section Block ── */
+.section-block {
+  padding: 16rpx 32rpx 24rpx;
+}
+
+.section-title-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+  padding: 0 8rpx;
+}
+
+.section-dot {
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: var(--radius-full);
+}
+
+.section-dot-main {
+  background: var(--color-training-main);
+}
+
+.section-dot-assist {
+  background: var(--color-training-assist);
+}
+
+.section-title {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary-light);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* ── Main Exercises List ── */
+.main-exercises-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.exercise-card-item {
+  display: block;
+}
+
+/* ── Assistance Exercises List ── */
+.assist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.assist-row {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  padding: 24rpx 32rpx;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  border-radius: var(--radius-lg);
+}
+
+.assist-icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: var(--radius-full);
+  background: var(--state-success);
+  flex-shrink: 0;
+}
+
+.assist-icon {
+  font-size: 24rpx;
+  color: var(--color-surface);
+}
+
+.assist-name {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.assist-count {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+  white-space: nowrap;
+}
+
+/* ── Session Summary Card ── */
+.summary-card {
+  margin: 0 32rpx 64rpx;
+  padding: 32rpx;
+  background: var(--color-surface-muted);
+  border-radius: var(--radius-lg);
+}
+
+.summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.summary-cell {
+  text-align: center;
+  flex: 1;
+}
+
+.summary-value {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 4rpx;
+  white-space: nowrap;
+}
+
+.summary-label {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+  white-space: nowrap;
+}
+
+.summary-divider {
+  width: 2rpx;
+  height: 64rpx;
+  background: var(--color-border-light);
+  flex-shrink: 0;
+}

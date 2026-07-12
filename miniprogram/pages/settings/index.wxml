@@ -1,0 +1,168 @@
+<!-- 设置与导出页 — tab
+     迁移自 SettingsExport.vue
+     设计基准：_design_extracted/pages/设置与导出.html
+     结构：5 个 section（训练偏好 / 数据管理 / 数据存储 / 周期 / 关于）
+     数据管理：导出/导入已接入 exportService，冲突解决 UI 为 placeholder（Task 16A）
+     数据存储：存储模式切换（local/cloud），Task 16A -->
+<view class="page">
+
+  <!-- ========== 头部 ========== -->
+  <view class="header">
+    <text class="typography-hero">设置</text>
+  </view>
+
+  <!-- ========== 训练偏好 ========== -->
+  <view class="section">
+    <text class="section-title">训练偏好</text>
+    <view class="section-card">
+      <!-- 默认单位 -->
+      <view class="row row--border" bindtap="toggleUnit">
+        <text class="row-label">默认单位</text>
+        <view class="row-value row-value--muted">
+          <text>{{defaultUnit}}</text>
+          <text class="iconfont icon-chevron-down row-icon"></text>
+        </view>
+      </view>
+      <!-- 组间休息 -->
+      <view class="row row--border">
+        <text class="row-label">组间休息</text>
+        <view class="row-value row-value--mono">
+          <view class="rest-btn" bindtap="decrementRest">
+            <text class="iconfont icon-minus rest-icon"></text>
+          </view>
+          <text class="rest-value">{{defaultRestSeconds}}秒</text>
+          <view class="rest-btn" bindtap="incrementRest">
+            <text class="iconfont icon-plus rest-icon"></text>
+          </view>
+        </view>
+      </view>
+      <!-- 重量取整 -->
+      <view class="row row--border" bindtap="toggleRounding">
+        <text class="row-label">重量取整</text>
+        <view class="row-value row-value--muted">
+          <text>{{weightRoundingLabel}}</text>
+          <text class="iconfont icon-chevron-down row-icon"></text>
+        </view>
+      </view>
+      <!-- 训练提醒 -->
+      <view class="row">
+        <text class="row-label">训练提醒</text>
+        <view class="toggle {{reminderEnabled ? 'toggle--on' : 'toggle--off'}}" bindtap="toggleReminder">
+          <view class="toggle-thumb {{reminderEnabled ? 'toggle-thumb--on' : 'toggle-thumb--off'}}"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========== 数据管理 ========== -->
+  <view class="section">
+    <text class="section-title">数据管理</text>
+    <view class="section-card">
+      <!-- 导出 JSON -->
+      <view class="row row--border" bindtap="handleExportJSON">
+        <view class="row-content">
+          <text class="row-label">导出 JSON 备份</text>
+          <text class="row-caption">完整数据</text>
+        </view>
+        <text class="row-action">导出</text>
+      </view>
+      <!-- 导出 CSV -->
+      <view class="row row--border" bindtap="handleExportCSV">
+        <view class="row-content">
+          <text class="row-label">导出 CSV 训练记录</text>
+          <text class="row-caption">表格格式</text>
+        </view>
+        <text class="row-action">导出</text>
+      </view>
+      <!-- 导入数据 -->
+      <view class="row row--border" bindtap="handleImport">
+        <view class="row-content">
+          <text class="row-label">导入数据</text>
+          <text class="row-caption">从备份恢复</text>
+        </view>
+        <text class="row-action">导入</text>
+      </view>
+      <!-- 导入冲突提示（placeholder，Task 16A 实现完整冲突解决 UI） -->
+      <view wx:if="{{importConflict}}" class="conflict-banner">
+        <view class="conflict-header">
+          <text class="iconfont icon-alert-triangle conflict-icon"></text>
+          <view class="conflict-text">
+            <text class="conflict-title">检测到数据冲突</text>
+            <text class="conflict-desc">导入数据包含 {{importConflict.conflictCount}} 个已存在的{{importConflict.conflictType}}</text>
+          </view>
+        </view>
+        <!-- TODO Task 16A：智能合并 / 覆盖现有 / 取消导入 按钮组 -->
+        <text class="conflict-placeholder">冲突解决功能开发中（Task 16A）</text>
+      </view>
+      <!-- 上次备份 -->
+      <view class="row">
+        <view class="row-content">
+          <text class="row-label">上次备份</text>
+          <text class="row-caption">{{lastBackupDate}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========== 数据存储（Task 16A） ========== -->
+  <view class="section">
+    <text class="section-title">数据存储</text>
+    <view class="section-card">
+      <!-- 当前存储模式 -->
+      <view class="row row--border">
+        <view class="row-content">
+          <text class="row-label">当前存储</text>
+          <text class="row-caption">{{storageMode === 'cloud' ? '云端存储 · 多设备同步' : '本地存储 · 仅当前设备'}}</text>
+        </view>
+        <text class="storage-badge storage-badge--{{storageMode}}">{{storageMode === 'cloud' ? '云端' : '本地'}}</text>
+      </view>
+      <!-- 切换到另一模式 -->
+      <view class="row" bindtap="handleStorageModeSwitch">
+        <view class="row-content">
+          <text class="row-label">{{storageMode === 'cloud' ? '切换到本地存储' : '切换到云端存储'}}</text>
+          <text class="row-caption">{{storageMode === 'cloud' ? '数据仅保存在当前设备' : '上传到云端，多设备同步'}}</text>
+        </view>
+        <text class="row-action">切换</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========== 周期 ========== -->
+  <view class="section">
+    <text class="section-title">周期</text>
+    <view class="section-card">
+      <!-- 周期管理 -->
+      <view class="row row--border" bindtap="goCycle">
+        <view class="row-content">
+          <text class="row-label">周期管理</text>
+          <text class="row-caption">{{cycleSummary}}</text>
+        </view>
+        <text class="iconfont icon-chevron-right row-chevron"></text>
+      </view>
+      <!-- 1RM 设置 -->
+      <view class="row" bindtap="goOneRM">
+        <view class="row-content">
+          <text class="row-label">1RM 设置</text>
+          <text class="row-caption">调整三大项最大重量</text>
+        </view>
+        <text class="iconfont icon-chevron-right row-chevron"></text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ========== 关于 ========== -->
+  <view class="section">
+    <text class="section-title">关于</text>
+    <view class="section-card">
+      <view class="row row--border">
+        <text class="row-label">Candito 训练助手</text>
+        <text class="row-caption">v1.0.0</text>
+      </view>
+      <view class="row">
+        <text class="row-label">数据来源</text>
+        <text class="row-caption row-caption--truncate">Johnnie Candito / 力量营翻译</text>
+      </view>
+    </view>
+  </view>
+
+</view>

@@ -1,0 +1,45 @@
+<!-- exercise-card 训练动作卡片组件
+     迁移自 TrainingDetail.vue 的主项/辅助项卡片结构
+     1:1 还原设计稿：名称 + 类型徽章 + 目标 + 组列表 + 小计页脚 -->
+<view class="exercise-card">
+  <!-- 头部：动作名 + 类型徽章 -->
+  <view class="ec-header">
+    <text class="ec-name">{{ exercise.name }}</text>
+    <text class="ec-badge" style="{{badgeStyle}}">{{ typeLabel }}</text>
+  </view>
+
+  <!-- 目标行（仅主项展示） -->
+  <view wx:if="{{showTarget}}" class="ec-target">
+    <text class="ec-target-label">目标: </text>
+    <text class="ec-target-value">{{ targetDisplay }}</text>
+  </view>
+
+  <!-- 组列表（使用预计算的 setsDisplay，WXML 不支持函数调用） -->
+  <view class="ec-sets">
+    <view
+      wx:for="{{setsDisplay}}"
+      wx:key="setNumber"
+      class="ec-set-row"
+      style="{{item.rowStyle}}"
+    >
+      <!-- 状态圆圈 -->
+      <view class="ec-set-icon" style="{{item.iconStyle}}">
+        <text wx:if="{{item.isCompleted && !item.isSkipped}}" class="iconfont icon-check ec-set-check"></text>
+        <text wx:else class="iconfont icon-alert-triangle ec-set-check"></text>
+      </view>
+      <!-- 组标签 -->
+      <text class="ec-set-label">第 {{item.setNumber}} 组</text>
+      <!-- 重量×次数 -->
+      <text class="ec-set-value" style="{{item.valueStyle}}">{{item.weightDisplay}}kg × {{item.repsDisplay}}次</text>
+    </view>
+  </view>
+
+  <!-- 页脚：小计 + 容量 -->
+  <view class="ec-footer">
+    <text class="ec-footer-label">小计:</text>
+    <text class="ec-footer-value">{{completedSetsCount}}组</text>
+    <text class="ec-footer-divider">|</text>
+    <text class="ec-footer-label">容量:</text>
+    <text class="ec-footer-value">{{volume}}kg</text>
+  </view>
+</view>

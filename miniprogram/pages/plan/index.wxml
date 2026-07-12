@@ -1,0 +1,90 @@
+<!-- 训练计划页 — 1:1 迁移自 TrainingPlan.vue -->
+<view class="page">
+  <!-- 顶部导航栏 -->
+  <view class="nav-header">
+    <view class="nav-back" bindtap="goBack">
+      <text class="iconfont icon-chevron-left nav-back-icon"></text>
+    </view>
+    <view class="nav-title">训练计划</view>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <!-- 有周期数据 -->
+  <block wx:if="{{hasDisplayCycle}}">
+    <!-- 当前位置横幅 -->
+    <view class="position-banner">
+      <view class="position-left">
+        <text class="position-tag">{{bannerLabel}}</text>
+        <text class="position-text">{{currentWeekText}}</text>
+      </view>
+      <view class="position-dots">
+        <view
+          wx:for="{{dots}}"
+          wx:key="index"
+          class="position-dot"
+          style="background: {{item.bgColor}};"
+        ></view>
+      </view>
+    </view>
+
+    <!-- 周选择器 -->
+    <scroll-view scroll-x class="week-tabs" enhanced show-scrollbar="{{false}}">
+      <view class="week-tabs-inner">
+        <view
+          wx:for="{{weekTabs}}"
+          wx:key="week"
+          class="week-tab"
+          style="{{item.style}}"
+          bindtap="selectWeek"
+          data-week="{{item.week}}"
+        >
+          <text wx:if="{{item.completed}}" class="iconfont icon-check week-tab-check"></text>
+          <text class="week-tab-label">W{{item.week}}</text>
+        </view>
+      </view>
+    </scroll-view>
+
+    <!-- 周内容 -->
+    <view class="week-content">
+      <view class="week-title">{{selectedWeekTitle}}</view>
+
+      <view
+        wx:for="{{dayCards}}"
+        wx:key="dayNumber"
+        class="day-card"
+        style="{{item.cardStyle}}"
+        bindtap="handleDayClick"
+        data-day="{{item}}"
+      >
+        <view class="day-card-head">
+          <view class="day-badge" style="{{item.badgeStyle}}">
+            <text wx:if="{{item.badgeIcon === 'check'}}" class="iconfont icon-check day-badge-icon"></text>
+            <view wx:elif="{{item.badgeIcon === 'dot'}}" class="day-badge-dot"></view>
+            <text class="day-badge-text">{{item.badgeText}}</text>
+          </view>
+          <text class="day-weekday">{{item.weekdayLabel}}</text>
+        </view>
+        <text class="day-workout-type">{{item.workoutType}}</text>
+        <view class="day-exercises">
+          <block wx:for="{{item.exercises}}" wx:for-item="ex" wx:for-index="exIdx" wx:key="id">
+            <view wx:if="{{exIdx > 0}}" class="ex-divider"></view>
+            <view class="ex-row">
+              <text class="ex-name" style="{{ex.nameStyle}}">{{ex.name}}</text>
+              <text class="ex-weight" style="{{ex.weightStyle}}">{{ex.weightDisplay}}</text>
+            </view>
+          </block>
+        </view>
+      </view>
+
+      <view wx:if="{{dayCards.length === 0}}" class="empty-state">
+        <text class="typography-caption">暂无训练安排</text>
+      </view>
+    </view>
+  </block>
+
+  <!-- 无周期数据 -->
+  <view wx:else class="no-cycle">
+    <text class="typography-caption no-cycle-text">没有活跃的训练周期</text>
+    <view class="create-btn" bindtap="goStart">创建训练周期</view>
+  </view>
+</view>

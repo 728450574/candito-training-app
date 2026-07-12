@@ -1,0 +1,22 @@
+{
+  "miniprogramRoot": "miniprogram/",
+  "compileType": "miniprogram",
+  "appid": "touristappid",
+  "projectname": "candito-training-miniprogram",
+  "description": "Candito 训练小程序 - 微信小程序原生工程",
+  "setting": {
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "urlCheck": false,
+    "newFeature": true,
+    "autoAudits": false,
+    "uglifyFileName": false,
+    "ignoreUploadUnusedFiles": true,
+    "ignoreDevUnusedFiles": false,
+    "packNpmManually": false,
+    "packNpmRelationList": []
+  },
+  "libVersion": "latest"
+}

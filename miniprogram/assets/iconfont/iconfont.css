@@ -1,0 +1,145 @@
+/* ============================================
+   iconfont.css — 图标字体基础设施（占位）
+   ============================================
+
+   【说明】
+   本文件为小程序图标方案占位文件。H5 项目使用 Lucide 图标库
+   （data-lucide 属性 + lucide-vue-next 组件两种方式），小程序
+   不支持 SVG sprite 与运行时 createIcons，故改用 iconfont 字体方案。
+
+   当前 @font-face 的 src 指向占位路径 ./iconfont.woff2，该字体
+   文件尚未生成；下方的 content 编码（\e001 ~ \e022）也为占位值，
+   需在 iconfont.cn 生成字体后用实际编码替换。
+
+   ----------------------------------------------------------
+   【需要的图标完整清单】（去重后共 34 个）
+   来源：tabBar 4 个 + src/views/*.vue 的 data-lucide 属性 +
+        lucide-vue-next 导入组件（PascalCase → kebab-case）
+
+   序号  图标名(class)        Lucide 原名(PascalCase)     用途/出现位置
+   ----  -------------------  --------------------------  ----------------------------
+   1     icon-alert-triangle  AlertTriangle               跳过组提示、详情页未完成组
+   2     icon-arrow-down      ArrowDown                    1RM 设置下拉
+   3     icon-arrow-down-circle ArrowDownCircle            训练执行页"下一个动作"
+   4     icon-arrow-right     ArrowRight                   漏训补课页跳转
+   5     icon-bar-chart-3     BarChart3                    tabBar 统计 / 今日页统计入口
+   6     icon-briefcase       Briefcase                    漏训页、暂停周期页
+   7     icon-calendar        Calendar                     tabBar 日历 / 启动训练页
+   8     icon-calendar-off    CalendarOff                  周期管理页
+   9     icon-check           Check                        完成组、详情页完成图标
+   10    icon-check-circle    CheckCircle                  训练执行页"所有动作已完成"
+   11    icon-chevron-down    ChevronDown                  折叠/展开、设置导出页
+   12    icon-chevron-left    ChevronLeft                  返回按钮
+   13    icon-chevron-right   ChevronRight                 列表项右箭头
+   14    icon-clock           Clock                        训练时长
+   15    icon-dumbbell        Dumbbell                     tabBar 今日 / 每周完成标记
+   16    icon-heart-pulse     HeartPulse                   暂停周期页
+   17    icon-info            Info                         MR10 动态调整提示
+   18    icon-list            List                         今日页"全部训练"入口
+   19    icon-minus           Minus                        设置导出页休息时间减少
+   20    icon-more-horizontal MoreHorizontal               暂停周期页更多操作
+   21    icon-octagon-x       OctagonX                     周期管理页终止操作
+   22    icon-pause           Pause                        训练执行页暂停按钮
+   23    icon-pause-circle    PauseCircle                  周期管理页暂停周期
+   24    icon-pen-line        PenLine / PencilLine         训练笔记
+   25    icon-plus            Plus                         设置导出页休息时间增加
+   26    icon-rotate-ccw      RotateCcw                    周期管理页重新开始
+   27    icon-scale           Scale                        体重记录
+   28    icon-settings        Settings                     tabBar 设置 / 今日页设置入口
+   29    icon-skip-forward    SkipForward                  跳过组、跳过训练
+   30    icon-target          Target                       训练执行页目标重量
+   31    icon-trending-up     TrendingUp                   第 6 周决策页
+   32    icon-trophy          Trophy                       今日页成就 / 第 6 周决策
+   33    icon-undo-2          Undo2                        周期管理页撤销
+   34    icon-x               X                            漏训页关闭
+
+   ----------------------------------------------------------
+   【iconfont.cn 生成步骤】
+   1. 访问 https://www.iconfont.cn 并登录（支持 GitHub / 微博登录）
+   2. 在「图标库」中搜索 "lucide"，找到 Lucide 图标库（官方已收录）
+   3. 将上述 34 个图标依次加入购物车（注意核对图标名一致）
+      - 若 iconfont.cn 未收录某个 Lucide 图标，可在 Lucide 官网
+        (https://lucide.dev) 下载对应 SVG 后上传至 iconfont.cn
+        「我上传的图标」中再加入项目
+   4. 点击购物车 → 「添加至项目」→ 新建项目（如 candito-training）
+   5. 进入项目页 → 「Font Class」页签 → 查看每个图标对应的 unicode 编码
+   6. 点击「下载至本地」获取压缩包，解压后取出 iconfont.woff2 文件
+
+   ----------------------------------------------------------
+   【下载后替换与更新说明】
+   1. 将下载的 iconfont.woff2 替换本目录下的占位文件
+      路径：miniprogram/assets/iconfont/iconfont.woff2
+   2. 打开下载包内的 iconfont.css，对照更新本文件中每个
+      .icon-xxx:before 的 content 编码（用 iconfont.cn 分配的实际
+      unicode 替换下方的 \e001 ~ \e022 占位值）
+   3. 若 iconfont.cn 生成的 font-family 名称为 "iconfont" 则无需改动
+      @font-face；若名称不同，请同步修改下方 @font-face 与 .iconfont 类
+   4. 更新完成后，在页面 wxml 中使用：
+      <text class="iconfont icon-dumbbell"></text>
+      大小通过 font-size 控制，颜色通过 color 控制
+
+   ----------------------------------------------------------
+   【小程序 @font-face 注意事项】
+   小程序 wxss 中 @font-face 引用本地字体文件存在平台差异：
+   - iOS：支持 @font-face 引用本地 .woff2
+   - Android 部分基础库版本：可能无法通过 @font-face 加载本地字体
+   若遇到图标不显示，可改用 wx.loadFontFace 全局加载（建议在 app.ts
+   onLaunch 中调用），src 需为网络地址（将 woff2 上传至 CDN/云存储）：
+     wx.loadFontFace({
+       family: 'iconfont',
+       source: 'url("https://your-cdn/iconfont.woff2")',
+       global: true,
+       scopes: ['webview', 'native'],
+     })
+   开发阶段可先用本地 @font-face 验证，上线前切换为网络字体。
+   ============================================ */
+
+@font-face {
+  font-family: "iconfont";
+  src: url('./iconfont.woff2') format('woff2');
+  font-display: swap;
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 图标类（content 为占位编码，需按 iconfont.cn 实际分配值替换） */
+.icon-alert-triangle:before { content: "\e001"; }
+.icon-arrow-down:before { content: "\e002"; }
+.icon-arrow-down-circle:before { content: "\e003"; }
+.icon-arrow-right:before { content: "\e004"; }
+.icon-bar-chart-3:before { content: "\e005"; }
+.icon-briefcase:before { content: "\e006"; }
+.icon-calendar:before { content: "\e007"; }
+.icon-calendar-off:before { content: "\e008"; }
+.icon-check:before { content: "\e009"; }
+.icon-check-circle:before { content: "\e00a"; }
+.icon-chevron-down:before { content: "\e00b"; }
+.icon-chevron-left:before { content: "\e00c"; }
+.icon-chevron-right:before { content: "\e00d"; }
+.icon-clock:before { content: "\e00e"; }
+.icon-dumbbell:before { content: "\e00f"; }
+.icon-heart-pulse:before { content: "\e010"; }
+.icon-info:before { content: "\e011"; }
+.icon-list:before { content: "\e012"; }
+.icon-minus:before { content: "\e013"; }
+.icon-more-horizontal:before { content: "\e014"; }
+.icon-octagon-x:before { content: "\e015"; }
+.icon-pause:before { content: "\e016"; }
+.icon-pause-circle:before { content: "\e017"; }
+.icon-pen-line:before { content: "\e018"; }
+.icon-plus:before { content: "\e019"; }
+.icon-rotate-ccw:before { content: "\e01a"; }
+.icon-scale:before { content: "\e01b"; }
+.icon-settings:before { content: "\e01c"; }
+.icon-skip-forward:before { content: "\e01d"; }
+.icon-target:before { content: "\e01e"; }
+.icon-trending-up:before { content: "\e01f"; }
+.icon-trophy:before { content: "\e020"; }
+.icon-undo-2:before { content: "\e021"; }
+.icon-x:before { content: "\e022"; }

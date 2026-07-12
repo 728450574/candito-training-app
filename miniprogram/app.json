@@ -1,0 +1,40 @@
+{
+  "pages": [
+    "pages/today/index",
+    "pages/calendar/index",
+    "pages/stats/index",
+    "pages/settings/index",
+    "pages/start/index",
+    "pages/training-execute/index",
+    "pages/training-complete/index",
+    "pages/training-detail/index",
+    "pages/plan/index",
+    "pages/cycle/index",
+    "pages/onerm/index",
+    "pages/pause/index",
+    "pages/missed/index",
+    "pages/week6/index",
+    "pages/weight/index",
+    "pages/custom-exercise/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "Candito 训练",
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FFFFFF"
+  },
+  "tabBar": {
+    "color": "#86868B",
+    "selectedColor": "#0A84FF",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      { "pagePath": "pages/today/index", "text": "今日" },
+      { "pagePath": "pages/calendar/index", "text": "日历" },
+      { "pagePath": "pages/stats/index", "text": "统计" },
+      { "pagePath": "pages/settings/index", "text": "设置" }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

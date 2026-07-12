@@ -1,0 +1,284 @@
+/* 处理错过训练页样式 — 1:1 迁移自 MissedWorkouts.vue
+   px → rpx 按 1px = 2rpx 换算 */
+
+.page {
+  min-height: 100vh;
+  background: var(--color-surface);
+  padding: 0 32rpx 64rpx;
+}
+
+.nav-spacer {
+  height: 88rpx;
+}
+
+.nav-bar {
+  display: flex;
+  align-items: center;
+  height: 88rpx;
+  padding: 0 8rpx;
+  margin-bottom: 16rpx;
+}
+
+.nav-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64rpx;
+  height: 64rpx;
+  margin-left: -8rpx;
+}
+
+.nav-back-icon {
+  font-size: 40rpx;
+  color: var(--color-training-main);
+}
+
+.nav-title {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-primary);
+}
+
+.nav-placeholder {
+  width: 64rpx;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 160rpx 32rpx;
+}
+
+.section {
+  padding: 0 8rpx;
+  margin-bottom: 40rpx;
+}
+
+/* 提示横幅 */
+.alert-banner {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  border-radius: var(--radius-lg);
+  padding: 24rpx 32rpx;
+  background: var(--state-warning-bg);
+  border: 2rpx solid rgba(255, 159, 10, 0.15);
+}
+
+.alert-icon {
+  font-size: 40rpx;
+  color: var(--state-warning);
+  flex-shrink: 0;
+}
+
+.alert-text {
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--state-warning);
+}
+
+.alert-count {
+  font-weight: var(--font-weight-semibold);
+}
+
+/* 错过训练卡片 */
+.missed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.missed-card {
+  border-radius: var(--radius-lg);
+  padding: 32rpx;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.missed-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.missed-card-title {
+  font-weight: var(--font-weight-semibold);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+  margin-right: 16rpx;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--color-primary);
+}
+
+.missed-card-tag {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  padding: 4rpx 16rpx;
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--state-warning);
+  background: var(--state-warning-bg);
+}
+
+.missed-card-date {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-primary-light);
+}
+
+.action-row {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 24rpx;
+}
+
+.action-btn {
+  flex: 1;
+  border-radius: var(--radius-full);
+  padding: 12rpx 0;
+  text-align: center;
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  transition: background var(--duration-fast) var(--ease-default);
+}
+
+/* 批量操作 */
+.batch-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  border-radius: var(--radius-lg);
+  padding: 24rpx 32rpx;
+  margin-bottom: 16rpx;
+  text-align: left;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.batch-btn-left {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  flex: 1;
+}
+
+.batch-icon {
+  font-size: 40rpx;
+  color: var(--color-primary-light);
+  flex-shrink: 0;
+}
+
+.batch-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--color-primary);
+}
+
+.batch-arrow {
+  font-size: 32rpx;
+  color: var(--color-primary-light);
+  flex-shrink: 0;
+  transition: transform var(--duration-normal) var(--ease-default);
+}
+
+.travel-skip-card {
+  margin-bottom: 16rpx;
+  border-radius: var(--radius-lg);
+  padding: 24rpx;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.travel-skip-label {
+  display: block;
+  margin-bottom: 16rpx;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-primary-light);
+}
+
+.travel-skip-range {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.travel-skip-col {
+  flex: 1;
+  text-align: center;
+}
+
+.travel-skip-col-label {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+}
+
+.travel-skip-col-value {
+  display: block;
+  margin-top: 4rpx;
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--color-primary);
+}
+
+.travel-skip-arrow {
+  font-size: 32rpx;
+  color: var(--color-primary-light);
+  flex-shrink: 0;
+}
+
+.travel-skip-apply {
+  width: 100%;
+  margin-top: 24rpx;
+  border-radius: var(--radius-full);
+  padding: 20rpx 0;
+  text-align: center;
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-surface);
+  background-color: var(--color-training-main);
+}
+
+/* 确认按钮 */
+.confirm-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  padding: 28rpx 48rpx;
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  color: var(--color-surface);
+  background-color: var(--color-training-main);
+}

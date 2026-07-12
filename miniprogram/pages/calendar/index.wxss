@@ -1,0 +1,350 @@
+/* 训练日历页样式
+   1:1 迁移自 TrainingCalendar.vue + 设计稿训练日历.html
+   px → rpx 换算（1px = 2rpx），CSS 变量保留
+   backdrop-filter 不支持，降级为更不透明的 rgba 背景 */
+
+.page {
+  padding: 0 0 80rpx;
+}
+
+/* ── 头部 ── */
+.header {
+  padding: 16rpx 40rpx 8rpx;
+}
+.header-title {
+  font-size: var(--text-2xl);
+  letter-spacing: -0.01em;
+  display: block;
+}
+.month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 24rpx;
+}
+.nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: var(--radius-md);
+  color: var(--color-primary-light);
+}
+.nav-icon {
+  font-size: 36rpx;
+}
+.month-label {
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+.cycle-pill-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 24rpx;
+}
+.cycle-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 8rpx 24rpx;
+  white-space: nowrap;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-training-main);
+  background: var(--state-info-bg);
+  border-radius: var(--radius-full);
+}
+
+/* ── 周视图（毛玻璃降级） ── */
+.week-view {
+  margin: 24rpx 40rpx 8rpx;
+  padding: 16rpx;
+  /* 原：rgba(255,255,255,0.72) + backdrop-filter: blur(16px)
+     降级：backdrop-filter 小程序支持差，提高不透明度补偿 */
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: var(--radius-lg);
+  border: 2rpx solid var(--color-border-light);
+}
+.week-row {
+  display: flex;
+  text-align: center;
+}
+.week-cell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8rpx 0;
+  min-width: 0;
+}
+.week-abbr {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+  line-height: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.week-abbr--today {
+  color: var(--color-training-main);
+  font-weight: var(--font-weight-semibold);
+}
+.week-date {
+  margin-top: 8rpx;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.week-date--current {
+  color: var(--color-primary);
+}
+.week-date--other {
+  color: var(--color-border);
+}
+.week-date--today {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: var(--radius-full);
+  color: var(--color-surface);
+  font-weight: var(--font-weight-bold);
+  background: var(--color-training-main);
+}
+.week-dot {
+  margin-top: 4rpx;
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: var(--radius-full);
+}
+
+/* ── 月历网格 ── */
+.cal-grid {
+  margin: 16rpx 40rpx 8rpx;
+  padding: 0 8rpx 8rpx;
+  border: 2rpx solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.cal-header-row {
+  display: flex;
+  text-align: center;
+  padding: 16rpx 0;
+  border-bottom: 2rpx solid var(--color-border-light);
+}
+.cal-header-cell {
+  flex: 1;
+  min-width: 0;
+}
+.cal-header-text {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+  font-weight: var(--font-weight-medium);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cal-row {
+  display: flex;
+  text-align: center;
+}
+.cal-cell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16rpx 0;
+  min-width: 0;
+}
+.cal-cell--br {
+  border-right: 2rpx solid var(--color-border-light);
+}
+.cal-cell--bb {
+  border-bottom: 2rpx solid var(--color-border-light);
+}
+.cal-date {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cal-date--current-train {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+.cal-date--current-rest {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-regular);
+}
+.cal-date--other {
+  color: var(--color-border);
+}
+.cal-date--today {
+  display: inline-block;
+  min-width: 48rpx;
+  padding: 4rpx 12rpx;
+  color: var(--color-surface);
+  font-weight: var(--font-weight-bold);
+  background: var(--color-training-main);
+  border-radius: var(--radius-full);
+  box-sizing: border-box;
+  text-align: center;
+}
+.cal-date--selected {
+  background: var(--state-info-bg);
+  border-radius: var(--radius-sm);
+  padding: 4rpx 12rpx;
+  display: inline-block;
+  min-width: 48rpx;
+  box-sizing: border-box;
+  text-align: center;
+}
+.cal-dot {
+  margin-top: 4rpx;
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: var(--radius-full);
+}
+.cal-dot--completed {
+  background: var(--state-success);
+}
+.cal-dot--today {
+  background: var(--color-training-main);
+}
+.cal-dot--upcoming {
+  background: var(--color-primary-light);
+}
+.cal-dot--missed {
+  background: var(--state-warning);
+}
+
+/* ── 图例 ── */
+.legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32rpx;
+  margin-top: 24rpx;
+  padding: 0 40rpx;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+.legend-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: var(--radius-full);
+}
+.legend-dot--completed {
+  background: var(--state-success);
+}
+.legend-dot--today {
+  background: var(--color-training-main);
+}
+.legend-dot--upcoming {
+  background: var(--color-primary-light);
+}
+.legend-dot--missed {
+  background: var(--state-warning);
+}
+.legend-text {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── 选中日期详情卡 ── */
+.detail-card {
+  margin: 32rpx 40rpx 0;
+  padding: 32rpx;
+  background: var(--color-surface);
+  border: 2rpx solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.detail-date {
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+.detail-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4rpx 20rpx;
+  white-space: nowrap;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-full);
+}
+.detail-body {
+  margin-top: 24rpx;
+  border-top: 2rpx solid var(--color-border-light);
+  padding-top: 24rpx;
+}
+.detail-type-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+.detail-type {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+.detail-exercises {
+  display: block;
+  margin-top: 16rpx;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--color-primary-light);
+  line-height: var(--leading-relaxed);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.detail-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-top: 24rpx;
+  padding: 12rpx 24rpx;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-training-main);
+  background: var(--state-info-bg);
+  border-radius: var(--radius-full);
+}
+.detail-btn-text {
+  color: var(--color-training-main);
+}
+.detail-btn-icon {
+  font-size: 24rpx;
+  color: var(--color-training-main);
+}
+.detail-rest {
+  display: block;
+}

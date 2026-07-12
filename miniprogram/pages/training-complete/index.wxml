@@ -1,0 +1,152 @@
+<!-- 训练完成总结页 — 迁移自 TrainingComplete.vue
+     1:1 还原设计稿：完成图标、训练摘要、3 列统计、MR10 提示、体重记录、笔记、感受评分、操作按钮 -->
+<view class="complete-page">
+
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="loading-wrap">
+    <text class="typography-caption">加载中...</text>
+  </view>
+
+  <!-- 未找到记录 -->
+  <view wx:elif="{{!hasRecord}}" class="empty-wrap">
+    <text class="empty-text">未找到训练记录</text>
+    <button class="empty-btn" bindtap="goToday">返回今日</button>
+  </view>
+
+  <!-- 主体 -->
+  <view wx:else class="complete-main">
+
+    <!-- ── Completion Header ── -->
+    <view class="complete-header">
+      <view class="check-circle">
+        <text class="iconfont icon-check check-icon"></text>
+      </view>
+      <text class="complete-title">训练完成！</text>
+      <text class="complete-subtitle">{{workoutSubtitle}}</text>
+    </view>
+
+    <!-- ── Training Summary Card ── -->
+    <view class="summary-card">
+      <text class="summary-title">本次训练</text>
+
+      <view wx:for="{{summaryExercises}}" wx:key="exKey" class="summary-exercise">
+        <view class="ex-header-row">
+          <text class="ex-name" style="{{item.nameStyle}}">{{item.name}}</text>
+          <text class="ex-count" style="{{item.countStyle}}">{{item.completedCount}}组 完成</text>
+        </view>
+
+        <view class="ex-sets">
+          <view
+            wx:for="{{item.sets}}"
+            wx:for-item="set"
+            wx:key="setKey"
+            class="ex-set-row"
+            style="{{set.rowStyle}}"
+          >
+            <text class="ex-set-label" style="{{set.labelStyle}}">S{{set.setNumber}}</text>
+            <text class="ex-set-value">{{set.weightDisplay}}kg × {{set.repsDisplay}}次</text>
+            <text
+              wx:if="{{set.isCompleted}}"
+              class="iconfont {{set.belowTarget ? 'icon-alert-triangle' : 'icon-check'}} ex-set-icon"
+              style="{{set.iconStyle}}"
+            ></text>
+          </view>
+        </view>
+
+        <view wx:if="{{item.showDivider}}" class="ex-divider"></view>
+      </view>
+    </view>
+
+    <!-- ── Stats Summary (3 metrics) ── -->
+    <view class="stats-grid">
+      <view class="stats-cell">
+        <text class="stats-value">{{totalVolume}}</text>
+        <text class="stats-label">总容量 kg</text>
+      </view>
+      <view class="stats-cell">
+        <text class="stats-value">{{durationMinutes}}</text>
+        <text class="stats-label">时长 分钟</text>
+      </view>
+      <view class="stats-cell">
+        <text class="stats-value">{{averageRest}}</text>
+        <text class="stats-label">平均休息 秒</text>
+      </view>
+    </view>
+
+    <!-- ── MR10 Special Notice ── -->
+    <view wx:if="{{showMR10}}" class="mr10-card">
+      <view class="mr10-icon-wrap">
+        <text class="iconfont icon-info mr10-icon"></text>
+      </view>
+      <view class="mr10-content">
+        <text class="mr10-title">{{mr10Title}}</text>
+        <text class="mr10-desc">{{mr10Description}}</text>
+      </view>
+    </view>
+
+    <!-- ── Body Weight Record ── -->
+    <view class="form-card">
+      <text class="form-title">记录今日体重</text>
+      <view class="weight-input-row">
+        <view class="weight-input-wrap">
+          <input
+            class="weight-input"
+            type="digit"
+            value="{{bodyWeightStr}}"
+            placeholder="--"
+            placeholder-class="weight-input-placeholder"
+            bindinput="onWeightInput"
+          />
+        </view>
+        <text class="weight-unit">kg</text>
+      </view>
+      <text class="form-hint">选填，帮助追踪体重变化趋势</text>
+    </view>
+
+    <!-- ── Training Notes ── -->
+    <view class="form-card">
+      <text class="form-title">训练笔记</text>
+      <textarea
+        class="notes-textarea"
+        value="{{notes}}"
+        placeholder="今天感觉怎么样？有什么想记录的..."
+        placeholder-class="notes-placeholder"
+        maxlength="-1"
+        auto-height
+        bindinput="onNotesInput"
+      ></textarea>
+    </view>
+
+    <!-- ── Feeling Rating ── -->
+    <view class="form-card form-card-feeling">
+      <text class="form-title">训练感受</text>
+      <view class="stars-row">
+        <view
+          wx:for="{{starsDisplay}}"
+          wx:key="star"
+          class="star-btn"
+          style="{{item.btnStyle}}"
+          data-star="{{item.value}}"
+          bindtap="selectFeeling"
+        >
+          <text class="star-icon" style="{{item.iconStyle}}">{{item.glyph}}</text>
+        </view>
+      </view>
+      <view class="stars-labels">
+        <text class="stars-label">很差</text>
+        <text class="stars-label">很棒</text>
+      </view>
+    </view>
+
+    <!-- ── Action Buttons ── -->
+    <view class="actions">
+      <button
+        class="checkin-btn {{isSubmitting ? 'checkin-btn-disabled' : ''}}"
+        disabled="{{isSubmitting}}"
+        bindtap="submitRecord"
+      >完成打卡</button>
+      <view class="back-today-link" bindtap="goToday">返回今日</view>
+    </view>
+
+  </view>
+</view>

@@ -1,0 +1,139 @@
+/* exercise-card 样式
+   1:1 迁移自 TrainingDetail.vue 的动作卡片
+   使用全局 CSS 变量（见 assets/styles/theme.wxss） */
+
+.exercise-card {
+  padding: 16px 16px;
+  margin-bottom: 12px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  border-radius: var(--radius-lg);
+}
+
+/* 头部 */
+.ec-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.ec-name {
+  font-family: var(--font-sans);
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  letter-spacing: -0.02em;
+  line-height: var(--leading-tight);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ec-badge {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+/* 目标行 */
+.ec-target {
+  white-space: nowrap;
+  margin-bottom: 12px;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-primary-light);
+}
+
+.ec-target-label {
+  color: var(--color-primary-light);
+}
+
+.ec-target-value {
+  font-family: var(--font-mono);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+/* 组列表 */
+.ec-sets {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.ec-set-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+}
+
+.ec-set-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.ec-set-check {
+  font-size: 12px;
+  color: var(--color-surface);
+}
+
+.ec-set-label {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ec-set-value {
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* 页脚 */
+.ec-footer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-border-light);
+}
+
+.ec-footer-label {
+  white-space: nowrap;
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+}
+
+.ec-footer-value {
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+}
+
+.ec-footer-divider {
+  color: var(--color-border);
+  margin: 0 4px;
+}

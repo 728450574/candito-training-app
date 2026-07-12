@@ -1,0 +1,114 @@
+<!-- 暂停周期页 — 1:1 迁移自 PauseCycle.vue -->
+<view class="page">
+  <view class="nav-spacer"></view>
+
+  <view class="nav-bar">
+    <view class="nav-back" bindtap="goBack">
+      <text class="iconfont icon-chevron-left nav-back-icon"></text>
+    </view>
+    <text class="nav-title">暂停周期</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <block wx:if="{{!hasActiveCycle}}">
+    <view class="empty-state">
+      <text class="typography-caption">没有活跃的训练周期</text>
+    </view>
+  </block>
+
+  <block wx:else>
+    <!-- 当前进度 -->
+    <view class="section">
+      <view class="progress-card">
+        <text class="progress-card-label">当前进度</text>
+        <text class="progress-card-text">{{progressLabel}}</text>
+      </view>
+    </view>
+
+    <!-- 暂停原因 -->
+    <view class="section">
+      <text class="section-label">暂停原因</text>
+      <view class="reason-list">
+        <view
+          wx:for="{{reasonOptions}}"
+          wx:key="value"
+          class="reason-item"
+          style="{{index < reasonOptions.length - 1 ? 'border-bottom: 1rpx solid var(--color-border-light);' : ''}}{{selectedReason === item.value ? 'background: var(--state-info-bg);' : ''}}"
+          bindtap="selectReason"
+          data-value="{{item.value}}"
+        >
+          <text class="iconfont {{item.iconClass}} reason-icon"></text>
+          <text class="reason-label">{{item.label}}</text>
+          <text wx:if="{{selectedReason === item.value}}" class="iconfont icon-check reason-check"></text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 自定义原因输入 -->
+    <view wx:if="{{selectedReason === 'other'}}" class="section">
+      <view class="custom-reason-card">
+        <input
+          class="custom-reason-input"
+          value="{{customReason}}"
+          placeholder="请输入暂停原因（选填）"
+          bindinput="inputCustomReason"
+        />
+      </view>
+    </view>
+
+    <!-- 预计暂停时长 -->
+    <view class="section">
+      <text class="section-label">预计暂停时长</text>
+
+      <view class="duration-row">
+        <view
+          wx:for="{{durationOptions}}"
+          wx:key="value"
+          class="duration-btn"
+          style="{{item.value === selectedDuration ? 'color: var(--color-surface); background: var(--color-training-main); box-shadow: none;' : 'color: var(--color-primary); background: var(--color-surface); box-shadow: var(--shadow-card);'}}"
+          bindtap="selectDuration"
+          data-value="{{item.value}}"
+        >{{item.label}}</view>
+      </view>
+
+      <!-- 自定义日期范围 -->
+      <view wx:if="{{selectedDuration === 'custom'}}" class="custom-date-card">
+        <view class="custom-date-col">
+          <text class="custom-date-label">开始</text>
+          <picker mode="date" value="{{customStartDate}}" bindchange="changeStartDate">
+            <text class="custom-date-value">{{customStartDate}}</text>
+          </picker>
+        </view>
+        <text class="iconfont icon-arrow-right custom-date-arrow"></text>
+        <view class="custom-date-col">
+          <text class="custom-date-label">结束</text>
+          <picker mode="date" value="{{customEndDate}}" bindchange="changeEndDate">
+            <text class="custom-date-value">{{customEndDate}}</text>
+          </picker>
+        </view>
+      </view>
+
+      <view class="total-days">
+        <text class="total-days-text">共 {{totalDaysNum}} 天</text>
+      </view>
+    </view>
+
+    <!-- 受影响训练 -->
+    <view class="section">
+      <view class="affected-card">
+        <text class="affected-title">受影响训练: {{affectedDays.length}}个训练日</text>
+        <view class="affected-list">
+          <view wx:for="{{affectedDays}}" wx:key="key" class="affected-item">
+            <text class="affected-tag">{{item.label}}</text>
+            <text class="affected-date">{{item.date}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 确认按钮 -->
+    <view class="section">
+      <view class="confirm-btn" bindtap="handleConfirm">确认暂停</view>
+    </view>
+  </block>
+</view>

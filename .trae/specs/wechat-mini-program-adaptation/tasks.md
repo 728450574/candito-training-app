@@ -1,15 +1,15 @@
 # Tasks
 
 ## 阶段一：分支与工具链准备
-- [ ] Task 1: 创建小程序适配分支
-  - [ ] SubTask 1.1: 在仓库根执行 `git checkout -b feature/wechat-miniprogram` 基于当前主干创建分支
-  - [ ] SubTask 1.2: 验证分支已切换，原 H5 代码（`candito-v4-training-app/`）保持不变
-- [ ] Task 2: 安装 CloudBase Skills
-  - [ ] SubTask 2.1: 在仓库根执行 `npx skills add tencentcloudbase/cloudbase-skills -y`
-  - [ ] SubTask 2.2: 验证 Skills 注册成功（查看 `.skills/` 或对应配置目录，记录可用 Skills 清单）
+- [x] Task 1: 创建小程序适配分支
+  - [x] SubTask 1.1: 在仓库根执行 `git checkout -b feature/wechat-miniprogram` 基于当前主干创建分支
+  - [x] SubTask 1.2: 验证分支已切换，原 H5 代码（`candito-v4-training-app/`）保持不变
+- [x] Task 2: 安装 CloudBase Skills
+  - [x] SubTask 2.1: 在仓库根执行 `npx skills add tencentcloudbase/cloudbase-skills -y`
+  - [x] SubTask 2.2: 验证 Skills 注册成功（已安装到 `.agents/skills/cloudbase/`，含 29 个参考领域）
 
 ## 阶段二：原生小程序工程骨架
-- [ ] Task 3: 创建小程序工程文件
+- [x] Task 3: 创建小程序工程文件
   - [ ] SubTask 3.1: 在仓库根创建 `project.config.json`（`miniprogramRoot` 指向 `miniprogram/`，`compileType: miniprogram`，appid 占位）
   - [ ] SubTask 3.2: 创建 `tsconfig.json`（开启严格模式，输出到 `miniprogram/` 同目录）
   - [ ] SubTask 3.3: 创建/更新 `package.json`，加入 `miniprogram-api-typings` 依赖与必要脚本
@@ -73,16 +73,16 @@
   - [ ] SubTask 12.2: `pages/training-execute/`（训练执行，含计时器）
   - [ ] SubTask 12.3: `pages/training-complete/`（训练完成总结）
   - [ ] SubTask 12.4: `pages/training-detail/`（训练详情）
-- [ ] Task 13: 迁移周期管理页面
-  - [ ] SubTask 13.1: `pages/plan/`（训练计划）
-  - [ ] SubTask 13.2: `pages/cycle/`（周期管理）
-  - [ ] SubTask 13.3: `pages/onerm/`（1RM 设置）
-  - [ ] SubTask 13.4: `pages/pause/`（暂停周期）
-  - [ ] SubTask 13.5: `pages/missed/`（处理错过训练）
-  - [ ] SubTask 13.6: `pages/week6/`（第6周决策）
-- [ ] Task 14: 迁移其他页面
-  - [ ] SubTask 14.1: `pages/weight/`（体重记录）
-  - [ ] SubTask 14.2: `pages/custom-exercise/`（自定义动作）
+- [x] Task 13: 迁移周期管理页面
+  - [x] SubTask 13.1: `pages/plan/`（训练计划）
+  - [x] SubTask 13.2: `pages/cycle/`（周期管理）
+  - [x] SubTask 13.3: `pages/onerm/`（1RM 设置）
+  - [x] SubTask 13.4: `pages/pause/`（暂停周期）
+  - [x] SubTask 13.5: `pages/missed/`（处理错过训练）
+  - [x] SubTask 13.6: `pages/week6/`（第6周决策）
+- [x] Task 14: 迁移其他页面
+  - [x] SubTask 14.1: `pages/weight/`（体重记录）
+  - [x] SubTask 14.2: `pages/custom-exercise/`（自定义动作）
 - [ ] Task 15: 页面迁移通用规范
   - [ ] SubTask 15.1: Vue 模板 `v-if/v-for/v-model/@click` → WXML `wx:if/wx:for/双向绑定/bindtap`
   - [ ] SubTask 15.2: `<style scoped>` → `index.wxss`，px → rpx 换算

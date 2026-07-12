@@ -1,0 +1,13 @@
+<!-- stat-chart 图表组件骨架
+     用于替代 H5 项目 ProgressStats.vue 中的内联 SVG 图表
+     （1RM 趋势折线图、体重迷你折线图）
+     小程序不支持 SVG，使用 canvas 2d 绘制
+     具体绘制逻辑在页面迁移阶段根据实际需求完善 -->
+<view class="stat-chart" style="height: {{height}}px;">
+  <canvas
+    type="2d"
+    id="chart"
+    canvas-id="chart"
+    class="stat-chart-canvas"
+  ></canvas>
+</view>

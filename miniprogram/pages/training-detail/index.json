@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "exercise-card": "/components/exercise-card/index"
+  },
+  "navigationBarTitleText": "训练详情",
+  "navigationBarBackgroundColor": "#FFFFFF",
+  "navigationBarTextStyle": "black"
+}

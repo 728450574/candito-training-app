@@ -1,0 +1,91 @@
+<!-- 体重记录页 — 1:1 迁移自 WeightRecord.vue -->
+<view class="page">
+  <!-- 顶部导航栏 -->
+  <view class="nav-header">
+    <view class="nav-back" bindtap="goBack">
+      <text class="iconfont icon-chevron-left nav-back-icon"></text>
+    </view>
+    <text class="nav-title">体重记录</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <view class="page-body">
+    <!-- 当前体重卡片 -->
+    <view class="current-card">
+      <text class="typography-caption current-label">当前体重</text>
+      <view class="current-main-row">
+        <text class="current-weight">{{currentWeight}}</text>
+        <text class="current-unit">kg</text>
+      </view>
+      <view class="current-change-row">
+        <text class="current-change" style="color: {{changeColor}};">{{changeIndicator}}</text>
+        <text class="typography-caption current-change-label">较上次</text>
+      </view>
+      <text class="typography-caption current-last">最后记录: {{lastRecordDate}}</text>
+    </view>
+
+    <!-- 记录体重卡片 -->
+    <view class="record-card">
+      <text class="record-title">记录体重</text>
+      <view class="record-input-row">
+        <view class="weight-input-box">
+          <input
+            class="weight-input"
+            type="digit"
+            placeholder="81.5"
+            placeholder-class="weight-input-placeholder"
+            value="{{weightInput}}"
+            bindinput="handleWeightInput"
+          />
+          <text class="weight-input-unit">kg</text>
+        </view>
+      </view>
+      <view class="record-bottom-row">
+        <view class="date-box">
+          <text class="date-text">{{recordDateDisplay}}</text>
+          <picker mode="date" value="{{recordDate}}" bindchange="handleDateChange">
+            <text class="iconfont icon-calendar date-icon"></text>
+          </picker>
+        </view>
+        <view class="save-btn" bindtap="handleSave">保存</view>
+      </view>
+    </view>
+
+    <!-- 体重趋势图卡片 -->
+    <view class="chart-card">
+      <view class="chart-head">
+        <text class="chart-title">体重趋势</text>
+        <text class="typography-caption chart-range">近30天</text>
+      </view>
+      <view class="chart-container" style="height: 400rpx;">
+        <canvas
+          type="2d"
+          id="weightChart"
+          class="weight-chart-canvas"
+        ></canvas>
+      </view>
+    </view>
+
+    <!-- 历史记录卡片 -->
+    <view class="history-card">
+      <text class="history-title">历史记录</text>
+      <view class="history-list">
+        <view
+          wx:for="{{displayHistory}}"
+          wx:key="id"
+          class="history-item"
+          style="{{index < displayHistory.length - 1 ? 'border-bottom: 2rpx solid var(--color-border-light);' : ''}}"
+        >
+          <view class="history-item-left">
+            <text class="history-date">{{item.dateLabel}}</text>
+            <text class="history-weight">{{item.weightLabel}}</text>
+          </view>
+          <text class="history-change" style="color: {{item.changeColor}};">{{item.changeLabel}}</text>
+        </view>
+      </view>
+      <view class="history-footer" bindtap="toggleShowAll">
+        <text class="history-footer-text">{{showAllHistory ? '收起' : '查看全部'}}</text>
+      </view>
+    </view>
+  </view>
+</view>

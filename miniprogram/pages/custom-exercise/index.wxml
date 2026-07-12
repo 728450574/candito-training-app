@@ -1,0 +1,101 @@
+<!-- 自定义动作页 — 1:1 迁移自 CustomExercise.vue -->
+<view class="page">
+  <!-- 顶部导航栏 -->
+  <view class="nav-header">
+    <view class="nav-back" bindtap="goBack">
+      <text class="iconfont icon-chevron-left nav-back-icon"></text>
+    </view>
+    <text class="nav-title">自定义辅助训练</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <view class="page-body">
+    <!-- 动作位置选择 -->
+    <view class="section">
+      <text class="section-label">为哪个位置添加自定义动作</text>
+      <view class="category-list">
+        <view
+          wx:for="{{categories}}"
+          wx:key="key"
+          class="category-item"
+          style="{{item.style}}"
+          bindtap="selectCategory"
+          data-key="{{item.key}}"
+        >
+          <view class="radio-wrap">
+            <view class="radio-dot" style="{{item.radioStyle}}"></view>
+          </view>
+          <view class="category-info">
+            <text class="category-label">{{item.label}}</text>
+            <text class="category-sublabel">{{item.subLabel}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 动作名称输入 -->
+    <view class="section">
+      <text class="section-label">动作名称</text>
+      <view class="name-input-wrap">
+        <input
+          class="name-input"
+          type="text"
+          placeholder="输入自定义动作名称，如：T杠划船"
+          placeholder-class="name-input-placeholder"
+          value="{{customName}}"
+          bindinput="handleNameInput"
+        />
+      </view>
+    </view>
+
+    <!-- 推荐选择 -->
+    <view class="section">
+      <text class="section-label section-label-light">推荐选择</text>
+      <scroll-view scroll-x class="preset-scroll" enhanced show-scrollbar="{{false}}">
+        <view class="preset-row">
+          <view
+            wx:for="{{presetExercises}}"
+            wx:key="*this"
+            class="preset-btn"
+            style="{{item.style}}"
+            bindtap="selectPreset"
+            data-name="{{item.name}}"
+          >
+            {{item.name}}
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- 默认组数配置 -->
+    <view class="section section-config">
+      <text class="section-label">默认组数配置</text>
+      <view class="config-card">
+        <view class="config-row">
+          <view class="config-group">
+            <text class="config-label">组数</text>
+            <view class="config-value-box">
+              <text class="config-value">{{defaultSets}}</text>
+            </view>
+            <text class="config-unit">组</text>
+          </view>
+          <view class="config-divider"></view>
+          <view class="config-group">
+            <text class="config-label">次数</text>
+            <view class="config-value-box">
+              <text class="config-value">{{defaultReps}}</text>
+            </view>
+            <text class="config-unit">次</text>
+          </view>
+        </view>
+        <text class="config-hint">训练时可随时调整</text>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-section">
+      <view class="confirm-btn" bindtap="handleConfirm">添加动作</view>
+      <view class="cancel-btn" bindtap="goBack">取消</view>
+    </view>
+  </view>
+</view>
