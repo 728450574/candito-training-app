@@ -21,12 +21,27 @@
 - [ ] `miniprogram/services/dateService.ts`、`planGenerator.ts`、`statsService.ts` 核心算法与 H5 版本一致
 - [ ] services 中无浏览器 API 引用（`localStorage`、`document`、`window`、`Blob` 等）
 
-## 状态管理与持久化
-- [ ] `miniprogram/utils/storage.ts` 封装 `wx.setStorageSync / getStorageSync`
+## 状态管理与存储抽象层
+- [ ] `miniprogram/utils/storage/StorageAdapter.ts` 定义统一接口（`get/set/remove/list/clear`，异步 Promise）
+- [ ] `LocalStorageAdapter.ts` 基于 `wx.setStorageSync / getStorageSync`，key 与 H5 版本一致
+- [ ] `CloudStorageAdapter.ts` 基于 CloudBase 云数据库，按 openid 隔离
+- [ ] `storageManager.ts` 管理 `getActiveAdapter / setMode / onModeChange`
 - [ ] `miniprogram/stores/` 包含 `cycleStore.ts`、`recordStore.ts`、`bodyMetricStore.ts`、`settingsStore.ts` 单例模块
+- [ ] 各 store 通过 `storageManager.getActiveAdapter()` 读写，不直接调用具体后端
 - [ ] 各 store 支持 `subscribe` 订阅模式
-- [ ] 各 store 在 `app.ts` `onLaunch` 中调用 `init()` 从本地存储恢复
+- [ ] 各 store 在 `app.ts` `onLaunch` 中根据 `settingsStore.storageMode` 初始化对应 adapter 并 `init()` 加载
 - [ ] storage key 命名与 JSON 结构与 H5 版本一致（保证数据迁移兼容）
+
+## 存储模式切换（设置页）
+- [ ] 设置页含"数据存储"区块，展示当前模式（云端/本地）+ 切换入口
+- [ ] 切换入口 UI 对照 `设置与导出.html` 设计稿，风格一致
+- [ ] 云端 → 本地：弹出 `wx.showModal` 二次确认，内容含三条警示（仅本机、卸载/清缓存/换设备丢失、云端数据不自动同步建议先导出）
+- [ ] 用户点击"取消"时保持云端模式不变，不执行切换
+- [ ] 本地 → 云端：弹出提示告知数据将上传到云端账户支持多设备同步，本地数据可选清空
+- [ ] 未登录态切换到云端时引导 `wx.cloud` 匿名登录或 `getUserProfile`
+- [ ] 切换成功后调用 `storageManager.setMode()`，各 store 重新 `init()` 加载新后端数据
+- [ ] 新后端为空时 `wx.showToast` 提示"该存储模式下暂无数据"
+- [ ] `settingsStore.storageMode` 字段持久化在本地（模式本身不依赖云端）
 
 ## 图标与组件
 - [ ] iconfont 字体文件已放入 `miniprogram/assets/iconfont/`
@@ -50,12 +65,15 @@
 - [ ] 导入使用 `wx.chooseMessageFile` 读取文件
 - [ ] 端到端验证：导出 JSON/CSV → 导入还原数据完整
 
-## 样式适配
-- [ ] `theme.css` 已转写为 `app.wxss` + `theme.wxss`
+## 样式适配（UI 1:1 保真，硬性验收门槛）
+- [ ] `theme.css` 已转写为 `app.wxss` + `theme.wxss`，全部设计 token（颜色/字号/字重/行高/间距/圆角/阴影/缓动）值不得改动
 - [ ] CSS 变量挂在 `page` 选择器
-- [ ] 不支持的 CSS 特性（`backdrop-filter`、`*` 通配符）已替换或降级
-- [ ] 关键 px 单位已转换为 rpx（1px = 2rpx）
-- [ ] 各页面视觉与原设计稿基本一致
+- [ ] 排版工具类 `.typography-hero/title/subtitle/body/caption/data/data-lg` 保留，字号/字重/行高/字距与原值一致
+- [ ] 字体栈保留 `-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei'`，数据元素用 `'SF Mono','Menlo'`
+- [ ] 不支持的 CSS 特性（`backdrop-filter` 降级为 `rgba(255,255,255,0.92)` + 顶部细线、`*` 通配符替换）已处理
+- [ ] 关键 px 单位已转换为 rpx（1px = 2rpx，375pt 基准）
+- [ ] **逐页 UI 验收**：17 个设计稿对应页面（含休息日状态合并到今日训练页）已逐项对照，背景色/卡片/按钮/列表项/间距/字号/字重/颜色/圆角/阴影均与设计稿一致
+- [ ] 任一页面未通过设计稿对照即视为未完成，不得进入发布流程
 
 ## CloudBase 集成
 - [ ] `app.ts` 中 `wx.cloud.init` 完成，环境 ID 可配置

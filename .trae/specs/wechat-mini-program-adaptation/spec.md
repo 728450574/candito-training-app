@@ -12,9 +12,11 @@
   - Vue 模板指令（`v-if/v-for/v-model/@click`）→ WXML 指令（`wx:if/wx:for/双向绑定 bindtap`）
   - `<style scoped>` → 对应 `index.wxss`
 - 复用现有 TypeScript 类型定义（`src/types/*`）与纯逻辑 services（`dateService`、`planGenerator`、`statsService`）
-- 将 Pinia stores 重写为原生 TS 单例模块（模块级状态 + 订阅通知），持久化使用 `wx.setStorageSync / getStorageSync`
+- 将 Pinia stores 重写为原生 TS 单例模块（模块级状态 + 订阅通知），持久化通过**存储抽象层** `StorageAdapter` 实现，支持本地存储与云端存储两种后端，由用户在设置页切换
+- 实现存储抽象层 `StorageAdapter`（`get/set/remove/list/clear` 接口）+ `LocalStorageAdapter`（`wx.setStorageSync`）+ `CloudStorageAdapter`（CloudBase 云数据库）
+- 在设置页提供存储模式切换入口（云端/本地），切换到本地存储时弹出 `wx.showModal` 二次确认，警示数据丢失风险
 - 替换浏览器专属 API：
-  - `localStorage` → `wx.setStorageSync / getStorageSync`
+  - `localStorage` → `StorageAdapter`（底层可指向 `wx.setStorageSync` 或 CloudBase）
   - `Blob / URL.createObjectURL` 导出 → `wx.getFileSystemManager().writeFile` + `wx.openDocument` 或 `wx.shareFileMessage`
   - `FileReader` 导入 → `wx.chooseMessageFile`（小程序内选文件）
 - 替换 Lucide DOM 图标方案（`createIcons`）为 iconfont 字体图标
@@ -103,7 +105,11 @@
 │   │   ├── bodyMetric.ts
 │   │   └── settings.ts
 │   ├── utils/
-│   │   ├── storage.ts              # wx.setStorageSync 封装
+│   │   ├── storage/                # 存储抽象层
+│   │   │   ├── StorageAdapter.ts   # 统一接口定义
+│   │   │   ├── LocalStorageAdapter.ts   # wx.setStorageSync 实现
+│   │   │   ├── CloudStorageAdapter.ts   # CloudBase 云数据库实现
+│   │   │   └── storageManager.ts   # 当前激活后端管理 + 切换
 │   │   └── navigation.ts           # wx.navigateTo 封装
 │   └── assets/
 │       ├── iconfont/               # 字体图标文件
@@ -116,8 +122,8 @@
 
 ## ADDED Requirements
 
-### Requirement: UI 1:1 保真
-系统 SHALL 以 `_design_extracted/pages/` 下 17 个设计稿 HTML 为唯一视觉基准，在小程序中像素级还原 Apple 极简白色设计风格。设计 token 必须完整迁移，不得自行发挥或简化视觉。
+### Requirement: UI 1:1 保真（硬性验收门槛）
+系统 SHALL 以 `_design_extracted/pages/` 下 17 个设计稿 HTML 为唯一视觉基准，在小程序中像素级还原 Apple 极简白色设计风格。设计 token 必须完整迁移，不得自行发挥或简化视觉。**UI 保真为硬性验收门槛**：任一页面未通过设计稿逐项对照即视为该页面未完成，不得进入发布流程。
 
 #### Scenario: 设计 token 迁移
 - **WHEN** 查看 `miniprogram/app.wxss` 与 `theme.wxss`
@@ -196,11 +202,11 @@
 - **THEN** 核心算法与原 H5 版本一致（如 1RM 计算、6 周计划生成、统计数据聚合），且不依赖任何浏览器 API
 
 ### Requirement: 状态管理与持久化
-系统 SHALL 将原 Pinia stores 重写为 TypeScript 单例状态模块，并通过微信小程序本地存储持久化。
+系统 SHALL 将原 Pinia stores 重写为 TypeScript 单例状态模块，并通过存储抽象层持久化（本地或云端，由用户在设置中切换）。
 
 #### Scenario: 状态读写
 - **WHEN** 用户在小程序中创建周期、记录训练或修改设置
-- **THEN** 状态通过单例模块管理，并通过 `wx.setStorageSync` 写入本地存储，key 命名与 JSON 结构与 H5 版本保持一致
+- **THEN** 状态通过单例模块管理，并通过存储抽象层写入当前激活的存储后端（本地或云端），key 命名与 JSON 结构与 H5 版本保持一致
 
 #### Scenario: 订阅通知
 - **WHEN** 某个 store 状态变化
@@ -209,6 +215,48 @@
 #### Scenario: 数据迁移
 - **WHEN** 用户从小程序版本读取 H5 版本导出的 JSON
 - **THEN** 能够正确解析并还原全部周期、记录、身体指标与设置
+
+### Requirement: 存储抽象层（本地/云端可切换）
+系统 SHALL 提供统一的存储抽象层 `StorageAdapter`，封装本地存储（`wx.setStorageSync`）与云端存储（CloudBase 云数据库）两种实现，stores 仅依赖抽象接口，不直接调用具体后端。
+
+#### Scenario: 抽象接口
+- **WHEN** 查看 `miniprogram/utils/storage/`
+- **THEN** 存在 `StorageAdapter` 接口定义（`get / set / remove / list / clear` 等方法），以及 `LocalStorageAdapter`（基于 `wx.setStorageSync`）与 `CloudStorageAdapter`（基于 CloudBase 云数据库 collection）两个实现
+
+#### Scenario: 后端切换
+- **WHEN** 用户在设置页切换存储模式
+- **THEN** stores 使用的存储后端即时切换为对应 adapter，无需修改 store 业务代码
+
+#### Scenario: 默认模式
+- **WHEN** 用户首次启动小程序且未选择存储模式
+- **THEN** 默认使用云端存储（若 CloudBase 已初始化）或本地存储（作为降级），并在设置页明确展示当前模式
+
+### Requirement: 设置页存储模式切换与数据丢失警示
+系统 SHALL 在设置页提供存储模式切换入口（云端存储 / 本地存储），并在用户切换到本地存储时弹出二次确认警示，告知数据存储位置变化及丢失风险。
+
+#### Scenario: 切换入口
+- **WHEN** 用户进入设置页
+- **THEN** 可见"数据存储"区块，展示当前模式（云端/本地），并提供切换到另一模式的操作入口
+
+#### Scenario: 切换到本地存储的警示
+- **WHEN** 用户从云端存储切换到本地存储
+- **THEN** 弹出 `wx.showModal` 二次确认，标题如"切换到本地存储"，内容明确告知：
+  - 切换后数据仅保存在当前设备本地
+  - 卸载小程序、清除缓存或更换设备将导致数据丢失
+  - 云端已有数据不会自动同步到本地（建议先导出备份）
+- **AND** 用户点击"确认切换"后才执行切换；点击"取消"则保持云端模式不变
+
+#### Scenario: 切换到云端存储的提示
+- **WHEN** 用户从本地存储切换到云端存储
+- **THEN** 弹出 `wx.showModal` 提示：切换后数据将上传到云端账户，可在多设备间同步；本地数据不会自动清除（可选是否清空本地）
+
+#### Scenario: 切换未登录态
+- **WHEN** 用户在未登录 CloudBase 状态下尝试切换到云端存储
+- **THEN** 引导用户先完成微信登录（`wx.cloud` 匿名登录或 `getUserProfile`），登录成功后再执行切换
+
+#### Scenario: 切换后数据加载
+- **WHEN** 存储模式切换完成
+- **THEN** 从新后端加载对应数据刷新各 store；若新后端为空，提示用户"该存储模式下暂无数据"
 
 ### Requirement: 图标方案替换
 系统 SHALL 使用 iconfont 字体图标替代原 Lucide DOM 渲染方案，保证 TabBar 与页面内图标视觉一致。

@@ -29,16 +29,19 @@
   - [ ] SubTask 6.2: 审查并移除/替换任何隐含的浏览器 API 引用（如 `Date` 使用保持，无 `localStorage`）
   - [ ] SubTask 6.3: 单元测试或手动调用验证算法输出与 H5 版本一致
 
-## 阶段四：状态管理与持久化
-- [ ] Task 7: 实现存储工具
-  - [ ] SubTask 7.1: 创建 `miniprogram/utils/storage.ts`：封装 `wx.setStorageSync / getStorageSync`，提供类型安全的读写接口
-  - [ ] SubTask 7.2: 定义与 H5 版本一致的 storage key 命名约定
-- [ ] Task 8: 重写 Pinia stores 为 TS 单例模块
-  - [ ] SubTask 8.1: 创建 `miniprogram/stores/cycleStore.ts`：模块级 state + `subscribe` 订阅模式 + 持久化
+## 阶段四：状态管理与存储抽象层
+- [ ] Task 7: 实现存储抽象层
+  - [ ] SubTask 7.1: 创建 `miniprogram/utils/storage/StorageAdapter.ts`：定义统一接口（`get/set/remove/list/clear`，异步 Promise 返回），支持泛型
+  - [ ] SubTask 7.2: 实现 `LocalStorageAdapter.ts`：基于 `wx.setStorageSync / getStorageSync`，与 H5 版本 storage key 命名保持一致
+  - [ ] SubTask 7.3: 实现 `CloudStorageAdapter.ts`：基于 CloudBase 云数据库 collection（如 `cycles`、`records`、`bodyMetrics`、`settings`），支持按 openid 隔离
+  - [ ] SubTask 7.4: 实现 `storageManager.ts`：管理当前激活后端，提供 `getActiveAdapter / setMode('local'|'cloud') / onModeChange` 订阅
+  - [ ] SubTask 7.5: 定义存储模式枚举与 settings 中 `storageMode` 字段持久化（模式本身存本地，避免循环依赖）
+- [ ] Task 8: 重写 Pinia stores 为 TS 单例模块（依赖 StorageAdapter）
+  - [ ] SubTask 8.1: 创建 `miniprogram/stores/cycleStore.ts`：模块级 state + `subscribe` 订阅模式，读写通过 `storageManager.getActiveAdapter()`
   - [ ] SubTask 8.2: 创建 `miniprogram/stores/recordStore.ts`
   - [ ] SubTask 8.3: 创建 `miniprogram/stores/bodyMetricStore.ts`
-  - [ ] SubTask 8.4: 创建 `miniprogram/stores/settingsStore.ts`
-  - [ ] SubTask 8.5: 在 `app.ts` `onLaunch` 中调用各 store 的 `init()` 从本地存储恢复状态
+  - [ ] SubTask 8.4: 创建 `miniprogram/stores/settingsStore.ts`（含 `storageMode` 字段）
+  - [ ] SubTask 8.5: 在 `app.ts` `onLaunch` 中根据 settingsStore.storageMode 初始化对应 adapter，调用各 store 的 `init()` 加载数据
 
 ## 阶段五：组件与图标
 - [ ] Task 9: 图标方案落地
@@ -83,6 +86,15 @@
   - [ ] SubTask 16.2: 调用 `wx.openDocument` 预览或 `wx.shareFileMessage` 分享
   - [ ] SubTask 16.3: 导入使用 `wx.chooseMessageFile` 读取文件并解析还原
   - [ ] SubTask 16.4: 端到端验证：导出 → 导入数据完整还原
+
+## 阶段 7.5：设置页存储模式切换
+- [ ] Task 16A: 实现存储模式切换 UI 与逻辑
+  - [ ] SubTask 16A.1: 在设置页 `pages/settings/` 新增"数据存储"区块，展示当前模式（云端/本地）+ 切换入口，UI 对照 `设置与导出.html` 设计稿风格
+  - [ ] SubTask 16A.2: 切换到本地存储时弹出 `wx.showModal` 二次确认：标题"切换到本地存储"，内容明确告知（① 数据仅保存在当前设备 ② 卸载/清缓存/换设备将丢失 ③ 云端数据不会自动同步到本地，建议先导出备份），含"确认切换/取消"按钮
+  - [ ] SubTask 16A.3: 切换到云端存储时弹出 `wx.showModal` 提示：数据将上传到云端账户支持多设备同步，本地数据可选是否清空
+  - [ ] SubTask 16A.4: 未登录态切换到云端时引导 `wx.cloud` 匿名登录或 `getUserProfile`，登录成功后再切换
+  - [ ] SubTask 16A.5: 切换成功后调用 `storageManager.setMode()`，各 store 重新 `init()` 加载新后端数据；新后端为空时 `wx.showToast` 提示"该存储模式下暂无数据"
+  - [ ] SubTask 16A.6: 切换入口与警示文案的 UI 保真度对照设计稿验收
 
 ## 阶段八：样式适配（UI 1:1 保真）
 - [ ] Task 17: 设计 token 完整迁移
@@ -134,12 +146,13 @@
 - Task 2 依赖 Task 1（同分支环境下安装 Skills）
 - Task 3 ~ Task 4 为工程骨架，须先于其他开发任务完成
 - Task 5（类型）、Task 6（纯逻辑 services）须先于 Task 8（stores）完成
-- Task 7（存储工具）须先于 Task 8 完成
+- Task 7（存储抽象层）须先于 Task 8 完成
 - Task 9（图标）、Task 10（组件）可并行，且须先于页面迁移（Task 11 ~ 14）
 - Task 11 ~ 14 可并行（不同页面互不依赖），但都依赖 Task 4、Task 8、Task 9、Task 10
 - Task 16（导入导出）依赖 Task 8（stores）完成
+- Task 16A（存储模式切换）依赖 Task 7、Task 8、Task 22（CloudBase 初始化）与设置页迁移完成
 - Task 17（token 迁移）须先于 Task 20（页面级样式）完成，且强烈建议先于页面迁移完成以提供样式基础
 - Task 18、Task 19（降级/单位换算）依赖 Task 17
-- Task 21（逐页视觉对照）依赖对应页面迁移完成与 Task 17 ~ 20
+- Task 21（逐页视觉对照）依赖对应页面迁移完成与 Task 17 ~ 20，含 Task 16A 的设置页存储区块验收
 - Task 22 依赖 Task 2 与 Task 4
 - Task 23 依赖所有前置任务完成（含 Task 21 逐页 UI 验收）
