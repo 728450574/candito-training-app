@@ -16,7 +16,8 @@
     "ignoreUploadUnusedFiles": true,
     "ignoreDevUnusedFiles": false,
     "packNpmManually": false,
-    "packNpmRelationList": []
+    "packNpmRelationList": [],
+    "useCompilerPlugins": ["typescript"]
   },
   "libVersion": "latest"
 }
