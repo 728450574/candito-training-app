@@ -72,6 +72,7 @@ Page({
     elapsedFormatted: '00:00',
     restFormatted: '--:--',
     isResting: false,
+    restProgressDeg: 0,
     // Current exercise display
     pageTitle: '',
     currentExerciseName: '',
@@ -122,6 +123,7 @@ Page({
   _isRunning: false,
   _isResting: false,
   _defaultRestSeconds: 90,
+  _restTotal: 0,
   _touchStartX: 0,
   _touchStartY: 0,
 
@@ -228,11 +230,14 @@ Page({
       this._restInterval = setInterval(() => {
         if (this._restSeconds > 0) {
           this._restSeconds--
-          this.setData({ restFormatted: formatTime(this._restSeconds) })
+          this.setData({
+            restFormatted: formatTime(this._restSeconds),
+            restProgressDeg: this._restTotal > 0 ? Math.round((this._restSeconds / this._restTotal) * 360) : 0,
+          })
         } else {
           this.clearRestInterval()
           this._isResting = false
-          this.setData({ isResting: false, restFormatted: '--:--' })
+          this.setData({ isResting: false, restFormatted: '--:--', restProgressDeg: 0 })
         }
       }, 1000)
     }
@@ -293,19 +298,24 @@ Page({
     this.clearRestInterval()
     this._restSeconds = duration ?? this._defaultRestSeconds
     if (this._restSeconds <= 0) return
+    this._restTotal = this._restSeconds
     this._isResting = true
     this.setData({
       isResting: true,
       restFormatted: formatTime(this._restSeconds),
+      restProgressDeg: 360,
     })
     this._restInterval = setInterval(() => {
       if (this._restSeconds > 0) {
         this._restSeconds--
-        this.setData({ restFormatted: formatTime(this._restSeconds) })
+        this.setData({
+          restFormatted: formatTime(this._restSeconds),
+          restProgressDeg: this._restTotal > 0 ? Math.round((this._restSeconds / this._restTotal) * 360) : 0,
+        })
       } else {
         this.clearRestInterval()
         this._isResting = false
-        this.setData({ isResting: false, restFormatted: '--:--' })
+        this.setData({ isResting: false, restFormatted: '--:--', restProgressDeg: 0 })
       }
     }, 1000)
   },

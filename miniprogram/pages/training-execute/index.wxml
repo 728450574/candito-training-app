@@ -33,8 +33,10 @@
         <text class="timer-elapsed">{{elapsedFormatted}}</text>
       </view>
       <view class="timer-right">
-        <view class="rest-circle">
-          <text class="rest-circle-text">{{isResting ? restFormatted : '--:--'}}</text>
+        <view class="rest-circle" style="background: conic-gradient(#0A84FF {{restProgressDeg}}deg, #F0F0F5 0deg);">
+          <view class="rest-circle-inner">
+            <text class="rest-circle-text">{{isResting ? restFormatted : '--:--'}}</text>
+          </view>
         </view>
         <view class="rest-info">
           <text class="rest-label">组间休息</text>

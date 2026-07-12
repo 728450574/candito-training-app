@@ -140,7 +140,16 @@
   width: 72rpx;
   height: 72rpx;
   border-radius: var(--radius-full);
-  border: 6rpx solid var(--color-border-light);
+}
+
+.rest-circle-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
 }
 
 .rest-circle-text {
