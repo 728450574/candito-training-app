@@ -12,6 +12,15 @@
   - Vue 模板指令（`v-if/v-for/v-model/@click`）→ WXML 指令（`wx:if/wx:for/双向绑定 bindtap`）
   - `<style scoped>` → 对应 `index.wxss`
 - 复用现有 TypeScript 类型定义（`src/types/*`）与纯逻辑 services（`dateService`、`planGenerator`、`statsService`）
+- **业务逻辑 1:1 保真（硬性验收门槛）**：原 H5 项目的全部业务算法、状态机、数据流、边界处理须在小程序中逐行等价复现，不得简化、改写或"优化"。涉及：
+  - 1RM 计算与进度系数（Epley 公式 `weight*(1+reps/30)`、`ONE_RM_MULTIPLIERS {1:1.00, 2:1.03, 3:1.06, 4:1.09}`）
+  - 6 周 Candito 计划生成（周模板、`roundWeight`/`pct` 百分比计算、主项/辅助项/可选项构建、AMRAP 组）
+  - 训练执行流程（计时器、逐组记录、MR10 动态调整逻辑）
+  - 周期状态机（active/paused/terminated/completed 状态流转与 `activeCycle` 计算属性排除逻辑）
+  - 错过训练处理、第 6 周决策、暂停周期恢复逻辑
+  - 训练量与完成度统计（`calculateVolume`、`calculateWeeklyCompletion`）
+  - 数据导入导出格式（`EXPORT_VERSION='1.0.0'`、`simpleHash` 校验和算法、`ExportData` 结构）
+  - storage key 命名（`candito_cycles`、`candito_active_cycle` 等）与 JSON 结构
 - 将 Pinia stores 重写为原生 TS 单例模块（模块级状态 + 订阅通知），持久化通过**存储抽象层** `StorageAdapter` 实现，支持本地存储与云端存储两种后端，由用户在设置页切换
 - 实现存储抽象层 `StorageAdapter`（`get/set/remove/list/clear` 接口）+ `LocalStorageAdapter`（`wx.setStorageSync`）+ `CloudStorageAdapter`（CloudBase 云数据库）
 - 在设置页提供存储模式切换入口（云端/本地），切换到本地存储时弹出 `wx.showModal` 二次确认，警示数据丢失风险
@@ -200,6 +209,56 @@
 #### Scenario: 纯逻辑复用
 - **WHEN** 查看 `miniprogram/services/dateService.ts`、`planGenerator.ts`、`statsService.ts`
 - **THEN** 核心算法与原 H5 版本一致（如 1RM 计算、6 周计划生成、统计数据聚合），且不依赖任何浏览器 API
+
+### Requirement: 业务逻辑 1:1 保真（硬性验收门槛）
+系统 SHALL 在小程序中逐行等价复现原 H5 项目的全部业务算法、状态机、数据流与边界处理，不得简化、改写或"优化"。**业务逻辑保真为硬性验收门槛**：任一关键算法输出与 H5 版本不一致即视为未完成。原 H5 services 文件作为"金标准"参考源，小程序版本须通过等价性验证（相同输入 → 相同输出）。
+
+#### Scenario: 1RM 计算保真
+- **WHEN** 调用 `epley1RM(weight, reps)`
+- **THEN** 公式为 `reps <= 0 ? weight : reps === 1 ? weight : weight * (1 + reps / 30)`，与原 `statsService.ts` 逐行一致
+- **AND** `ONE_RM_MULTIPLIERS` 常量为 `{1: 1.00, 2: 1.03, 3: 1.06, 4: 1.09}`，用于周期间 1RM 进度调整
+
+#### Scenario: 6 周计划生成保真
+- **WHEN** 调用 `planGenerator.createCycle(input)`（相同 oneRM/unit/weightRounding/startDate/assistanceConfig）
+- **THEN** 生成的 Cycle 结构（weeks/days/exercises/sets）与 H5 版本完全一致：
+  - `roundWeight(weight, rounding) = Math.round(weight / rounding) * rounding`
+  - `pct(value, percent, rounding) = roundWeight(value * percent / 100, rounding)`
+  - 主项组（`mainSet/mainSets`）、AMRAP 组（`isAMRAP: true`）、辅助项（`buildAssistanceExercises`）构建逻辑一致
+  - 6 周主题、dayOffsets、dayTypes（lower/upper）与原 WeekTemplate 一致
+
+#### Scenario: 训练执行流程保真
+- **WHEN** 用户在训练执行页完成一组训练
+- **THEN** 逐组记录逻辑（actualWeight/actualReps 写入）、MR10 动态调整算法、计时器启停与原 H5 `useTimer.ts` 及 `TrainingExecution.vue` 逻辑一致
+
+#### Scenario: 周期状态机保真
+- **WHEN** 操作周期（创建/暂停/恢复/终止/重新开始/第6周决策）
+- **THEN** 状态流转规则与原 `cycleStore.ts` 一致：
+  - `activeCycle` 计算属性排除 `status === 'terminated' || 'completed'` 的周期
+  - 暂停后恢复、终止后重新开始的字段更新逻辑一致
+  - 错过训练处理（makeup 状态）、第 6 周决策（测试组 vs 减重组）逻辑一致
+
+#### Scenario: 统计计算保真
+- **WHEN** 调用 `calculateVolume(record)` / `calculateTotalVolume(records)` / `calculateWeeklyCompletion(cycle)`
+- **THEN** 输出与原 `statsService.ts` 完全一致：
+  - 训练量 = Σ(actualWeight ?? targetWeight ?? 0) × (actualReps ?? 0)
+  - 周完成度 = completed(含 makeup) / total × 100，四舍五入取整
+
+#### Scenario: 导入导出格式保真
+- **WHEN** 导出数据
+- **THEN** `ExportData` 结构（version/exportedAt/checksum/data）与原 `exportService.ts` 一致：
+  - `EXPORT_VERSION = '1.0.0'`
+  - `simpleHash(str)` 校验和算法逐行一致（`((hash << 5) - hash) + char`，`hash |= 0`，转无符号 16 进制补 0 到 8 位）
+  - `calculateChecksum` 使用 `simpleHash`
+- **AND** H5 版本导出的 JSON 可被小程序版本导入并完整还原，反之亦然
+
+#### Scenario: 存储 key 与数据结构保真
+- **WHEN** 查看 `LocalStorageAdapter` 写入的 key
+- **THEN** 与原 H5 版本完全一致：`candito_cycles`、`candito_active_cycle`、`candito_records`、`candito_body_metrics`、`candito_settings`（以原 store 中实际 key 为准）
+- **AND** 对应 JSON 结构与字段名一致，保证 H5 与小程序本地存储数据可互通
+
+#### Scenario: 等价性验证
+- **WHEN** 对关键算法（1RM、计划生成、训练量、完成度、校验和）编写对照测试
+- **THEN** 相同输入下，小程序版本与 H5 版本输出完全一致（建议移植 H5 单元测试或构造对照用例）
 
 ### Requirement: 状态管理与持久化
 系统 SHALL 将原 Pinia stores 重写为 TypeScript 单例状态模块，并通过存储抽象层持久化（本地或云端，由用户在设置中切换）。

@@ -20,14 +20,22 @@
   - [ ] SubTask 4.3: 创建 `miniprogram/app.wxss`：全局样式，定义 `page` 下的 CSS 变量（参考原 `theme.css`）
   - [ ] SubTask 4.4: 创建 `miniprogram/assets/styles/theme.wxss` 并在 `app.wxss` 中 `@import`
 
-## 阶段三：类型与纯逻辑层复用
+## 阶段三：类型与纯逻辑层复用（业务逻辑 1:1 保真）
 - [ ] Task 5: 复用 TypeScript 类型定义
-  - [ ] SubTask 5.1: 将 `candito-v4-training-app/src/types/*.ts` 复制到 `miniprogram/types/`
+  - [ ] SubTask 5.1: 将 `candito-v4-training-app/src/types/*.ts` 复制到 `miniprogram/types/`，字段/枚举/接口不得改动
   - [ ] SubTask 5.2: 验证类型在 TS 编译中无报错（无浏览器类型依赖）
-- [ ] Task 6: 复用纯逻辑 services
-  - [ ] SubTask 6.1: 将 `dateService.ts`、`planGenerator.ts`、`statsService.ts` 复制到 `miniprogram/services/`
-  - [ ] SubTask 6.2: 审查并移除/替换任何隐含的浏览器 API 引用（如 `Date` 使用保持，无 `localStorage`）
-  - [ ] SubTask 6.3: 单元测试或手动调用验证算法输出与 H5 版本一致
+- [ ] Task 6: 复用纯逻辑 services（逐行等价，禁止改写）
+  - [ ] SubTask 6.1: 将 `dateService.ts`、`planGenerator.ts`、`statsService.ts` 复制到 `miniprogram/services/`，业务算法逐行保留：
+    - `planGenerator.ts`：`roundWeight`、`pct`、`mainSet/mainSets/amrapSet`、`buildAssistanceExercises`、6 周 WeekTemplate
+    - `statsService.ts`：`epley1RM`（`weight*(1+reps/30)`）、`ONE_RM_MULTIPLIERS {1:1.00,2:1.03,3:1.06,4:1.09}`、`calculateVolume`、`calculateTotalVolume`、`calculateWeeklyCompletion`
+  - [ ] SubTask 6.2: 仅替换 IO/依赖注入点（如 `uuid` 的 `v4` 改为小程序兼容实现或保留 `uuid` 依赖），业务算法本体不动
+  - [ ] SubTask 6.3: 审查并确认无隐含浏览器 API 引用（`Date` 使用保持，无 `localStorage`/`document`/`window`/`Blob`）
+- [ ] Task 6A: 业务逻辑等价性验证
+  - [ ] SubTask 6A.1: 构造对照用例（一组 1RM 输入、unit、weightRounding、startDate、assistanceConfig），调用 `planGenerator.createCycle`，比对小程序版本与 H5 版本输出的 Cycle JSON 完全一致
+  - [ ] SubTask 6A.2: 对照 `epley1RM`、`calculateVolume`、`calculateWeeklyCompletion` 输出一致
+  - [ ] SubTask 6A.3: 对照 `simpleHash`/`calculateChecksum` 对相同字符串输出一致（校验和算法逐行等价）
+  - [ ] SubTask 6A.4: 对照周期状态机流转（创建→暂停→恢复→终止→重新开始、第6周决策、错过训练 makeup）字段更新一致
+  - [ ] SubTask 6A.5: 将验证结果（对照用例 + 输出 diff）记录到 `miniprogram/tests/fidelity-report.md`（或等价位置），作为验收证据
 
 ## 阶段四：状态管理与存储抽象层
 - [ ] Task 7: 实现存储抽象层
@@ -36,12 +44,13 @@
   - [ ] SubTask 7.3: 实现 `CloudStorageAdapter.ts`：基于 CloudBase 云数据库 collection（如 `cycles`、`records`、`bodyMetrics`、`settings`），支持按 openid 隔离
   - [ ] SubTask 7.4: 实现 `storageManager.ts`：管理当前激活后端，提供 `getActiveAdapter / setMode('local'|'cloud') / onModeChange` 订阅
   - [ ] SubTask 7.5: 定义存储模式枚举与 settings 中 `storageMode` 字段持久化（模式本身存本地，避免循环依赖）
-- [ ] Task 8: 重写 Pinia stores 为 TS 单例模块（依赖 StorageAdapter）
-  - [ ] SubTask 8.1: 创建 `miniprogram/stores/cycleStore.ts`：模块级 state + `subscribe` 订阅模式，读写通过 `storageManager.getActiveAdapter()`
-  - [ ] SubTask 8.2: 创建 `miniprogram/stores/recordStore.ts`
-  - [ ] SubTask 8.3: 创建 `miniprogram/stores/bodyMetricStore.ts`
-  - [ ] SubTask 8.4: 创建 `miniprogram/stores/settingsStore.ts`（含 `storageMode` 字段）
-  - [ ] SubTask 8.5: 在 `app.ts` `onLaunch` 中根据 settingsStore.storageMode 初始化对应 adapter，调用各 store 的 `init()` 加载数据
+- [ ] Task 8: 重写 Pinia stores 为 TS 单例模块（业务逻辑 1:1 保真，依赖 StorageAdapter）
+  - [ ] SubTask 8.1: 创建 `miniprogram/stores/cycleStore.ts`：模块级 state + `subscribe` 订阅模式，读写通过 `storageManager.getActiveAdapter()`；`activeCycle` 计算逻辑（排除 terminated/completed）、storage key（`candito_cycles`/`candito_active_cycle`）与原 H5 一致
+  - [ ] SubTask 8.2: 创建 `miniprogram/stores/recordStore.ts`（key `candito_records`，记录写入/查询逻辑与 H5 一致）
+  - [ ] SubTask 8.3: 创建 `miniprogram/stores/bodyMetricStore.ts`（key `candito_body_metrics`）
+  - [ ] SubTask 8.4: 创建 `miniprogram/stores/settingsStore.ts`（key `candito_settings`，含 `storageMode` 字段，其余设置字段与 H5 一致）
+  - [ ] SubTask 8.5: 周期状态机方法（create/pause/resume/terminate/restart/week6Decision/markMissed/makeup）逻辑与原 `cycleStore.ts` 逐行等价
+  - [ ] SubTask 8.6: 在 `app.ts` `onLaunch` 中根据 settingsStore.storageMode 初始化对应 adapter，调用各 store 的 `init()` 加载数据
 
 ## 阶段五：组件与图标
 - [ ] Task 9: 图标方案落地
