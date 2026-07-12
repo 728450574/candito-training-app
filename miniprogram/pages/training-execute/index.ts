@@ -8,7 +8,7 @@ import { cycleStore } from '../../stores/cycleStore'
 import { recordStore } from '../../stores/recordStore'
 import { settingsStore } from '../../stores/settingsStore'
 import { getToday } from '../../services/dateService'
-import { v4 as uuid } from 'uuid'
+import { uuidv4 as uuid } from '../../utils/uuid'
 import type { TrainingDay, PlannedExercise } from '../../types/cycle'
 import type { ExerciseRecord, WorkoutRecord } from '../../types/record'
 

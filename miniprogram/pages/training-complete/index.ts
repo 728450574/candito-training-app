@@ -8,7 +8,7 @@ import { cycleStore } from '../../stores/cycleStore'
 import { recordStore } from '../../stores/recordStore'
 import { bodyMetricStore } from '../../stores/bodyMetricStore'
 import { calculateVolume } from '../../services/statsService'
-import { v4 as uuid } from 'uuid'
+import { uuidv4 as uuid } from '../../utils/uuid'
 import type { WorkoutRecord, ExerciseRecord, SetRecord } from '../../types/record'
 import type { TrainingDay } from '../../types/cycle'
 

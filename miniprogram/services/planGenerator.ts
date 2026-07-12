@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid'
+import { uuidv4 } from '../utils/uuid'
 import type { Cycle, Week, TrainingDay, PlannedExercise } from '../types/cycle'
 import type { PlannedSet } from '../types/cycle'
 import { addDays } from './dateService'
