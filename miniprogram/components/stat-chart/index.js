@@ -1,4 +1,3 @@
-"use strict";
 // stat-chart 图表组件
 // 替代 H5 项目 ProgressStats.vue 的内联 SVG 图表
 // （1RM 跨周期趋势折线图 / 体重迷你折线图）
@@ -127,7 +126,7 @@ Component({
                 if (!width || !height)
                     return;
                 const ctx = canvas.getContext('2d');
-                const dpr = wx.getSystemInfoSync().pixelRatio;
+                const dpr = wx.getWindowInfo().pixelRatio;
                 canvas.width = width * dpr;
                 canvas.height = height * dpr;
                 ctx.scale(dpr, dpr);

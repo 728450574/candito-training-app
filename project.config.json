@@ -5,10 +5,10 @@
   "projectname": "candito-training-miniprogram",
   "description": "Candito 训练小程序 - 微信小程序原生工程",
   "setting": {
-    "es6": true,
-    "enhance": true,
+    "es6": false,
+    "enhance": false,
     "postcss": true,
-    "minified": true,
+    "minified": false,
     "urlCheck": false,
     "newFeature": true,
     "autoAudits": false,
@@ -17,7 +17,7 @@
     "ignoreDevUnusedFiles": false,
     "packNpmManually": false,
     "packNpmRelationList": [],
-    "useCompilerPlugins": ["typescript"]
+    "useCompilerPlugins": false
   },
   "libVersion": "latest"
 }

@@ -156,7 +156,7 @@ Page({
         if (!res || !res[0] || !res[0].node) return
         const canvas = res[0].node as WechatMiniprogram.Canvas
         const ctx = canvas.getContext('2d') as unknown as CanvasRenderingContext2D
-        const dpr = wx.getSystemInfoSync().pixelRatio
+        const dpr = wx.getWindowInfo().pixelRatio
         const width = res[0].width
         const height = res[0].height
         canvas.width = width * dpr

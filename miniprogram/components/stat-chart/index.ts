@@ -137,7 +137,7 @@ Component({
           const height = res[0].height
           if (!width || !height) return
           const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
-          const dpr = wx.getSystemInfoSync().pixelRatio
+          const dpr = wx.getWindowInfo().pixelRatio
           canvas.width = width * dpr
           canvas.height = height * dpr
           ctx.scale(dpr, dpr)
