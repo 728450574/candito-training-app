@@ -32,8 +32,15 @@ interface AppDataDoc {
 
 /** 获取 db 实例，未初始化时抛出明确错误 */
 function getDb(): DB.Database {
-  if (!cloudInitialized || typeof wx === 'undefined' || typeof wx.cloud === 'undefined') {
-    throw new Error('CloudBase 未初始化')
+  if (typeof wx === 'undefined' || typeof wx.cloud === 'undefined') {
+    throw new Error('CloudBase 未初始化：当前小程序未支持云开发')
+  }
+  // 惰性初始化：第一次调用时 init（不传 env，使用默认云环境）
+  // 注意：wx.cloud.init 的错误是异步抛出的，try-catch 抓不住，
+  // 真正的失败会在后续 db.collection().get() 时抛出，由调用方 catch
+  if (!cloudInitialized) {
+    wx.cloud.init({ traceUser: true })
+    cloudInitialized = true
   }
   return wx.cloud.database()
 }
@@ -54,8 +61,8 @@ export class CloudStorageAdapter implements StorageAdapter {
       }
       return docs[0].value as T
     } catch (e) {
-      // 未初始化时 getDb 直接抛 "CloudBase 未初始化"，原样上抛
-      if (e instanceof Error && e.message === 'CloudBase 未初始化') {
+      // 未初始化时 getDb 直接抛 "CloudBase 未初始化..."，原样上抛
+      if (e instanceof Error && e.message.startsWith('CloudBase 未初始化')) {
         throw e
       }
       return null
@@ -96,7 +103,7 @@ export class CloudStorageAdapter implements StorageAdapter {
       const docs = res.data as AppDataDoc[]
       return (docs || []).map((d) => d.key)
     } catch (e) {
-      if (e instanceof Error && e.message === 'CloudBase 未初始化') {
+      if (e instanceof Error && e.message.startsWith('CloudBase 未初始化')) {
         throw e
       }
       return []

@@ -189,22 +189,10 @@ Page({
         // 切换到云端存储 — 先校验 CloudBase 可用性
         // wx.cloud 为小程序内置能力，未启用云开发时可能为 undefined
         if (!wx.cloud) {
-            wx.showToast({ title: '云端存储不可用，请检查网络或稍后重试', icon: 'none' });
+            wx.showToast({ title: '当前小程序不支持云存储', icon: 'none' });
             return;
         }
-        // CloudBase 未初始化时尝试重新初始化（引导登录：小程序云开发通过 wx.cloud.init
-        // 建立 OPENID 鉴权上下文，无需单独匿名登录步骤）
-        if (!(0, CloudStorageAdapter_1.isCloudInitialized)()) {
-            try {
-                wx.cloud.init({ env: 'candito-prod', traceUser: true });
-                (0, CloudStorageAdapter_1.setCloudInitialized)(true);
-            }
-            catch (_a) {
-                wx.showToast({ title: '云端存储不可用，请检查网络或稍后重试', icon: 'none' });
-                return;
-            }
-        }
-        // 提示并确认
+        // 提示并确认（实际 init 与连通性测试在 performSwitch 中进行，失败会回滚）
         wx.showModal({
             title: '切换到云端存储',
             content: '切换后数据将上传到云端账户，可在多设备间同步。本地数据不会自动清除。',
@@ -219,21 +207,25 @@ Page({
     },
     /** 执行实际切换：切后端 → 持久化模式 → 重新加载各 store → 刷新视图 → 反馈 */
     async performSwitch(newMode) {
+        const oldMode = storageManager_1.storageManager.getMode();
         wx.showLoading({ title: '切换中...', mask: true });
         try {
             // 1. 切换存储后端
             storageManager_1.storageManager.setMode(newMode);
             // 2. 持久化模式设置（settingsStore 始终走本地，保存 storageMode）
             settingsStore_1.settingsStore.update({ storageMode: newMode });
-            // 3. 重新加载各 store 数据（从新后端读取）
+            // 3. 切换到 cloud 时，先测试云存储连通性，失败则回滚
+            if (newMode === 'cloud') {
+                await this.testCloudConnection();
+            }
+            // 4. 重新加载各 store 数据（从新后端读取）
             await cycleStore_1.cycleStore.load();
             await recordStore_1.recordStore.load();
             await bodyMetricStore_1.bodyMetricStore.load();
-            // 4. 刷新设置页视图
+            // 5. 刷新设置页视图
             this.refresh();
             wx.hideLoading();
-            // 5/6. 根据新后端是否有数据给出提示
-            //    recordStore 为懒加载（load 是 no-op），空状态以 cycles + metrics 判定
+            // 6. 根据新后端是否有数据给出提示
             const hasData = cycleStore_1.cycleStore.getCycles().length > 0 ||
                 bodyMetricStore_1.bodyMetricStore.getMetrics().length > 0;
             if (!hasData) {
@@ -247,12 +239,32 @@ Page({
             }
         }
         catch (e) {
+            // 回滚到原模式，避免数据丢失
+            storageManager_1.storageManager.setMode(oldMode);
+            settingsStore_1.settingsStore.update({ storageMode: oldMode });
             wx.hideLoading();
+            const tip = newMode === 'cloud'
+                ? '云存储不可用，请确认已开通微信云开发'
+                : '切换失败';
             wx.showToast({
-                title: e instanceof Error ? e.message : '切换失败',
+                title: e instanceof Error && e.message ? e.message : tip,
                 icon: 'none',
             });
         }
+    },
+    /** 测试云存储连通性：惰性 init + count 查询，失败抛错 */
+    async testCloudConnection() {
+        if (typeof wx === 'undefined' || typeof wx.cloud === 'undefined') {
+            throw new Error('当前小程序不支持云存储');
+        }
+        // 惰性初始化（不传 env，使用默认云环境）
+        if (!(0, CloudStorageAdapter_1.isCloudInitialized)()) {
+            wx.cloud.init({ traceUser: true });
+            (0, CloudStorageAdapter_1.setCloudInitialized)(true);
+        }
+        // count 查询测试数据库连通性（不需要实际有数据）
+        const db = wx.cloud.database();
+        await db.collection('app_data').count();
     },
     // ── 周期入口 ──
     goCycle() {
