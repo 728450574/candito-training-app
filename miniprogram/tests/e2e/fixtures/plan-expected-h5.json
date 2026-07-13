@@ -1,0 +1,924 @@
+{
+  "$comment": "Golden expected output of planGenerator.createCycle(plan-input.json), manually traced from /workspace/candito-v4-training-app/src/services/planGenerator.ts. Input: squat=100, bench=85, deadlift=120, unit=kg, weightRounding=2.5, startDate=2026-07-13, assistance={horizontalPull:'哑铃划船', shoulder:'坐姿哑铃推举', verticalPull:'负重引体向上'}. Algorithm specifics preserved: mainSets() produces {setNumber,targetWeight,targetReps} WITHOUT isAMRAP; mainSet() produces {...,isAMRAP:false}; amrapSet() produces {...,isAMRAP:true}; assistance sets produce {setNumber,targetReps} only. roundWeight(w,2.5)=Math.round(w/2.5)*2.5. UUIDs are deterministic 'test-cycle-001' / 'test-exercise-NNN'. createdAt is a fixed deterministic ISO string.",
+  "id": "test-cycle-001",
+  "name": "测试周期",
+  "startDate": "2026-07-13",
+  "status": "active",
+  "oneRM": {
+    "squat": 100,
+    "bench": 85,
+    "deadlift": 120
+  },
+  "unit": "kg",
+  "weightRounding": 2.5,
+  "assistanceConfig": {
+    "horizontalPull": "哑铃划船",
+    "shoulder": "坐姿哑铃推举",
+    "verticalPull": "负重引体向上"
+  },
+  "weeks": [
+    {
+      "weekNumber": 1,
+      "theme": "肌肉调理",
+      "days": [
+        {
+          "dayNumber": 1,
+          "dayOffset": 0,
+          "type": "lower",
+          "originalDate": "2026-07-13",
+          "scheduledDate": "2026-07-13",
+          "exercises": [
+            {
+              "id": "test-exercise-001",
+              "name": "深蹲",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 80, "targetReps": "6" },
+                { "setNumber": 2, "targetWeight": 80, "targetReps": "6" }
+              ]
+            },
+            {
+              "id": "test-exercise-002",
+              "name": "硬拉",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 90, "targetReps": "6" },
+                { "setNumber": 2, "targetWeight": 90, "targetReps": "6" }
+              ]
+            }
+          ],
+          "status": "pending"
+        },
+        {
+          "dayNumber": 2,
+          "dayOffset": 1,
+          "type": "upper",
+          "originalDate": "2026-07-14",
+          "scheduledDate": "2026-07-14",
+          "exercises": [
+            {
+              "id": "test-exercise-003",
+              "name": "卧推",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 37.5, "targetReps": "10", "isAMRAP": false },
+                { "setNumber": 2, "targetWeight": 50, "targetReps": "10", "isAMRAP": false },
+                { "setNumber": 3, "targetWeight": 57.5, "targetReps": "8", "isAMRAP": false },
+                { "setNumber": 4, "targetWeight": 60, "targetReps": "6", "isAMRAP": false }
+              ]
+            },
+            {
+              "id": "test-exercise-004",
+              "name": "哑铃划船",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            },
+            {
+              "id": "test-exercise-005",
+              "name": "坐姿哑铃推举",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            },
+            {
+              "id": "test-exercise-006",
+              "name": "负重引体向上",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            }
+          ],
+          "status": "pending"
+        },
+        {
+          "dayNumber": 3,
+          "dayOffset": 3,
+          "type": "upper",
+          "originalDate": "2026-07-16",
+          "scheduledDate": "2026-07-16",
+          "exercises": [
+            {
+              "id": "test-exercise-007",
+              "name": "卧推",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 37.5, "targetReps": "10", "isAMRAP": false },
+                { "setNumber": 2, "targetWeight": 50, "targetReps": "10", "isAMRAP": false },
+                { "setNumber": 3, "targetWeight": 57.5, "targetReps": "8", "isAMRAP": false },
+                { "setNumber": 4, "targetWeight": 60, "targetReps": "6", "isAMRAP": false }
+              ]
+            },
+            {
+              "id": "test-exercise-008",
+              "name": "哑铃划船",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            },
+            {
+              "id": "test-exercise-009",
+              "name": "坐姿哑铃推举",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            },
+            {
+              "id": "test-exercise-010",
+              "name": "负重引体向上",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            }
+          ],
+          "status": "pending"
+        },
+        {
+          "dayNumber": 4,
+          "dayOffset": 4,
+          "type": "lower",
+          "originalDate": "2026-07-17",
+          "scheduledDate": "2026-07-17",
+          "exercises": [
+            {
+              "id": "test-exercise-011",
+              "name": "深蹲",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 75, "targetReps": "8" },
+                { "setNumber": 2, "targetWeight": 75, "targetReps": "8" }
+              ]
+            },
+            {
+              "id": "test-exercise-012",
+              "name": "硬拉",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 85, "targetReps": "8" },
+                { "setNumber": 2, "targetWeight": 85, "targetReps": "8" }
+              ]
+            }
+          ],
+          "status": "pending"
+        },
+        {
+          "dayNumber": 5,
+          "dayOffset": 5,
+          "type": "upper",
+          "originalDate": "2026-07-18",
+          "scheduledDate": "2026-07-18",
+          "exercises": [
+            {
+              "id": "test-exercise-013",
+              "name": "卧推",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 65, "targetReps": "MR", "isAMRAP": true }
+              ]
+            },
+            {
+              "id": "test-exercise-014",
+              "name": "哑铃划船",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            },
+            {
+              "id": "test-exercise-015",
+              "name": "坐姿哑铃推举",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            },
+            {
+              "id": "test-exercise-016",
+              "name": "负重引体向上",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            }
+          ],
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "weekNumber": 2,
+      "theme": "肌肉调理/增肌",
+      "days": [
+        {
+          "dayNumber": 1,
+          "dayOffset": 0,
+          "type": "lower",
+          "originalDate": "2026-07-20",
+          "scheduledDate": "2026-07-20",
+          "exercises": [
+            {
+              "id": "test-exercise-017",
+              "name": "深蹲",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 80, "targetReps": "MR10", "isAMRAP": true }
+              ]
+            },
+            {
+              "id": "test-exercise-018",
+              "name": "硬拉变式",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 85, "targetReps": "8" },
+                { "setNumber": 2, "targetWeight": 85, "targetReps": "8" },
+                { "setNumber": 3, "targetWeight": 85, "targetReps": "8" }
+              ]
+            }
+          ],
+          "status": "pending"
+        },
+        {
+          "dayNumber": 2,
+          "dayOffset": 1,
+          "type": "upper",
+          "originalDate": "2026-07-21",
+          "scheduledDate": "2026-07-21",
+          "exercises": [
+            {
+              "id": "test-exercise-019",
+              "name": "卧推",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 62.5, "targetReps": "8" },
+                { "setNumber": 2, "targetWeight": 62.5, "targetReps": "8" },
+                { "setNumber": 3, "targetWeight": 62.5, "targetReps": "8" }
+              ]
+            },
+            {
+              "id": "test-exercise-020",
+              "name": "哑铃划船",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            },
+            {
+              "id": "test-exercise-021",
+              "name": "坐姿哑铃推举",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            },
+            {
+              "id": "test-exercise-022",
+              "name": "负重引体向上",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            }
+          ],
+          "status": "pending"
+        },
+        {
+          "dayNumber": 3,
+          "dayOffset": 3,
+          "type": "lower",
+          "originalDate": "2026-07-23",
+          "scheduledDate": "2026-07-23",
+          "exercises": [
+            {
+              "id": "test-exercise-023",
+              "name": "深蹲",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 82.5, "targetReps": "MR10", "isAMRAP": true }
+              ]
+            },
+            {
+              "id": "test-exercise-024",
+              "name": "硬拉变式",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 85, "targetReps": "8" },
+                { "setNumber": 2, "targetWeight": 85, "targetReps": "8" },
+                { "setNumber": 3, "targetWeight": 85, "targetReps": "8" }
+              ]
+            }
+          ],
+          "status": "pending"
+        },
+        {
+          "dayNumber": 4,
+          "dayOffset": 4,
+          "type": "upper",
+          "originalDate": "2026-07-24",
+          "scheduledDate": "2026-07-24",
+          "exercises": [
+            {
+              "id": "test-exercise-025",
+              "name": "卧推",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 50, "targetReps": "8" },
+                { "setNumber": 2, "targetWeight": 50, "targetReps": "8" },
+                { "setNumber": 3, "targetWeight": 50, "targetReps": "8" }
+              ]
+            },
+            {
+              "id": "test-exercise-026",
+              "name": "哑铃划船",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            },
+            {
+              "id": "test-exercise-027",
+              "name": "坐姿哑铃推举",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            },
+            {
+              "id": "test-exercise-028",
+              "name": "负重引体向上",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            }
+          ],
+          "status": "pending"
+        },
+        {
+          "dayNumber": 5,
+          "dayOffset": 6,
+          "type": "upper",
+          "originalDate": "2026-07-26",
+          "scheduledDate": "2026-07-26",
+          "exercises": [
+            {
+              "id": "test-exercise-029",
+              "name": "卧推",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 65, "targetReps": "MR", "isAMRAP": true }
+              ]
+            },
+            {
+              "id": "test-exercise-030",
+              "name": "哑铃划船",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            },
+            {
+              "id": "test-exercise-031",
+              "name": "坐姿哑铃推举",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            },
+            {
+              "id": "test-exercise-032",
+              "name": "负重引体向上",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            }
+          ],
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "weekNumber": 3,
+      "theme": "线性最大超负荷",
+      "days": [
+        {
+          "dayNumber": 1,
+          "dayOffset": 0,
+          "type": "lower",
+          "originalDate": "2026-07-27",
+          "scheduledDate": "2026-07-27",
+          "exercises": [
+            {
+              "id": "test-exercise-033",
+              "name": "深蹲",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 87.5, "targetReps": "3", "isAMRAP": false },
+                { "setNumber": 2, "targetWeight": 90, "targetReps": "3", "isAMRAP": false }
+              ]
+            },
+            {
+              "id": "test-exercise-034",
+              "name": "硬拉",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 100, "targetReps": "3" },
+                { "setNumber": 2, "targetWeight": 100, "targetReps": "3" }
+              ]
+            }
+          ],
+          "status": "pending"
+        },
+        {
+          "dayNumber": 2,
+          "dayOffset": 2,
+          "type": "upper",
+          "originalDate": "2026-07-29",
+          "scheduledDate": "2026-07-29",
+          "exercises": [
+            {
+              "id": "test-exercise-035",
+              "name": "卧推",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 65, "targetReps": "4", "isAMRAP": false },
+                { "setNumber": 2, "targetWeight": 67.5, "targetReps": "4", "isAMRAP": false }
+              ]
+            },
+            {
+              "id": "test-exercise-036",
+              "name": "哑铃划船",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            },
+            {
+              "id": "test-exercise-037",
+              "name": "坐姿哑铃推举",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            },
+            {
+              "id": "test-exercise-038",
+              "name": "负重引体向上",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            }
+          ],
+          "status": "pending"
+        },
+        {
+          "dayNumber": 3,
+          "dayOffset": 4,
+          "type": "lower",
+          "originalDate": "2026-07-31",
+          "scheduledDate": "2026-07-31",
+          "exercises": [
+            {
+              "id": "test-exercise-039",
+              "name": "深蹲",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 85, "targetReps": "3" },
+                { "setNumber": 2, "targetWeight": 85, "targetReps": "3" }
+              ]
+            },
+            {
+              "id": "test-exercise-040",
+              "name": "硬拉",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 95, "targetReps": "3" },
+                { "setNumber": 2, "targetWeight": 95, "targetReps": "3" }
+              ]
+            }
+          ],
+          "status": "pending"
+        },
+        {
+          "dayNumber": 4,
+          "dayOffset": 5,
+          "type": "upper",
+          "originalDate": "2026-08-01",
+          "scheduledDate": "2026-08-01",
+          "exercises": [
+            {
+              "id": "test-exercise-041",
+              "name": "卧推",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 65, "targetReps": "4" },
+                { "setNumber": 2, "targetWeight": 65, "targetReps": "4" },
+                { "setNumber": 3, "targetWeight": 65, "targetReps": "4" }
+              ]
+            },
+            {
+              "id": "test-exercise-042",
+              "name": "哑铃划船",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            },
+            {
+              "id": "test-exercise-043",
+              "name": "坐姿哑铃推举",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            },
+            {
+              "id": "test-exercise-044",
+              "name": "负重引体向上",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            }
+          ],
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "weekNumber": 4,
+      "theme": "适应大重量",
+      "days": [
+        {
+          "dayNumber": 1,
+          "dayOffset": 0,
+          "type": "lower",
+          "originalDate": "2026-08-03",
+          "scheduledDate": "2026-08-03",
+          "exercises": [
+            {
+              "id": "test-exercise-045",
+              "name": "深蹲",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 85, "targetReps": "3", "isAMRAP": false },
+                { "setNumber": 2, "targetWeight": 90, "targetReps": "3", "isAMRAP": false },
+                { "setNumber": 3, "targetWeight": 92.5, "targetReps": "3", "isAMRAP": false }
+              ]
+            },
+            {
+              "id": "test-exercise-046",
+              "name": "硬拉",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 105, "targetReps": "3", "isAMRAP": false },
+                { "setNumber": 2, "targetWeight": 107.5, "targetReps": "3", "isAMRAP": false }
+              ]
+            }
+          ],
+          "status": "pending"
+        },
+        {
+          "dayNumber": 2,
+          "dayOffset": 1,
+          "type": "upper",
+          "originalDate": "2026-08-04",
+          "scheduledDate": "2026-08-04",
+          "exercises": [
+            {
+              "id": "test-exercise-047",
+              "name": "卧推",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 67.5, "targetReps": "3", "isAMRAP": false },
+                { "setNumber": 2, "targetWeight": 72.5, "targetReps": "3", "isAMRAP": false },
+                { "setNumber": 3, "targetWeight": 75, "targetReps": "3", "isAMRAP": false }
+              ]
+            },
+            {
+              "id": "test-exercise-048",
+              "name": "哑铃划船",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            },
+            {
+              "id": "test-exercise-049",
+              "name": "坐姿哑铃推举",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            },
+            {
+              "id": "test-exercise-050",
+              "name": "负重引体向上",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            }
+          ],
+          "status": "pending"
+        },
+        {
+          "dayNumber": 3,
+          "dayOffset": 3,
+          "type": "lower",
+          "originalDate": "2026-08-06",
+          "scheduledDate": "2026-08-06",
+          "exercises": [
+            {
+              "id": "test-exercise-051",
+              "name": "深蹲",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 87.5, "targetReps": "3" },
+                { "setNumber": 2, "targetWeight": 87.5, "targetReps": "3" }
+              ]
+            },
+            {
+              "id": "test-exercise-052",
+              "name": "硬拉",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 102.5, "targetReps": "3" },
+                { "setNumber": 2, "targetWeight": 102.5, "targetReps": "3" }
+              ]
+            }
+          ],
+          "status": "pending"
+        },
+        {
+          "dayNumber": 4,
+          "dayOffset": 4,
+          "type": "upper",
+          "originalDate": "2026-08-07",
+          "scheduledDate": "2026-08-07",
+          "exercises": [
+            {
+              "id": "test-exercise-053",
+              "name": "卧推",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 70, "targetReps": "3" },
+                { "setNumber": 2, "targetWeight": 70, "targetReps": "3" }
+              ]
+            },
+            {
+              "id": "test-exercise-054",
+              "name": "哑铃划船",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            },
+            {
+              "id": "test-exercise-055",
+              "name": "坐姿哑铃推举",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            },
+            {
+              "id": "test-exercise-056",
+              "name": "负重引体向上",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            }
+          ],
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "weekNumber": 5,
+      "theme": "高强度力量训练",
+      "days": [
+        {
+          "dayNumber": 1,
+          "dayOffset": 0,
+          "type": "lower",
+          "originalDate": "2026-08-10",
+          "scheduledDate": "2026-08-10",
+          "exercises": [
+            {
+              "id": "test-exercise-057",
+              "name": "深蹲",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 97.5, "targetReps": "1-4", "isAMRAP": true }
+              ]
+            }
+          ],
+          "status": "pending"
+        },
+        {
+          "dayNumber": 2,
+          "dayOffset": 2,
+          "type": "upper",
+          "originalDate": "2026-08-12",
+          "scheduledDate": "2026-08-12",
+          "exercises": [
+            {
+              "id": "test-exercise-058",
+              "name": "卧推",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 75, "targetReps": "1-4", "isAMRAP": true }
+              ]
+            },
+            {
+              "id": "test-exercise-059",
+              "name": "哑铃划船",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            },
+            {
+              "id": "test-exercise-060",
+              "name": "坐姿哑铃推举",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            },
+            {
+              "id": "test-exercise-061",
+              "name": "负重引体向上",
+              "type": "assistance",
+              "sets": [
+                { "setNumber": 1, "targetReps": "8-12" },
+                { "setNumber": 2, "targetReps": "8-12" },
+                { "setNumber": 3, "targetReps": "8-12" }
+              ]
+            }
+          ],
+          "status": "pending"
+        },
+        {
+          "dayNumber": 3,
+          "dayOffset": 4,
+          "type": "lower",
+          "originalDate": "2026-08-14",
+          "scheduledDate": "2026-08-14",
+          "exercises": [
+            {
+              "id": "test-exercise-062",
+              "name": "硬拉",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 110, "targetReps": "1-4", "isAMRAP": true }
+              ]
+            }
+          ],
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "weekNumber": 6,
+      "theme": "测试/减载/跳过",
+      "days": [
+        {
+          "dayNumber": 1,
+          "dayOffset": 0,
+          "type": "lower",
+          "originalDate": "2026-08-17",
+          "scheduledDate": "2026-08-17",
+          "exercises": [
+            {
+              "id": "test-exercise-063",
+              "name": "深蹲",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 85, "targetReps": "3-5", "isAMRAP": true }
+              ],
+              "notes": "第6周 — 根据选择进行调整：测试1RM / 减载 / 跳过"
+            }
+          ],
+          "status": "pending"
+        },
+        {
+          "dayNumber": 2,
+          "dayOffset": 2,
+          "type": "upper",
+          "originalDate": "2026-08-19",
+          "scheduledDate": "2026-08-19",
+          "exercises": [
+            {
+              "id": "test-exercise-064",
+              "name": "卧推",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 72.5, "targetReps": "3-5", "isAMRAP": true }
+              ],
+              "notes": "第6周 — 根据选择进行调整：测试1RM / 减载 / 跳过"
+            }
+          ],
+          "status": "pending"
+        },
+        {
+          "dayNumber": 3,
+          "dayOffset": 4,
+          "type": "lower",
+          "originalDate": "2026-08-21",
+          "scheduledDate": "2026-08-21",
+          "exercises": [
+            {
+              "id": "test-exercise-065",
+              "name": "硬拉",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 102.5, "targetReps": "3-5", "isAMRAP": true }
+              ],
+              "notes": "第6周 — 根据选择进行调整：测试1RM / 减载 / 跳过"
+            }
+          ],
+          "status": "pending"
+        }
+      ]
+    }
+  ],
+  "pauseHistory": [],
+  "restartBranches": [],
+  "batchProcessHistory": [],
+  "isPaused": false,
+  "createdAt": "2026-07-13T00:00:00.000Z"
+}

@@ -1,0 +1,15 @@
+# 依赖
+node_modules/
+
+# 测试报告产物（保留目录结构与 .gitkeep）
+reports/*.html
+reports/*.json
+reports/ui-screenshots/*.png
+reports/storage-logs/*.log
+
+# 保留 .gitkeep 以维持目录结构
+!reports/.gitkeep
+!reports/**/.gitkeep
+
+# 保留 README.md 索引文件（SubTask 14.4）
+!reports/README.md

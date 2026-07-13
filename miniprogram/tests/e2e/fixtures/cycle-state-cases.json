@@ -1,0 +1,223 @@
+{
+  "$comment": "Test cases for cycle state machine transitions. Each case has: name, description, sequence (array of {action, input} executed in order starting from a fresh cycle), expectedFields (partial Cycle field snapshots — only key fields asserted, not full cycle), assertions (list of additional behavioral assertions). Placeholder conventions: '<iso-string>' = field must be a non-empty ISO datetime string; '<date-string>' = YYYY-MM-DD; '<uuid>' = non-empty id string; '<positive-int>' = positive integer; null = field absent/undefined. Based on Cycle/PauseRecord/RestartRecord/BatchProcessRecord interfaces in cycle.ts and activeCycle computed in cycleStore.ts (activeCycle returns null when status is 'terminated' or 'completed').",
+  "cases": [
+    {
+      "name": "a. create cycle — status active, activeCycle excludes terminated/completed",
+      "description": "Creating a new cycle sets status 'active' with empty histories; the cycle is reachable via activeCycle; activeCycle excludes any cycle whose status is 'terminated' or 'completed'.",
+      "sequence": [
+        { "action": "createCycle", "input": { "ref": "plan-input.json" } }
+      ],
+      "expectedFields": {
+        "status": "active",
+        "isPaused": false,
+        "pauseHistory": [],
+        "restartBranches": [],
+        "batchProcessHistory": [],
+        "currentPause": null,
+        "terminatedAt": null,
+        "terminateReason": null,
+        "week6Decision": null,
+        "completedAt": null
+      },
+      "assertions": [
+        "activeCycle !== null (cycle is the active cycle)",
+        "getCompletedCycles() does not include this cycle",
+        "activeCycle computed returns null when cycle.status === 'terminated' or 'completed' (cycleStore line: if (cycle.status === 'terminated' || cycle.status === 'completed') return null)"
+      ]
+    },
+    {
+      "name": "b. pause cycle (reason 'holiday') — status paused, currentPause set, pauseHistory +1",
+      "description": "Pausing an active cycle sets status 'paused', isPaused true, populates currentPause, and appends an entry to pauseHistory.",
+      "sequence": [
+        { "action": "createCycle", "input": { "ref": "plan-input.json" } },
+        { "action": "pauseCycle", "input": { "reason": "holiday", "pausedWeek": 1, "pausedDay": 3, "note": "假期外出", "estimatedDays": 5 } }
+      ],
+      "expectedFields": {
+        "status": "paused",
+        "isPaused": true,
+        "currentPause": {
+          "reason": "holiday",
+          "pausedWeek": 1,
+          "pausedDay": 3,
+          "daysShifted": 0,
+          "resumedAt": null,
+          "note": "假期外出"
+        },
+        "pauseHistory": [
+          {
+            "reason": "holiday",
+            "pausedWeek": 1,
+            "pausedDay": 3,
+            "resumedAt": null,
+            "note": "假期外出"
+          }
+        ]
+      },
+      "assertions": [
+        "pauseHistory.length === 1 (increased by 1)",
+        "currentPause.pausedAt is a non-null ISO datetime string",
+        "currentPause.id is a non-empty string",
+        "currentPause.daysShifted === 0 (not yet resumed)"
+      ]
+    },
+    {
+      "name": "c. resume cycle (option 'postpone') — status active, currentPause cleared, pauseHistory[0] finalized",
+      "description": "Resuming a paused cycle with 'postpone' option sets status back to 'active', clears currentPause, finalizes the pauseHistory entry with resumedAt/resumeOption/daysShifted, and shifts subsequent scheduled dates forward.",
+      "sequence": [
+        { "action": "createCycle", "input": { "ref": "plan-input.json" } },
+        { "action": "pauseCycle", "input": { "reason": "holiday", "pausedWeek": 1, "pausedDay": 3, "note": "假期外出", "estimatedDays": 5 } },
+        { "action": "resumeCycle", "input": { "resumeOption": "postpone" } }
+      ],
+      "expectedFields": {
+        "status": "active",
+        "isPaused": false,
+        "currentPause": null,
+        "pauseHistory": [
+          {
+            "reason": "holiday",
+            "resumeOption": "postpone",
+            "resumedAt": "<iso-string>",
+            "daysShifted": "<positive-int>"
+          }
+        ]
+      },
+      "assertions": [
+        "pauseHistory[0].resumedAt is a non-null ISO datetime string",
+        "pauseHistory[0].resumeOption === 'postpone'",
+        "pauseHistory[0].daysShifted > 0 (equals the pause duration in days)",
+        "scheduledDate of subsequent training days shifted forward by daysShifted days",
+        "calculateShiftedDates(startDate, pauseDuration, 'postpone').adjustedDays === pauseDuration"
+      ]
+    },
+    {
+      "name": "d. terminate cycle (reason 'injury') — status terminated, terminatedAt/terminateReason set",
+      "description": "Terminating a cycle sets status 'terminated', records terminatedAt and terminateReason; the cycle is no longer returned by activeCycle.",
+      "sequence": [
+        { "action": "createCycle", "input": { "ref": "plan-input.json" } },
+        { "action": "terminateCycle", "input": { "reason": "injury", "note": "手腕受伤" } }
+      ],
+      "expectedFields": {
+        "status": "terminated",
+        "isPaused": false,
+        "terminatedAt": "<iso-string>",
+        "terminateReason": "injury"
+      },
+      "assertions": [
+        "terminatedAt is a non-null ISO datetime string",
+        "terminateReason === 'injury'",
+        "activeCycle === null after termination (status is 'terminated')",
+        "cycle appears in getCompletedCycles() (returns status 'completed' or 'terminated')"
+      ]
+    },
+    {
+      "name": "e. restart cycle (fromWeek 3, fromDay 1) — restartBranches +1, new branch isActive",
+      "description": "Restarting a terminated cycle from a given week/day appends a RestartRecord to restartBranches with isActive true, preserving the original oneRM.",
+      "sequence": [
+        { "action": "createCycle", "input": { "ref": "plan-input.json" } },
+        { "action": "terminateCycle", "input": { "reason": "injury" } },
+        { "action": "restartCycle", "input": { "fromWeek": 3, "fromDay": 1 } }
+      ],
+      "expectedFields": {
+        "restartBranches": [
+          {
+            "fromWeek": 3,
+            "fromDay": 1,
+            "isActive": true,
+            "restartDate": "<date-string>",
+            "originalOneRM": { "squat": 100, "bench": 85, "deadlift": 120 }
+          }
+        ]
+      },
+      "assertions": [
+        "restartBranches.length === 1 (increased by 1)",
+        "restartBranches[0].fromWeek === 3",
+        "restartBranches[0].fromDay === 1",
+        "restartBranches[0].isActive === true",
+        "restartBranches[0].restartDate is a non-null date string",
+        "restartBranches[0].originalOneRM matches parent cycle oneRM",
+        "restartBranches[0].id is a non-empty string"
+      ]
+    },
+    {
+      "name": "f. markMissed (date range) — affected days skipped, batchProcessHistory +1",
+      "description": "Marking a date range as missed sets the status of affected training days to 'skipped' and appends a BatchProcessRecord (type 'missed_workouts') to batchProcessHistory. Week 1 day offsets are [0,1,3,4,5] from startDate 2026-07-13, so dates 2026-07-14 (day 2) and 2026-07-16 (day 3) are affected.",
+      "sequence": [
+        { "action": "createCycle", "input": { "ref": "plan-input.json" } },
+        { "action": "markMissed", "input": { "type": "missed_workouts", "dateRange": { "start": "2026-07-14", "end": "2026-07-16" } } }
+      ],
+      "expectedFields": {
+        "batchProcessHistory": [
+          {
+            "type": "missed_workouts",
+            "dateRange": { "start": "2026-07-14", "end": "2026-07-16" }
+          }
+        ],
+        "affectedDays": [
+          { "week": 1, "day": 2, "status": "skipped" },
+          { "week": 1, "day": 3, "status": "skipped" }
+        ]
+      },
+      "assertions": [
+        "batchProcessHistory.length === 1 (increased by 1)",
+        "batchProcessHistory[0].type === 'missed_workouts'",
+        "batchProcessHistory[0].dateRange.start === '2026-07-14'",
+        "batchProcessHistory[0].dateRange.end === '2026-07-16'",
+        "batchProcessHistory[0].affectedDays lists each affected {week, day, action}",
+        "batchProcessHistory[0].processedAt is a non-null ISO datetime string",
+        "TrainingDay.status === 'skipped' for week 1 day 2 (date 2026-07-14)",
+        "TrainingDay.status === 'skipped' for week 1 day 3 (date 2026-07-16)",
+        "TrainingDay.status unchanged for days outside the date range"
+      ]
+    },
+    {
+      "name": "g. makeup missed day — day status makeup, WorkoutRecord status makeup",
+      "description": "Making up a previously-skipped training day changes TrainingDay.status from 'skipped' to 'makeup', reschedules it to a new date, and produces a WorkoutRecord with status 'makeup' and isRescheduled true.",
+      "sequence": [
+        { "action": "createCycle", "input": { "ref": "plan-input.json" } },
+        { "action": "markMissed", "input": { "type": "missed_workouts", "dateRange": { "start": "2026-07-14", "end": "2026-07-16" } } },
+        { "action": "makeupDay", "input": { "week": 1, "day": 2, "newDate": "2026-07-15" } }
+      ],
+      "expectedFields": {
+        "trainingDay": {
+          "week": 1,
+          "day": 2,
+          "status": "makeup",
+          "scheduledDate": "2026-07-15",
+          "originalDate": "2026-07-14"
+        },
+        "workoutRecord": {
+          "status": "makeup",
+          "isRescheduled": true,
+          "scheduledDate": "2026-07-15",
+          "originalDate": "2026-07-14"
+        }
+      },
+      "assertions": [
+        "TrainingDay.status changes from 'skipped' to 'makeup'",
+        "TrainingDay.scheduledDate === '2026-07-15' (rescheduled)",
+        "TrainingDay.originalDate remains '2026-07-14' (unchanged)",
+        "WorkoutRecord.status === 'makeup'",
+        "WorkoutRecord.isRescheduled === true",
+        "calculateWeeklyCompletion counts 'makeup' as completed (status === 'completed' || 'makeup')"
+      ]
+    },
+    {
+      "name": "h. week6 decision 'test_1rm' — week6Decision set, status transitions",
+      "description": "When the cycle reaches week 6 and the user chooses 'test_1rm', week6Decision is recorded and status transitions. Per the CycleStatus union ('active'|'paused'|'week6_pending'|'completed'|'terminated'), the expected terminal status after a test_1rm decision is 'completed'; some implementations may keep 'week6_pending' until the 1RM test result is recorded.",
+      "sequence": [
+        { "action": "createCycle", "input": { "ref": "plan-input.json" } },
+        { "action": "advanceToWeek6", "input": {} },
+        { "action": "week6Decision", "input": { "decision": "test_1rm" } }
+      ],
+      "expectedFields": {
+        "week6Decision": "test_1rm",
+        "status": "completed"
+      },
+      "assertions": [
+        "week6Decision === 'test_1rm'",
+        "status === 'completed' OR 'week6_pending' (per implementation; 'completed' if decision finalizes the cycle, 'week6_pending' if it defers until 1RM test results are recorded)",
+        "After status becomes 'completed', activeCycle === null and cycle appears in getCompletedCycles()"
+      ]
+    }
+  ]
+}
