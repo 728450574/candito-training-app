@@ -8,8 +8,9 @@
 // 通过模块级 cloudInitialized 标记控制；Task 22 在 wx.cloud.init() 后调用 setCloudInitialized(true)。
 
 import type { StorageAdapter } from './StorageAdapter'
+import { CLOUD_ENV, CLOUD_COLLECTION } from '../../config/cloud'
 
-const COLLECTION = 'app_data'
+const COLLECTION = CLOUD_COLLECTION
 
 /** CloudBase 是否已初始化（Task 22 调用 wx.cloud.init() 后置为 true） */
 let cloudInitialized = false
@@ -35,11 +36,11 @@ function getDb(): DB.Database {
   if (typeof wx === 'undefined' || typeof wx.cloud === 'undefined') {
     throw new Error('CloudBase 未初始化：当前小程序未支持云开发')
   }
-  // 惰性初始化：第一次调用时 init（不传 env，使用默认云环境）
+  // 惰性初始化：第一次调用时 init（使用 config/cloud.ts 中配置的 env）
   // 注意：wx.cloud.init 的错误是异步抛出的，try-catch 抓不住，
   // 真正的失败会在后续 db.collection().get() 时抛出，由调用方 catch
   if (!cloudInitialized) {
-    wx.cloud.init({ traceUser: true })
+    wx.cloud.init({ env: CLOUD_ENV, traceUser: true })
     cloudInitialized = true
   }
   return wx.cloud.database()

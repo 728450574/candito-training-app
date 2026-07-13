@@ -17,6 +17,7 @@ const bodyMetricStore_1 = require("../../stores/bodyMetricStore");
 const settingsStore_1 = require("../../stores/settingsStore");
 const storageManager_1 = require("../../utils/storage/storageManager");
 const CloudStorageAdapter_1 = require("../../utils/storage/CloudStorageAdapter");
+const cloud_1 = require("../../config/cloud");
 const exportService_1 = require("../../services/exportService");
 const dateService_1 = require("../../services/dateService");
 const LAST_BACKUP_KEY = 'candito_last_backup';
@@ -257,14 +258,14 @@ Page({
         if (typeof wx === 'undefined' || typeof wx.cloud === 'undefined') {
             throw new Error('当前小程序不支持云存储');
         }
-        // 惰性初始化（不传 env，使用默认云环境）
+        // 惰性初始化（使用 config/cloud.ts 中配置的 env）
         if (!(0, CloudStorageAdapter_1.isCloudInitialized)()) {
-            wx.cloud.init({ traceUser: true });
+            wx.cloud.init({ env: cloud_1.CLOUD_ENV, traceUser: true });
             (0, CloudStorageAdapter_1.setCloudInitialized)(true);
         }
         // count 查询测试数据库连通性（不需要实际有数据）
         const db = wx.cloud.database();
-        await db.collection('app_data').count();
+        await db.collection(cloud_1.CLOUD_COLLECTION).count();
     },
     // ── 周期入口 ──
     goCycle() {

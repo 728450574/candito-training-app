@@ -10,7 +10,9 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "typeRoots": ["../node_modules/@types", "../node_modules"],
     "types": ["miniprogram-api-typings"],
+    "ignoreDeprecations": "5.0",
     "outDir": ".",
     "rootDir": "."
   },
