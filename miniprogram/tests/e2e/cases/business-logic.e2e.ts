@@ -493,7 +493,8 @@ describe('业务逻辑 1:1 保真 E2E', () => {
     it('epley1RM 参考实现与 fixture 期望值一致（Node.js）', () => {
       for (const { weight, reps, expected } of statsInput.epley1RM) {
         const result = epley1RMRef(weight, reps)
-        expect(result).toBe(expected)
+        // 浮点比较用 toBeCloseTo（IEEE-754 精度差异，如 93.5 vs 93.50000000000001）
+        expect(result).toBeCloseTo(expected, 10)
       }
     })
 
@@ -501,7 +502,7 @@ describe('业务逻辑 1:1 保真 E2E', () => {
       expect(epley1RMRef(100, 0)).toBe(100)
       expect(epley1RMRef(100, -1)).toBe(100)
       expect(epley1RMRef(100, 1)).toBe(100)
-      expect(epley1RMRef(100, 5)).toBe(100 * (1 + 5 / 30))
+      expect(epley1RMRef(100, 5)).toBeCloseTo(100 * (1 + 5 / 30), 10)
     })
 
     it('ONE_RM_MULTIPLIERS 常量值为 {1:1.00, 2:1.03, 3:1.06, 4:1.09}', () => {

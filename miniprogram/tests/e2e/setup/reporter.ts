@@ -110,7 +110,9 @@ export default class CustomReporter implements Reporter {
       results: this.entries
     }
 
-    const reportsDir = path.resolve(__dirname, '..', 'reports')
+    // 注意：jest 以 ESM 方式加载 .ts reporter 时 __dirname 不可用，
+    // 改用 process.cwd()（test:e2e 脚本固定在 miniprogram/tests/e2e 目录运行）
+    const reportsDir = path.resolve(process.cwd(), 'reports')
     this.ensureDir(reportsDir)
 
     const jsonPath = path.join(reportsDir, 'last-run.json')
