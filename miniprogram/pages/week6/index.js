@@ -108,12 +108,13 @@ Page({
     },
     // 等价原 findBestSet：找出最大重量(并列时取更高次数)的完成组
     findBestSet(exerciseRecords) {
+        var _a, _b;
         let bestWeight = 0;
         let bestReps = 0;
         for (const ex of exerciseRecords) {
             for (const set of ex.sets) {
-                const w = set.actualWeight ?? 0;
-                const r = set.actualReps ?? 0;
+                const w = (_a = set.actualWeight) !== null && _a !== void 0 ? _a : 0;
+                const r = (_b = set.actualReps) !== null && _b !== void 0 ? _b : 0;
                 if (w > 0 && r > 0 && set.isCompleted) {
                     if (w > bestWeight || (w === bestWeight && r > bestReps)) {
                         bestWeight = w;

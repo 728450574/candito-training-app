@@ -61,7 +61,7 @@ class SettingsStore {
                 this.settings = { ...DEFAULT_SETTINGS, ...parsed };
             }
         }
-        catch {
+        catch (_a) {
             this.settings = { ...DEFAULT_SETTINGS };
         }
         this.notify();
@@ -75,7 +75,7 @@ class SettingsStore {
         try {
             await this.localAdapter.set(STORAGE_KEY, this.settings);
         }
-        catch {
+        catch (_a) {
             // storage full or unavailable — silently ignore
         }
     }

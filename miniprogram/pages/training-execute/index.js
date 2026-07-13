@@ -138,16 +138,19 @@ Page({
             id: ex.id,
             name: ex.name,
             type: ex.type,
-            sets: ex.sets.map((s) => ({
-                setNumber: s.setNumber,
-                targetWeight: s.targetWeight,
-                targetReps: s.targetReps,
-                isAMRAP: s.isAMRAP,
-                actualWeight: s.targetWeight ?? 0,
-                actualReps: parseInt(s.targetReps ?? '6', 10) || 0,
-                isCompleted: false,
-                isSkipped: false,
-            })),
+            sets: ex.sets.map((s) => {
+                var _a, _b;
+                return ({
+                    setNumber: s.setNumber,
+                    targetWeight: s.targetWeight,
+                    targetReps: s.targetReps,
+                    isAMRAP: s.isAMRAP,
+                    actualWeight: (_a = s.targetWeight) !== null && _a !== void 0 ? _a : 0,
+                    actualReps: parseInt((_b = s.targetReps) !== null && _b !== void 0 ? _b : '6', 10) || 0,
+                    isCompleted: false,
+                    isSkipped: false,
+                });
+            }),
         }));
         this._currentExerciseIndex = 0;
         this._currentSetIndex = 0;
@@ -232,7 +235,7 @@ Page({
     },
     startRest(duration) {
         this.clearRestInterval();
-        this._restSeconds = duration ?? this._defaultRestSeconds;
+        this._restSeconds = duration !== null && duration !== void 0 ? duration : this._defaultRestSeconds;
         if (this._restSeconds <= 0)
             return;
         this._restTotal = this._restSeconds;
@@ -280,11 +283,12 @@ Page({
         try {
             wx.setStorageSync(this._draftKey, JSON.stringify(data));
         }
-        catch {
+        catch (_a) {
             // quota exceeded
         }
     },
     loadDraft() {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
         if (!this._draftKey)
             return false;
         try {
@@ -300,14 +304,14 @@ Page({
             if (!Array.isArray(data.exercises))
                 return false;
             this._exercises = data.exercises;
-            this._currentExerciseIndex = data.currentExerciseIndex ?? 0;
-            this._currentSetIndex = data.currentSetIndex ?? 0;
-            this._inputWeight = data.inputWeight ?? 0;
-            this._inputReps = data.inputReps ?? 0;
-            this._startTime = data.startTime ?? new Date().toISOString();
-            this._mr10TotalReps = data.mr10TotalReps ?? 0;
-            this._mr10Calculated = data.mr10Calculated ?? false;
-            this._mr10LoadingWeight = data.mr10LoadingWeight ?? 0;
+            this._currentExerciseIndex = (_a = data.currentExerciseIndex) !== null && _a !== void 0 ? _a : 0;
+            this._currentSetIndex = (_b = data.currentSetIndex) !== null && _b !== void 0 ? _b : 0;
+            this._inputWeight = (_c = data.inputWeight) !== null && _c !== void 0 ? _c : 0;
+            this._inputReps = (_d = data.inputReps) !== null && _d !== void 0 ? _d : 0;
+            this._startTime = (_e = data.startTime) !== null && _e !== void 0 ? _e : new Date().toISOString();
+            this._mr10TotalReps = (_f = data.mr10TotalReps) !== null && _f !== void 0 ? _f : 0;
+            this._mr10Calculated = (_g = data.mr10Calculated) !== null && _g !== void 0 ? _g : false;
+            this._mr10LoadingWeight = (_h = data.mr10LoadingWeight) !== null && _h !== void 0 ? _h : 0;
             if (data.elapsedSeconds > 0) {
                 this._elapsedSeconds = data.elapsedSeconds;
             }
@@ -317,17 +321,17 @@ Page({
             }
             // 恢复休息计时器
             const wasResting = data.isResting === true;
-            const hadRestTime = (data.restSecondsLeft ?? 0) > 0;
+            const hadRestTime = ((_j = data.restSecondsLeft) !== null && _j !== void 0 ? _j : 0) > 0;
             if (wasResting || hadRestTime) {
                 const restDuration = data.defaultRestSeconds || 90;
-                const remaining = Math.max(0, (data.restSecondsLeft ?? restDuration) - secondsAway);
+                const remaining = Math.max(0, ((_k = data.restSecondsLeft) !== null && _k !== void 0 ? _k : restDuration) - secondsAway);
                 if (remaining > 0) {
                     this.startRest(remaining);
                 }
             }
             return true;
         }
-        catch {
+        catch (_l) {
             return false;
         }
     },
@@ -337,7 +341,7 @@ Page({
         try {
             wx.removeStorageSync(this._draftKey);
         }
-        catch {
+        catch (_a) {
             // ignore
         }
     },
@@ -464,6 +468,7 @@ Page({
         this.recomputeDisplay();
     },
     initInputsForCurrentSet() {
+        var _a;
         const currentExercise = this._exercises[this._currentExerciseIndex];
         if (!currentExercise)
             return;
@@ -478,7 +483,7 @@ Page({
             const lastCompleted = [...currentExercise.sets].reverse().find((s) => s.isCompleted && s.actualWeight > 0);
             this._inputWeight = lastCompleted ? lastCompleted.actualWeight : 0;
         }
-        const parsed = parseInt(currentSet.targetReps ?? '6', 10);
+        const parsed = parseInt((_a = currentSet.targetReps) !== null && _a !== void 0 ? _a : '6', 10);
         this._inputReps = isNaN(parsed) ? 6 : parsed;
         this.setData({
             inputWeightStr: String(this._inputWeight),
@@ -596,8 +601,9 @@ Page({
     },
     // ── 重新计算显示数据 ──
     recomputeDisplay() {
-        const currentExercise = this._exercises[this._currentExerciseIndex] ?? null;
-        const currentSet = currentExercise ? currentExercise.sets[this._currentSetIndex] ?? null : null;
+        var _a, _b, _c, _d, _e;
+        const currentExercise = (_a = this._exercises[this._currentExerciseIndex]) !== null && _a !== void 0 ? _a : null;
+        const currentSet = currentExercise ? (_b = currentExercise.sets[this._currentSetIndex]) !== null && _b !== void 0 ? _b : null : null;
         if (!currentExercise || !currentSet) {
             // 所有动作完成
             const allDone = this._exercises.length > 0 && this._exercises.every((ex) => ex.sets.every((s) => s.isCompleted));
@@ -617,7 +623,7 @@ Page({
         // 目标显示（仅主项）
         const showTarget = currentExercise.type === 'main';
         const targetWeightDisplay = currentSet.targetWeight != null ? String(currentSet.targetWeight) : '--';
-        const targetRepsDisplay = currentSet.isAMRAP ? 'AMRAP' : (currentSet.targetReps ?? '--') + '次';
+        const targetRepsDisplay = currentSet.isAMRAP ? 'AMRAP' : ((_c = currentSet.targetReps) !== null && _c !== void 0 ? _c : '--') + '次';
         // 组列表显示
         const setsDisplay = currentExercise.sets.map((s, idx) => {
             const isCurrent = idx === this._currentSetIndex && !s.isCompleted;
@@ -710,7 +716,7 @@ Page({
             nextExerciseTypeLabel = this.typeLabel(nextEx.type);
             nextExerciseBadgeStyle = this.typeBadgeStyle(nextEx.type);
             const totalSets = nextEx.sets.length;
-            const repsSample = nextEx.sets[0]?.targetReps ?? '';
+            const repsSample = (_e = (_d = nextEx.sets[0]) === null || _d === void 0 ? void 0 : _d.targetReps) !== null && _e !== void 0 ? _e : '';
             nextExerciseTargetRepsDisplay = `${repsSample} × ${totalSets}组`;
         }
         this.setData({
@@ -736,13 +742,14 @@ Page({
         this.recomputeRepDisplay();
     },
     recomputeRepDisplay() {
+        var _a, _b;
         const currentExercise = this._exercises[this._currentExerciseIndex];
-        const currentSet = currentExercise ? currentExercise.sets[this._currentSetIndex] ?? null : null;
+        const currentSet = currentExercise ? (_a = currentExercise.sets[this._currentSetIndex]) !== null && _a !== void 0 ? _a : null : null;
         if (!currentSet) {
             this.setData({ repOptionsDisplay: [] });
             return;
         }
-        const parsed = parseInt(currentSet.targetReps ?? '6', 10);
+        const parsed = parseInt((_b = currentSet.targetReps) !== null && _b !== void 0 ? _b : '6', 10);
         const center = isNaN(parsed) ? 6 : parsed;
         const options = [];
         for (let i = Math.max(1, center - 2); i <= center + 2; i++) {
@@ -755,6 +762,7 @@ Page({
         this.setData({ repOptionsDisplay });
     },
     recomputeNextDisplay() {
+        var _a, _b;
         // 下一动作预览（所有动作完成时清空）
         let nextExerciseName = '';
         let nextExerciseTypeLabel = '';
@@ -767,7 +775,7 @@ Page({
             nextExerciseTypeLabel = this.typeLabel(nextEx.type);
             nextExerciseBadgeStyle = this.typeBadgeStyle(nextEx.type);
             const totalSets = nextEx.sets.length;
-            const repsSample = nextEx.sets[0]?.targetReps ?? '';
+            const repsSample = (_b = (_a = nextEx.sets[0]) === null || _a === void 0 ? void 0 : _a.targetReps) !== null && _b !== void 0 ? _b : '';
             nextExerciseTargetRepsDisplay = `${repsSample} × ${totalSets}组`;
         }
         this.setData({

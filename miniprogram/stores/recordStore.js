@@ -48,7 +48,7 @@ class RecordStore {
             this.notify();
             return list;
         }
-        catch {
+        catch (_a) {
             this.recordsByCycle[cycleId] = [];
             this.notify();
             return [];
@@ -63,7 +63,7 @@ class RecordStore {
         try {
             await storageManager_1.storageManager.getActiveAdapter().set(this.storageKey(cycleId), records);
         }
-        catch {
+        catch (_a) {
             // storage full or unavailable
         }
     }
@@ -76,7 +76,7 @@ class RecordStore {
         try {
             // 懒加载：不预读，保持与原 H5 一致的行为
         }
-        catch {
+        catch (_a) {
             // 加载失败使用默认空状态
         }
     }
@@ -117,7 +117,7 @@ class RecordStore {
             const keys = await storageManager_1.storageManager.getActiveAdapter().list(STORAGE_PREFIX);
             return keys.map((k) => k.slice(STORAGE_PREFIX.length));
         }
-        catch {
+        catch (_a) {
             return [];
         }
     }

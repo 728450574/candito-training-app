@@ -4,13 +4,17 @@
     "target": "ES2018",
     "module": "CommonJS",
     "moduleResolution": "node",
-    "noEmit": true,
+    "noEmit": false,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["miniprogram-api-typings"]
+    "typeRoots": ["../node_modules/@types"],
+    "types": ["miniprogram-api-typings"],
+    "outDir": ".",
+    "rootDir": "."
   },
-  "include": ["miniprogram/**/*"]
+  "include": ["./**/*.ts"],
+  "exclude": ["./**/*.js"]
 }

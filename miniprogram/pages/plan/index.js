@@ -53,7 +53,7 @@ Page({
         }
         const currentWeekNumber = this.findCurrentWeekNumber(displayCycle);
         const currentWeek = displayCycle.weeks.find((w) => w.weekNumber === currentWeekNumber);
-        const currentWeekTheme = currentWeek?.theme || '';
+        const currentWeekTheme = (currentWeek === null || currentWeek === void 0 ? void 0 : currentWeek.theme) || '';
         const bannerLabel = cycleId ? '预览' : '当前';
         const currentWeekText = `第${displayCycle.weeks.length > 0 ? currentWeekNumber : '--'}周 · ${currentWeekTheme}`;
         // dots
@@ -83,7 +83,7 @@ Page({
         }
         // selectedWeek content
         const selectedWeekData = displayCycle.weeks.find((w) => w.weekNumber === this._selectedWeek) || null;
-        const selectedWeekTheme = selectedWeekData?.theme || '';
+        const selectedWeekTheme = (selectedWeekData === null || selectedWeekData === void 0 ? void 0 : selectedWeekData.theme) || '';
         const selectedWeekTitle = `第${this._selectedWeek}周 · ${selectedWeekTheme}`;
         let dayCards = [];
         if (selectedWeekData) {
@@ -110,7 +110,7 @@ Page({
             }
         }
         const firstIncomplete = cycle.weeks.find((w) => w.days.some((d) => d.status === 'pending' && d.type !== 'rest'));
-        return firstIncomplete?.weekNumber || 1;
+        return (firstIncomplete === null || firstIncomplete === void 0 ? void 0 : firstIncomplete.weekNumber) || 1;
     },
     weekCompleted(cycle, weekNumber) {
         const week = cycle.weeks.find((w) => w.weekNumber === weekNumber);
@@ -173,7 +173,7 @@ Page({
         const exercises = day.exercises.slice(0, 3).map((ex) => {
             const firstSet = ex.sets[0];
             let weightDisplay = '--';
-            if (firstSet?.targetWeight) {
+            if (firstSet === null || firstSet === void 0 ? void 0 : firstSet.targetWeight) {
                 weightDisplay = `${firstSet.targetWeight}kg`;
             }
             return { id: ex.id, name: ex.name, weightDisplay, nameStyle, weightStyle };

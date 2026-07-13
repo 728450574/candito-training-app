@@ -47,8 +47,9 @@ Page({
         this.refresh();
     },
     onUnload() {
-        this.unsubSettings?.();
-        this.unsubCycle?.();
+        var _a, _b;
+        (_a = this.unsubSettings) === null || _a === void 0 ? void 0 : _a.call(this);
+        (_b = this.unsubCycle) === null || _b === void 0 ? void 0 : _b.call(this);
     },
     refresh() {
         const settings = settingsStore_1.settingsStore.getSettings();
@@ -198,7 +199,7 @@ Page({
                 wx.cloud.init({ env: 'candito-prod', traceUser: true });
                 (0, CloudStorageAdapter_1.setCloudInitialized)(true);
             }
-            catch {
+            catch (_a) {
                 wx.showToast({ title: '云端存储不可用，请检查网络或稍后重试', icon: 'none' });
                 return;
             }

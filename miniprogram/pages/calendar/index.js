@@ -65,8 +65,9 @@ Page({
         void this.refresh();
     },
     onUnload() {
-        this.unsubCycle?.();
-        this.unsubRecord?.();
+        var _a, _b;
+        (_a = this.unsubCycle) === null || _a === void 0 ? void 0 : _a.call(this);
+        (_b = this.unsubRecord) === null || _b === void 0 ? void 0 : _b.call(this);
     },
     async refresh() {
         const activeCycle = cycleStore_1.cycleStore.getActiveCycle();

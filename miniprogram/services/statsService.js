@@ -20,11 +20,12 @@ function epley1RM(weight, reps) {
     return weight * (1 + reps / 30);
 }
 function calculateVolume(record) {
+    var _a, _b, _c;
     let total = 0;
     for (const exercise of record.exercises) {
         for (const set of exercise.sets) {
-            const w = set.actualWeight ?? set.targetWeight ?? 0;
-            const r = set.actualReps ?? 0;
+            const w = (_b = (_a = set.actualWeight) !== null && _a !== void 0 ? _a : set.targetWeight) !== null && _b !== void 0 ? _b : 0;
+            const r = (_c = set.actualReps) !== null && _c !== void 0 ? _c : 0;
             total += w * r;
         }
     }
@@ -56,11 +57,12 @@ function getAverageFeeling(records) {
     return Math.round((sum / records.length) * 10) / 10;
 }
 function get1rmTrend(cycles, records) {
+    var _a;
     const squat = [];
     const bench = [];
     const deadlift = [];
     for (const cycle of cycles) {
-        const cycleRecords = records[cycle.id] ?? [];
+        const cycleRecords = (_a = records[cycle.id]) !== null && _a !== void 0 ? _a : [];
         squat.push({
             cycleName: cycle.name,
             value: bestEstimated1RM(cycleRecords, '深蹲', cycle.oneRM.squat),

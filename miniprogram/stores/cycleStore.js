@@ -55,14 +55,14 @@ class CycleStore {
             const cycles = await storageManager_1.storageManager.getActiveAdapter().get(STORAGE_KEY);
             this.cycles = cycles ? cycles : [];
         }
-        catch {
+        catch (_a) {
             this.cycles = [];
         }
         try {
             const id = await storageManager_1.storageManager.getActiveAdapter().get(ACTIVE_KEY);
             this.activeCycleId = id ? id : null;
         }
-        catch {
+        catch (_b) {
             this.activeCycleId = null;
         }
         this.notify();
@@ -71,7 +71,7 @@ class CycleStore {
         try {
             await storageManager_1.storageManager.getActiveAdapter().set(STORAGE_KEY, this.cycles);
         }
-        catch {
+        catch (_a) {
             // storage full or unavailable
         }
         try {
@@ -82,7 +82,7 @@ class CycleStore {
                 await storageManager_1.storageManager.getActiveAdapter().remove(ACTIVE_KEY);
             }
         }
-        catch {
+        catch (_b) {
             // storage full or unavailable
         }
     }

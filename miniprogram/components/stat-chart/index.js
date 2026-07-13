@@ -1,3 +1,4 @@
+"use strict";
 // stat-chart 图表组件
 // 替代 H5 项目 ProgressStats.vue 的内联 SVG 图表
 // （1RM 跨周期趋势折线图 / 体重迷你折线图）
@@ -135,20 +136,24 @@ Component({
             });
         },
         draw(ctx, width, height) {
-            const series = this.data.series ?? [];
+            var _a, _b, _c;
+            const series = (_a = this.data.series) !== null && _a !== void 0 ? _a : [];
             if (series.length === 0)
                 return;
             // 解析每条 series 的颜色（处理 CSS 变量），归一化数据点
-            const resolved = series.map((s) => ({
-                name: s.name,
-                color: resolveColor(s.color),
-                points: (s.points ?? []).map((p) => ({
-                    label: p.label,
-                    value: Number(p.value) || 0,
-                })),
-            }));
+            const resolved = series.map((s) => {
+                var _a;
+                return ({
+                    name: s.name,
+                    color: resolveColor(s.color),
+                    points: ((_a = s.points) !== null && _a !== void 0 ? _a : []).map((p) => ({
+                        label: p.label,
+                        value: Number(p.value) || 0,
+                    })),
+                });
+            });
             // X 轴标签：优先用 categories，否则取首条 series 的 points.label
-            const categories = this.data.categories ?? [];
+            const categories = (_b = this.data.categories) !== null && _b !== void 0 ? _b : [];
             const firstPoints = resolved[0].points;
             const xLabels = categories.length > 0
                 ? categories.map((c) => String(c))
@@ -228,7 +233,7 @@ Component({
                         continue;
                     const x = xPos(i);
                     ctx.textAlign = i === 0 ? 'left' : i === count - 1 ? 'right' : 'center';
-                    ctx.fillText(xLabels[i] ?? '', x, padTop + chartH + 16);
+                    ctx.fillText((_c = xLabels[i]) !== null && _c !== void 0 ? _c : '', x, padTop + chartH + 16);
                 }
             }
             // ── 3 / 4 / 5. 逐系列绘制：折线 + 数据点 + 末点高亮与数值标签 ──

@@ -118,7 +118,7 @@ Page({
             }
         }
         const firstIncomplete = cycle.weeks.find((w) => w.days.some((d) => d.status === 'pending' && d.type !== 'rest'));
-        return firstIncomplete?.weekNumber || 6;
+        return (firstIncomplete === null || firstIncomplete === void 0 ? void 0 : firstIncomplete.weekNumber) || 6;
     },
     buildWeekTimeline(cycle) {
         const today = (0, dateService_1.getToday)();
@@ -206,7 +206,7 @@ Page({
         }
         if (cycle.status === 'terminated') {
             const lastWeek = [...cycle.weeks].reverse().find((w) => w.days.some((d) => d.status === 'completed'));
-            const weekNum = lastWeek?.weekNumber || 0;
+            const weekNum = (lastWeek === null || lastWeek === void 0 ? void 0 : lastWeek.weekNumber) || 0;
             const reason = cycle.terminateReason ? ` · ${cycle.terminateReason}` : '因伤终止';
             return `完成至第${weekNum}周${reason}`;
         }

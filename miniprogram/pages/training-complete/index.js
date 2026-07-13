@@ -54,10 +54,11 @@ Page({
         void this.loadRecord();
     },
     async loadRecord() {
+        var _a;
         const found = await recordStore_1.recordStore.getRecordForDay(this._cycleId, this._weekNum, this._dayNum);
         if (found) {
             this._record = found;
-            const bodyWeight = found.bodyWeight ?? null;
+            const bodyWeight = (_a = found.bodyWeight) !== null && _a !== void 0 ? _a : null;
             this.setData({
                 loading: false,
                 hasRecord: true,
@@ -174,14 +175,15 @@ Page({
     },
     // ── MR10 computed ──
     computeMR10() {
+        var _a, _b;
         const record = this._record;
         if (!record || record.mr10TotalReps == null) {
             this.setData({ showMR10: false, mr10Title: '', mr10Description: '' });
             return;
         }
         const mainExercise = record.exercises.find((ex) => ex.type === 'main');
-        const name = mainExercise?.name ?? '主项';
-        const reps = record.mr10TotalReps ?? 0;
+        const name = (_a = mainExercise === null || mainExercise === void 0 ? void 0 : mainExercise.name) !== null && _a !== void 0 ? _a : '主项';
+        const reps = (_b = record.mr10TotalReps) !== null && _b !== void 0 ? _b : 0;
         const mr10Title = `${name} MR10 完成 ${reps}次`;
         let sets;
         if (reps >= 10)
@@ -217,12 +219,13 @@ Page({
         return exercise.sets.filter((s) => s.isCompleted).length;
     },
     isBelowTarget(set) {
+        var _a, _b;
         if (!set.isCompleted)
             return false;
-        const targetNum = parseInt(set.targetReps ?? '', 10);
+        const targetNum = parseInt((_a = set.targetReps) !== null && _a !== void 0 ? _a : '', 10);
         if (isNaN(targetNum))
             return false;
-        return (set.actualReps ?? 0) < targetNum;
+        return ((_b = set.actualReps) !== null && _b !== void 0 ? _b : 0) < targetNum;
     },
     // ── 输入处理 ──
     onWeightInput(e) {
@@ -250,7 +253,7 @@ Page({
             ...record,
             notes: this.data.notes,
             feeling: this.data.feeling,
-            bodyWeight: bodyWeightVal ?? undefined,
+            bodyWeight: bodyWeightVal !== null && bodyWeightVal !== void 0 ? bodyWeightVal : undefined,
         };
         this._record = updatedRecord;
         // 等价 Vue：保存 body weight 到 bodyMetricStore

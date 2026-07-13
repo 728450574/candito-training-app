@@ -1,14 +1,14 @@
 {
   "miniprogramRoot": "miniprogram/",
   "compileType": "miniprogram",
-  "appid": "touristappid",
+  "appid": "wx7c401f374ce37bc7",
   "projectname": "candito-training-miniprogram",
   "description": "Candito 训练小程序 - 微信小程序原生工程",
   "setting": {
-    "es6": false,
-    "enhance": false,
+    "es6": true,
+    "enhance": true,
     "postcss": true,
-    "minified": false,
+    "minified": true,
     "urlCheck": false,
     "newFeature": true,
     "autoAudits": false,

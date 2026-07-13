@@ -78,6 +78,7 @@ Page({
         this.recomputeAll(record, dayData, cycle.unit);
     },
     recomputeAll(record, dayData, unit) {
+        var _a, _b;
         // ── Session header ──
         const displayDate = (0, dateService_1.formatDateFull)(record.date) + ' ' + (0, dateService_1.getWeekday)(record.date);
         const workoutTypeLabel = dayData.type === 'lower' ? '下肢训练' : '上肢训练';
@@ -87,9 +88,9 @@ Page({
         const bodyWeightDisplay = record.bodyWeight != null ? String(record.bodyWeight) : '';
         const cycleUnit = unit || 'kg';
         // ── Feeling ──
-        const f = record.feeling ?? 0;
+        const f = (_a = record.feeling) !== null && _a !== void 0 ? _a : 0;
         const feelingStars = '★'.repeat(f) + '☆'.repeat(5 - f);
-        const feelingLabel = FEELING_LABELS[record.feeling ?? 0] || '';
+        const feelingLabel = FEELING_LABELS[(_b = record.feeling) !== null && _b !== void 0 ? _b : 0] || '';
         // ── Notes ──
         const showNotes = !!(record.notes && record.notes.length > 0);
         const notesContent = record.notes || '';

@@ -15,7 +15,7 @@ class LocalStorageAdapter {
             }
             return raw;
         }
-        catch {
+        catch (_a) {
             return null;
         }
     }
@@ -23,7 +23,7 @@ class LocalStorageAdapter {
         try {
             wx.setStorageSync(key, value);
         }
-        catch {
+        catch (_a) {
             // storage full or unavailable — 静默忽略，与原 H5 行为一致
         }
     }
@@ -31,7 +31,7 @@ class LocalStorageAdapter {
         try {
             wx.removeStorageSync(key);
         }
-        catch {
+        catch (_a) {
             // 静默忽略
         }
     }
@@ -41,7 +41,7 @@ class LocalStorageAdapter {
             const keys = info.keys || [];
             return keys.filter((k) => k.startsWith(prefix));
         }
-        catch {
+        catch (_a) {
             return [];
         }
     }
@@ -54,7 +54,7 @@ class LocalStorageAdapter {
                 wx.removeStorageSync(k);
             }
         }
-        catch {
+        catch (_a) {
             // 静默忽略
         }
     }

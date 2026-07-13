@@ -35,7 +35,7 @@ class BodyMetricStore {
             const metrics = await storageManager_1.storageManager.getActiveAdapter().get(STORAGE_KEY);
             this.metrics = metrics ? metrics : [];
         }
-        catch {
+        catch (_a) {
             this.metrics = [];
         }
         this.notify();
@@ -44,7 +44,7 @@ class BodyMetricStore {
         try {
             await storageManager_1.storageManager.getActiveAdapter().set(STORAGE_KEY, this.metrics);
         }
-        catch {
+        catch (_a) {
             // storage full or unavailable
         }
     }

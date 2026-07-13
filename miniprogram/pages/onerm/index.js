@@ -40,17 +40,18 @@ Page({
         verticalPull: '负重引体向上',
     },
     onLoad() {
+        var _a, _b, _c, _d;
         const activeCycle = cycleStore_1.cycleStore.getActiveCycle();
         if (!activeCycle) {
             wx.switchTab({ url: '/pages/today/index' });
             return;
         }
         this._activeCycle = activeCycle;
-        this._rounding = activeCycle.weightRounding ?? 2.5;
+        this._rounding = (_a = activeCycle.weightRounding) !== null && _a !== void 0 ? _a : 2.5;
         this._oneRM = {
-            squat: activeCycle.oneRM.squat ?? 100,
-            bench: activeCycle.oneRM.bench ?? 85,
-            deadlift: activeCycle.oneRM.deadlift ?? 120,
+            squat: (_b = activeCycle.oneRM.squat) !== null && _b !== void 0 ? _b : 100,
+            bench: (_c = activeCycle.oneRM.bench) !== null && _c !== void 0 ? _c : 85,
+            deadlift: (_d = activeCycle.oneRM.deadlift) !== null && _d !== void 0 ? _d : 120,
         };
         this._assistanceCurrent = {
             horizontalPull: activeCycle.assistanceConfig.horizontalPull || '哑铃划船',

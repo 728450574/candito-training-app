@@ -55,11 +55,13 @@ Page({
         void this.refresh();
     },
     onUnload() {
-        this.unsubCycle?.();
-        this.unsubRecord?.();
-        this.unsubBodyMetric?.();
+        var _a, _b, _c;
+        (_a = this.unsubCycle) === null || _a === void 0 ? void 0 : _a.call(this);
+        (_b = this.unsubRecord) === null || _b === void 0 ? void 0 : _b.call(this);
+        (_c = this.unsubBodyMetric) === null || _c === void 0 ? void 0 : _c.call(this);
     },
     async refresh() {
+        var _a;
         const activeCycle = cycleStore_1.cycleStore.getActiveCycle();
         const completedCycles = cycleStore_1.cycleStore.getCompletedCycles();
         const allCycles = cycleStore_1.cycleStore.getCycles();
@@ -83,7 +85,7 @@ Page({
         // 汇总所有记录
         const allRecords = [];
         for (const c of relevantCycles) {
-            allRecords.push(...(recordsByCycle[c.id] ?? []));
+            allRecords.push(...((_a = recordsByCycle[c.id]) !== null && _a !== void 0 ? _a : []));
         }
         // 概览统计
         const totalSessions = allRecords.length;

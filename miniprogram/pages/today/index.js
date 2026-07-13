@@ -61,11 +61,13 @@ Page({
         void this.refresh();
     },
     onUnload() {
-        this.unsubCycle?.();
-        this.unsubRecord?.();
-        this.unsubSettings?.();
+        var _a, _b, _c;
+        (_a = this.unsubCycle) === null || _a === void 0 ? void 0 : _a.call(this);
+        (_b = this.unsubRecord) === null || _b === void 0 ? void 0 : _b.call(this);
+        (_c = this.unsubSettings) === null || _c === void 0 ? void 0 : _c.call(this);
     },
     async refresh() {
+        var _a, _b;
         const activeCycle = cycleStore_1.cycleStore.getActiveCycle();
         const settings = settingsStore_1.settingsStore.getSettings();
         if (!activeCycle) {
@@ -182,8 +184,8 @@ Page({
                 totalCompletedSets += ex.sets.filter((s) => s.isCompleted).length;
             }
             data.totalCompletedSets = totalCompletedSets;
-            data.durationMinutes = todayRecord.duration ?? 0;
-            const feeling = todayRecord.feeling ?? 0;
+            data.durationMinutes = (_a = todayRecord.duration) !== null && _a !== void 0 ? _a : 0;
+            const feeling = (_b = todayRecord.feeling) !== null && _b !== void 0 ? _b : 0;
             data.feelingStars = '★'.repeat(feeling) + '☆'.repeat(5 - feeling);
             const labels = ['', '很差', '较差', '一般', '不错', '很棒'];
             data.feelingLabel = labels[feeling] || '';

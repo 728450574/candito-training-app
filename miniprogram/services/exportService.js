@@ -180,7 +180,7 @@ async function importJSON(filePath) {
     try {
         parsed = JSON.parse(fileContent);
     }
-    catch {
+    catch (_a) {
         return { success: false, error: 'JSON 格式无效，无法解析' };
     }
     // 3. 验证数据结构

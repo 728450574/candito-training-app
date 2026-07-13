@@ -1,3 +1,4 @@
+"use strict";
 // exercise-card 训练动作卡片组件
 // 迁移自 TrainingDetail.vue 的主项/辅助项卡片
 // 接收 exercise 数据，内部计算徽章样式、目标显示、组状态、小计与容量
