@@ -1,8 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { UserSettings } from '@/types/settings'
-
-const STORAGE_KEY = 'candito_settings'
+import { getProvider } from '@/services/storage'
 
 const DEFAULT_SETTINGS: UserSettings = {
   defaultUnit: 'kg',
@@ -15,32 +14,23 @@ const DEFAULT_SETTINGS: UserSettings = {
 export const useSettingsStore = defineStore('settings', () => {
   const settings = ref<UserSettings>({ ...DEFAULT_SETTINGS })
 
-  function load(): void {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY)
-      if (raw) {
-        const parsed = JSON.parse(raw) as Partial<UserSettings>
-        settings.value = { ...DEFAULT_SETTINGS, ...parsed }
-      }
-    } catch {
-      settings.value = { ...DEFAULT_SETTINGS }
+  async function load(): Promise<void> {
+    const provider = getProvider()
+    const loaded = await provider.loadSettings()
+    if (loaded) {
+      settings.value = { ...DEFAULT_SETTINGS, ...loaded }
     }
   }
 
   function save(): void {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings.value))
-    } catch {
-      // storage full or unavailable — silently ignore
-    }
+    const provider = getProvider()
+    provider.saveSettings(settings.value)
   }
 
   function update(partial: Partial<UserSettings>): void {
     settings.value = { ...settings.value, ...partial }
     save()
   }
-
-  load()
 
   return { settings, update, load, save }
 })

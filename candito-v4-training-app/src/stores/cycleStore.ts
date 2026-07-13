@@ -1,9 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import type { Cycle } from '@/types/cycle'
-
-const STORAGE_KEY = 'candito_cycles'
-const ACTIVE_KEY = 'candito_active_cycle'
+import { getProvider } from '@/services/storage'
 
 export const useCycleStore = defineStore('cycle', () => {
   const cycles = ref<Cycle[]>([])
@@ -18,38 +16,16 @@ export const useCycleStore = defineStore('cycle', () => {
 
   const hasActiveCycle = computed(() => activeCycle.value !== null)
 
-  function load(): void {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY)
-      cycles.value = raw ? JSON.parse(raw) as Cycle[] : []
-    } catch {
-      cycles.value = []
-    }
-
-    try {
-      const raw = localStorage.getItem(ACTIVE_KEY)
-      activeCycleId.value = raw ? JSON.parse(raw) as string : null
-    } catch {
-      activeCycleId.value = null
-    }
+  async function load(): Promise<void> {
+    const provider = getProvider()
+    cycles.value = await provider.loadCycles()
+    activeCycleId.value = await provider.loadActiveCycleId()
   }
 
   function save(): void {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(cycles.value))
-    } catch {
-      // storage full or unavailable
-    }
-
-    try {
-      if (activeCycleId.value !== null) {
-        localStorage.setItem(ACTIVE_KEY, JSON.stringify(activeCycleId.value))
-      } else {
-        localStorage.removeItem(ACTIVE_KEY)
-      }
-    } catch {
-      // storage full or unavailable
-    }
+    const provider = getProvider()
+    provider.saveCycles(cycles.value)
+    provider.saveActiveCycleId(activeCycleId.value)
   }
 
   function addCycle(cycle: Cycle): void {
@@ -86,8 +62,6 @@ export const useCycleStore = defineStore('cycle', () => {
   function getCompletedCycles(): Cycle[] {
     return cycles.value.filter((c: Cycle) => c.status === 'completed' || c.status === 'terminated')
   }
-
-  load()
 
   return {
     cycles,

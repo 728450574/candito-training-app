@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
+import { getStorageMode, getCurrentMode } from '@/services/storage'
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -6,6 +7,12 @@ const router = createRouter({
     {
       path: '/',
       redirect: '/today'
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('@/views/AuthLogin.vue'),
+      meta: { showTabBar: false }
     },
     {
       path: '/start',
@@ -104,6 +111,17 @@ const router = createRouter({
       meta: { showTabBar: false }
     },
   ]
+})
+
+// 路由守卫：偏好云端但未登录时重定向到登录页
+router.beforeEach((to) => {
+  if (to.name === 'login') return true
+  const preferredMode = getStorageMode()
+  const actualMode = getCurrentMode()
+  if (preferredMode === 'cloud' && actualMode === 'local') {
+    return { name: 'login', query: { redirect: to.fullPath } }
+  }
+  return true
 })
 
 export default router

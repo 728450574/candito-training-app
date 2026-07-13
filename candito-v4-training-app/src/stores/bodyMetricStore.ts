@@ -1,27 +1,19 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { BodyMetric } from '@/types/bodyMetric'
-
-const STORAGE_KEY = 'candito_metrics'
+import { getProvider } from '@/services/storage'
 
 export const useBodyMetricStore = defineStore('bodyMetric', () => {
   const metrics = ref<BodyMetric[]>([])
 
-  function load(): void {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY)
-      metrics.value = raw ? JSON.parse(raw) as BodyMetric[] : []
-    } catch {
-      metrics.value = []
-    }
+  async function load(): Promise<void> {
+    const provider = getProvider()
+    metrics.value = await provider.loadMetrics()
   }
 
   function save(): void {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(metrics.value))
-    } catch {
-      // storage full or unavailable
-    }
+    const provider = getProvider()
+    provider.saveMetrics(metrics.value)
   }
 
   function addMetric(metric: BodyMetric): void {
@@ -49,8 +41,6 @@ export const useBodyMetricStore = defineStore('bodyMetric', () => {
     metrics.value = metrics.value.filter((m: BodyMetric) => m.id !== id)
     save()
   }
-
-  load()
 
   return { metrics, load, save, addMetric, getLatestMetric, getMetricsInRange, deleteMetric }
 })

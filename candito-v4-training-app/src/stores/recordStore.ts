@@ -1,54 +1,62 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { WorkoutRecord } from '@/types/record'
-
-const STORAGE_PREFIX = 'candito_records_'
+import { getProvider } from '@/services/storage'
 
 export const useRecordStore = defineStore('record', () => {
   const recordsByCycle = ref<Record<string, WorkoutRecord[]>>({})
+  const loadedCycleIds = new Set<string>()
 
-  function storageKey(cycleId: string): string {
-    return STORAGE_PREFIX + cycleId
+  /**
+   * 异步预加载所有周期记录到内存。
+   * 在应用启动时调用，之后所有同步读取方法从内存缓存获取。
+   */
+  async function loadAll(cycleIds: string[]): Promise<void> {
+    const provider = getProvider()
+    for (const cycleId of cycleIds) {
+      if (!loadedCycleIds.has(cycleId)) {
+        recordsByCycle.value[cycleId] = await provider.loadRecords(cycleId)
+        loadedCycleIds.add(cycleId)
+      }
+    }
+    // 加载孤儿记录（cycleId 不在已知列表中的记录）
+    const allCycleIds = await provider.loadAllRecordCycleIds()
+    for (const cycleId of allCycleIds) {
+      if (!loadedCycleIds.has(cycleId)) {
+        recordsByCycle.value[cycleId] = await provider.loadRecords(cycleId)
+        loadedCycleIds.add(cycleId)
+      }
+    }
   }
 
   function loadRecords(cycleId: string): WorkoutRecord[] {
-    try {
-      const raw = localStorage.getItem(storageKey(cycleId))
-      const records: WorkoutRecord[] = raw ? JSON.parse(raw) as WorkoutRecord[] : []
-      recordsByCycle.value[cycleId] = records
-      return records
-    } catch {
+    if (!loadedCycleIds.has(cycleId)) {
+      // 兜底：返回空数组（应在 loadAll 后调用）
       recordsByCycle.value[cycleId] = []
-      return []
+      loadedCycleIds.add(cycleId)
     }
+    return recordsByCycle.value[cycleId] ?? []
   }
 
   function saveRecords(cycleId: string): void {
+    const provider = getProvider()
     const records = recordsByCycle.value[cycleId]
-    if (!records) {
-      return
-    }
-    try {
-      localStorage.setItem(storageKey(cycleId), JSON.stringify(records))
-    } catch {
-      // storage full or unavailable
-    }
+    if (!records) return
+    provider.saveRecords(cycleId, records)
   }
 
   function addRecord(record: WorkoutRecord): void {
     const { cycleId } = record
     if (!recordsByCycle.value[cycleId]) {
-      recordsByCycle.value[cycleId] = loadRecords(cycleId)
+      recordsByCycle.value[cycleId] = []
+      loadedCycleIds.add(cycleId)
     }
     recordsByCycle.value[cycleId].push(record)
     saveRecords(cycleId)
   }
 
   function getRecordsForCycle(cycleId: string): WorkoutRecord[] {
-    if (!recordsByCycle.value[cycleId]) {
-      return loadRecords(cycleId)
-    }
-    return recordsByCycle.value[cycleId]
+    return loadRecords(cycleId)
   }
 
   function getRecordsForWeek(cycleId: string, weekNumber: number): WorkoutRecord[] {
@@ -60,18 +68,19 @@ export const useRecordStore = defineStore('record', () => {
   }
 
   function getCycleIds(): string[] {
-    const ids: string[] = []
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i)
-      if (key && key.startsWith(STORAGE_PREFIX)) {
-        ids.push(key.slice(STORAGE_PREFIX.length))
-      }
-    }
-    return ids
+    return Object.keys(recordsByCycle.value)
+  }
+
+  function removeRecordsForCycle(cycleId: string): void {
+    const provider = getProvider()
+    delete recordsByCycle.value[cycleId]
+    loadedCycleIds.delete(cycleId)
+    provider.removeAllRecordsForCycle(cycleId)
   }
 
   return {
     recordsByCycle,
+    loadAll,
     loadRecords,
     saveRecords,
     addRecord,
@@ -79,5 +88,6 @@ export const useRecordStore = defineStore('record', () => {
     getRecordsForWeek,
     getRecordForDay,
     getCycleIds,
+    removeRecordsForCycle,
   }
 })
