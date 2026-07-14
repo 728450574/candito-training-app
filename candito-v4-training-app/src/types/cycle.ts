@@ -74,6 +74,7 @@ export interface Cycle {
   actualStartDate?: string
   status: CycleStatus
   week6Decision?: Week6Decision
+  estimated1RM?: { squat: number; bench: number; deadlift: number }
   oneRM: { squat: number; bench: number; deadlift: number }
   unit: 'kg' | 'lb'
   weightRounding: number

@@ -2,10 +2,9 @@
   "version": 1,
   "skills": {
     "cloudbase": {
-      "source": "tencentcloudbase/cloudbase-skills",
-      "sourceType": "github",
-      "skillPath": "skills/cloudbase/SKILL.md",
-      "computedHash": "682548a8d0a1005632c7c66a4dfb32430c0ab74cdabbe2b88841f9b155c83f94"
+      "source": "E:\\ideaworkspace\\candito-training-app\\.agents\\skills\\cloudbase",
+      "sourceType": "local",
+      "computedHash": "4f73bc378faf9441376ee3a984fd2f321f50ebf4b54fe1d087f102855f105524"
     }
   }
 }

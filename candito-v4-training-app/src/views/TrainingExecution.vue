@@ -532,8 +532,14 @@ const isWeek2Day3 = computed(() => weekNum.value === 2 && dayNum.value === 3)
 
 const repOptions = computed(() => {
   if (!currentSet.value) return [5, 6, 7, 8, 9]
-  const parsed = parseInt(currentSet.value.targetReps ?? '6', 10)
-  const center = isNaN(parsed) ? 6 : parsed
+  const repStr = currentSet.value.targetReps ?? '6'
+  let center: number
+  if (repStr === 'MR10') {
+    center = 10
+  } else {
+    const parsed = parseInt(repStr, 10)
+    center = isNaN(parsed) ? 6 : parsed
+  }
   const options: number[] = []
   for (let i = Math.max(1, center - 2); i <= center + 2; i++) {
     options.push(i)
@@ -929,6 +935,26 @@ function finishWorkout() {
     if (week5Done) {
       cycleStore.updateCycle(cycle.id, { weeks: updatedWeeks, status: 'week6_pending' })
       router.push({ name: 'week6', query: { cycleId: cycle.id } })
+      return
+    }
+  }
+
+  // Week 6 completion check — navigate to start new cycle
+  if (weekNum.value === 6) {
+    const week6 = updatedWeeks.find(w => w.weekNumber === 6)
+    const week6Done = week6 && week6.days.filter((d: TrainingDay) => d.type !== 'rest').every((d: TrainingDay) => d.status === 'completed')
+    if (week6Done) {
+      const decision = cycle.week6Decision
+      const estimated = cycle.estimated1RM
+      const query: Record<string, string> = {}
+      // 携带预估1RM跳转到创建页, 用户可在此基础上调整
+      if (estimated && (decision === 'deload' || decision === 'test_1rm')) {
+        if (estimated.squat) query.squat = String(estimated.squat)
+        if (estimated.bench) query.bench = String(estimated.bench)
+        if (estimated.deadlift) query.deadlift = String(estimated.deadlift)
+      }
+      cycleStore.updateCycle(cycle.id, { weeks: updatedWeeks, status: 'completed', completedAt: todayStr })
+      router.push({ name: 'start', query })
       return
     }
   }

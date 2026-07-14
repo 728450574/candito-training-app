@@ -215,7 +215,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { ChevronDown } from 'lucide-vue-next'
 import { createIcons, icons } from 'lucide'
 import { createCycle } from '@/services/planGenerator'
@@ -224,6 +224,7 @@ import { useSettingsStore } from '@/stores/settingsStore'
 import { getToday } from '@/services/dateService'
 
 const router = useRouter()
+const route = useRoute()
 const cycleStore = useCycleStore()
 const settingsStore = useSettingsStore()
 
@@ -236,9 +237,9 @@ const today = getToday()
 
 const unit = ref<'kg' | 'lb'>(settingsStore.settings.defaultUnit || 'kg')
 
-const squat = ref<number | null>(null)
-const bench = ref<number | null>(null)
-const deadlift = ref<number | null>(null)
+const squat = ref<number | null>(route.query.squat ? Number(route.query.squat) : null)
+const bench = ref<number | null>(route.query.bench ? Number(route.query.bench) : null)
+const deadlift = ref<number | null>(route.query.deadlift ? Number(route.query.deadlift) : null)
 
 const isSubmitting = ref(false)
 const showAssistance = ref(true)

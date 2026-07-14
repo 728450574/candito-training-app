@@ -54,23 +54,27 @@ function assistanceExercise(name: string, sets: PlannedSet[]): PlannedExercise {
   }
 }
 
-function buildAssistanceExercises(config: Cycle['assistanceConfig']): PlannedExercise[] {
+function buildAssistanceExercises(
+  config: Cycle['assistanceConfig'],
+  setsCount = 3,
+  repsList: string[] = ['8-12', '8-12', '8-12']
+): PlannedExercise[] {
   const result: PlannedExercise[] = []
-  const add = (name: string, setsCount: number, reps: string) => {
+  const add = (name: string) => {
     const sets = Array.from({ length: setsCount }, (_, i) => ({
       setNumber: i + 1,
-      targetReps: reps,
+      targetReps: repsList[i] ?? repsList[repsList.length - 1],
     }))
     result.push(assistanceExercise(name, sets))
   }
-  add(config.horizontalPull, 3, '8-12')
-  add(config.shoulder, 3, '8-12')
-  add(config.verticalPull, 3, '8-12')
+  add(config.horizontalPull)
+  add(config.shoulder)
+  add(config.verticalPull)
   if (config.optional1) {
-    add(config.optional1, 3, '8-12')
+    add(config.optional1)
   }
   if (config.optional2) {
-    add(config.optional2, 3, '8-12')
+    add(config.optional2)
   }
   return result
 }
@@ -89,11 +93,12 @@ function buildWeek1Days(oneRM: OneRM, rounding: number, assistance: Cycle['assis
 
     if (dayType === 'lower') {
       if (i === 0) {
+        // W1D1: 深蹲4组 80%×6 + 硬拉2组 75%×6 + 辅助4组 [12,12,10,8]
         exercises.push({
           id: uuidv4(),
           name: '深蹲',
           type: 'main',
-          sets: mainSets(2, pct(oneRM.squat, 80, rounding), '6'),
+          sets: mainSets(4, pct(oneRM.squat, 80, rounding), '6'),
         })
         exercises.push({
           id: uuidv4(),
@@ -101,12 +106,14 @@ function buildWeek1Days(oneRM: OneRM, rounding: number, assistance: Cycle['assis
           type: 'main',
           sets: mainSets(2, pct(oneRM.deadlift, 75, rounding), '6'),
         })
+        exercises.push(...buildAssistanceExercises(assistance, 4, ['12', '12', '10', '8']))
       } else {
+        // W1D4: 深蹲4组 75%×8 + 硬拉2组 70%×8 + 辅助4组 [12,12,10,8]
         exercises.push({
           id: uuidv4(),
           name: '深蹲',
           type: 'main',
-          sets: mainSets(2, pct(oneRM.squat, 75, rounding), '8'),
+          sets: mainSets(4, pct(oneRM.squat, 75, rounding), '8'),
         })
         exercises.push({
           id: uuidv4(),
@@ -114,29 +121,32 @@ function buildWeek1Days(oneRM: OneRM, rounding: number, assistance: Cycle['assis
           type: 'main',
           sets: mainSets(2, pct(oneRM.deadlift, 70, rounding), '8'),
         })
+        exercises.push(...buildAssistanceExercises(assistance, 4, ['12', '12', '10', '8']))
       }
     } else {
       if (i === 1 || i === 2) {
+        // W1D2, W1D3: 卧推 50%/67.5%/75%/77.5% + 辅助 3组8-12
         exercises.push({
           id: uuidv4(),
           name: '卧推',
           type: 'main',
           sets: [
-            mainSet(1, pct(oneRM.bench, 45, rounding), '10'),
-            mainSet(2, pct(oneRM.bench, 60, rounding), '10'),
-            mainSet(3, pct(oneRM.bench, 67.5, rounding), '8'),
-            mainSet(4, pct(oneRM.bench, 70, rounding), '6'),
+            mainSet(1, pct(oneRM.bench, 50, rounding), '10'),
+            mainSet(2, pct(oneRM.bench, 67.5, rounding), '10'),
+            mainSet(3, pct(oneRM.bench, 75, rounding), '8'),
+            mainSet(4, pct(oneRM.bench, 77.5, rounding), '6'),
           ],
         })
         exercises.push(...buildAssistanceExercises(assistance))
       } else {
+        // W1D5: 卧推 AMRAP 80% MR + 辅助4组 [12,12,10,8]
         exercises.push({
           id: uuidv4(),
           name: '卧推',
           type: 'main',
-          sets: [amrapSet(1, pct(oneRM.bench, 75, rounding), 'MR')],
+          sets: [amrapSet(1, pct(oneRM.bench, 80, rounding), 'MR')],
         })
-        exercises.push(...buildAssistanceExercises(assistance))
+        exercises.push(...buildAssistanceExercises(assistance, 4, ['12', '12', '10', '8']))
       }
     }
 
@@ -158,7 +168,7 @@ function buildWeek2Days(oneRM: OneRM, rounding: number, assistance: Cycle['assis
 
     if (dayType === 'lower') {
       if (i === 0) {
-        // Day 1: 深蹲 MR10 (80%) + 硬拉变式
+        // W2D1: 深蹲 MR10 80% + 硬拉变式 3组 70%×8
         exercises.push({
           id: uuidv4(),
           name: '深蹲',
@@ -172,7 +182,7 @@ function buildWeek2Days(oneRM: OneRM, rounding: number, assistance: Cycle['assis
           sets: mainSets(3, pct(oneRM.deadlift, 70, rounding), '8'),
         })
       } else {
-        // Day 3: 深蹲 MR10 (82.5%) + 硬拉变式
+        // W2D3: 深蹲 MR10 82.5% + 硬拉变式 3组 70%×8
         exercises.push({
           id: uuidv4(),
           name: '深蹲',
@@ -195,23 +205,29 @@ function buildWeek2Days(oneRM: OneRM, rounding: number, assistance: Cycle['assis
       }
     } else {
       if (i === 4) {
-        // Day 5: 卧推 MR
+        // W2D5: 卧推 AMRAP 80% MR + 辅助4组 [12,12,10,8]
         exercises.push({
           id: uuidv4(),
           name: '卧推',
           type: 'main',
-          sets: [amrapSet(1, pct(oneRM.bench, 75, rounding), 'MR')],
+          sets: [amrapSet(1, pct(oneRM.bench, 80, rounding), 'MR')],
         })
-        exercises.push(...buildAssistanceExercises(assistance))
+        exercises.push(...buildAssistanceExercises(assistance, 4, ['12', '12', '10', '8']))
       } else {
-        const benchWeight = i === 1 ? pct(oneRM.bench, 72.5, rounding) : pct(oneRM.bench, 70, rounding)
+        // W2D2, W2D4: 卧推 72.5%/77.5%/82.5% reps 10/8/6-8 + 辅助 3组 [10,8,8]
+        const benchPcts = [72.5, 77.5, 82.5]
+        const benchReps = ['10', '8', '6-8']
         exercises.push({
           id: uuidv4(),
           name: '卧推',
           type: 'main',
-          sets: mainSets(3, benchWeight, '8'),
+          sets: benchPcts.map((pctVal, idx) => ({
+            setNumber: idx + 1,
+            targetWeight: pct(oneRM.bench, pctVal, rounding),
+            targetReps: benchReps[idx],
+          })),
         })
-        exercises.push(...buildAssistanceExercises(assistance))
+        exercises.push(...buildAssistanceExercises(assistance, 3, ['10', '8', '8']))
       }
     }
 
@@ -233,54 +249,50 @@ function buildWeek3Days(oneRM: OneRM, rounding: number, assistance: Cycle['assis
 
     if (dayType === 'lower') {
       if (i === 0) {
+        // W3D1: 深蹲 2组 87.5%×3 + 硬拉 3组 87.5%×3
         exercises.push({
           id: uuidv4(),
           name: '深蹲',
           type: 'main',
-          sets: [
-            mainSet(1, pct(oneRM.squat, 87.5, rounding), '3'),
-            mainSet(2, pct(oneRM.squat, 90, rounding), '3'),
-          ],
+          sets: mainSets(2, pct(oneRM.squat, 87.5, rounding), '3'),
         })
         exercises.push({
           id: uuidv4(),
           name: '硬拉',
           type: 'main',
-          sets: mainSets(2, pct(oneRM.deadlift, 82.5, rounding), '3'),
+          sets: mainSets(3, pct(oneRM.deadlift, 87.5, rounding), '3'),
         })
       } else {
+        // W3D3: 深蹲 1组 90% 4-6个 + 硬拉 1组 90% 8个
         exercises.push({
           id: uuidv4(),
           name: '深蹲',
           type: 'main',
-          sets: mainSets(2, pct(oneRM.squat, 85, rounding), '3'),
+          sets: [mainSet(1, pct(oneRM.squat, 90, rounding), '4-6')],
         })
         exercises.push({
           id: uuidv4(),
           name: '硬拉',
           type: 'main',
-          sets: mainSets(2, pct(oneRM.deadlift, 80, rounding), '3'),
+          sets: [mainSet(1, pct(oneRM.deadlift, 90, rounding), '8')],
         })
       }
     } else {
-      const benchWeight1 = pct(oneRM.bench, 77.5, rounding)
-      const benchWeight2 = pct(oneRM.bench, 80, rounding)
       if (i === 1) {
+        // W3D2: 卧推 3组 85% 4-6个
         exercises.push({
           id: uuidv4(),
           name: '卧推',
           type: 'main',
-          sets: [
-            mainSet(1, benchWeight1, '4'),
-            mainSet(2, benchWeight2, '4'),
-          ],
+          sets: mainSets(3, pct(oneRM.bench, 85, rounding), '4-6'),
         })
       } else {
+        // W3D4: 卧推 3组 87.5% 4-6个
         exercises.push({
           id: uuidv4(),
           name: '卧推',
           type: 'main',
-          sets: mainSets(3, pct(oneRM.bench, 75, rounding), '4'),
+          sets: mainSets(3, pct(oneRM.bench, 87.5, rounding), '4-6'),
         })
       }
       exercises.push(...buildAssistanceExercises(assistance))
@@ -304,12 +316,13 @@ function buildWeek4Days(oneRM: OneRM, rounding: number, assistance: Cycle['assis
 
     if (dayType === 'lower') {
       if (i === 0) {
+        // W4D1: 深蹲 87.5%/90%/92.5% 3组3个 + 硬拉 2组6个 (87.5%/90%)
         exercises.push({
           id: uuidv4(),
           name: '深蹲',
           type: 'main',
           sets: [
-            mainSet(1, pct(oneRM.squat, 85, rounding), '3'),
+            mainSet(1, pct(oneRM.squat, 87.5, rounding), '3'),
             mainSet(2, pct(oneRM.squat, 90, rounding), '3'),
             mainSet(3, pct(oneRM.squat, 92.5, rounding), '3'),
           ],
@@ -319,45 +332,59 @@ function buildWeek4Days(oneRM: OneRM, rounding: number, assistance: Cycle['assis
           name: '硬拉',
           type: 'main',
           sets: [
-            mainSet(1, pct(oneRM.deadlift, 87.5, rounding), '3'),
-            mainSet(2, pct(oneRM.deadlift, 90, rounding), '3'),
+            mainSet(1, pct(oneRM.deadlift, 87.5, rounding), '6'),
+            mainSet(2, pct(oneRM.deadlift, 90, rounding), '6'),
           ],
         })
       } else {
+        // W4D3: 深蹲 92.5%×3个 + 95%×1-2个, 硬拉 92.5%×3个 + 95%×1-2个
         exercises.push({
           id: uuidv4(),
           name: '深蹲',
           type: 'main',
-          sets: mainSets(2, pct(oneRM.squat, 87.5, rounding), '3'),
+          sets: [
+            mainSet(1, pct(oneRM.squat, 92.5, rounding), '3'),
+            mainSet(2, pct(oneRM.squat, 95, rounding), '1-2'),
+          ],
         })
         exercises.push({
           id: uuidv4(),
           name: '硬拉',
           type: 'main',
-          sets: mainSets(2, pct(oneRM.deadlift, 85, rounding), '3'),
+          sets: [
+            mainSet(1, pct(oneRM.deadlift, 92.5, rounding), '3'),
+            mainSet(2, pct(oneRM.deadlift, 95, rounding), '1-2'),
+          ],
         })
       }
     } else {
       if (i === 1) {
+        // W4D2: 卧推 82.5%/85%/90% 三组三个 + 辅助 4组 [12,12,10,8]
         exercises.push({
           id: uuidv4(),
           name: '卧推',
           type: 'main',
           sets: [
-            mainSet(1, pct(oneRM.bench, 80, rounding), '3'),
+            mainSet(1, pct(oneRM.bench, 82.5, rounding), '3'),
             mainSet(2, pct(oneRM.bench, 85, rounding), '3'),
-            mainSet(3, pct(oneRM.bench, 87.5, rounding), '3'),
+            mainSet(3, pct(oneRM.bench, 90, rounding), '3'),
           ],
         })
+        exercises.push(...buildAssistanceExercises(assistance, 4, ['12', '12', '10', '8']))
       } else {
+        // W4D4: 卧推 87.5%×3个 + 90%×2-4个 + 95%×1-2个 + 辅助 4组 [12,12,10,8]
         exercises.push({
           id: uuidv4(),
           name: '卧推',
           type: 'main',
-          sets: mainSets(2, pct(oneRM.bench, 82.5, rounding), '3'),
+          sets: [
+            mainSet(1, pct(oneRM.bench, 87.5, rounding), '3'),
+            mainSet(2, pct(oneRM.bench, 90, rounding), '2-4'),
+            mainSet(3, pct(oneRM.bench, 95, rounding), '1-2'),
+          ],
         })
+        exercises.push(...buildAssistanceExercises(assistance, 4, ['12', '12', '10', '8']))
       }
-      exercises.push(...buildAssistanceExercises(assistance))
     }
 
     return { dayNumber, dayOffset: offset, type: dayType, originalDate: date, scheduledDate: date, exercises, status: 'pending' }
@@ -378,28 +405,41 @@ function buildWeek5Days(oneRM: OneRM, rounding: number, assistance: Cycle['assis
 
     if (dayType === 'lower') {
       if (i === 0) {
+        // W5D1: 深蹲 AMRAP 97.5% 1-4 + 硬拉 67.5%×4 / 70%×4 / 72.5%×2
         exercises.push({
           id: uuidv4(),
           name: '深蹲',
           type: 'main',
           sets: [amrapSet(1, pct(oneRM.squat, 97.5, rounding), '1-4')],
         })
-      } else {
         exercises.push({
           id: uuidv4(),
           name: '硬拉',
           type: 'main',
-          sets: [amrapSet(1, pct(oneRM.deadlift, 92.5, rounding), '1-4')],
+          sets: [
+            mainSet(1, pct(oneRM.deadlift, 67.5, rounding), '4'),
+            mainSet(2, pct(oneRM.deadlift, 70, rounding), '4'),
+            mainSet(3, pct(oneRM.deadlift, 72.5, rounding), '2'),
+          ],
+        })
+      } else {
+        // W5D3: 硬拉 AMRAP 97.5% 1-4
+        exercises.push({
+          id: uuidv4(),
+          name: '硬拉',
+          type: 'main',
+          sets: [amrapSet(1, pct(oneRM.deadlift, 97.5, rounding), '1-4')],
         })
       }
     } else {
+      // W5D2: 卧推 AMRAP 97.5% 1-4 + 辅助 3组 [8,6,6]
       exercises.push({
         id: uuidv4(),
         name: '卧推',
         type: 'main',
-        sets: [amrapSet(1, pct(oneRM.bench, 87.5, rounding), '1-4')],
+        sets: [amrapSet(1, pct(oneRM.bench, 97.5, rounding), '1-4')],
       })
-      exercises.push(...buildAssistanceExercises(assistance))
+      exercises.push(...buildAssistanceExercises(assistance, 3, ['8', '6', '6']))
     }
 
     return { dayNumber, dayOffset: offset, type: dayType, originalDate: date, scheduledDate: date, exercises, status: 'pending' }
@@ -465,6 +505,144 @@ function buildWeek6Days(oneRM: OneRM, rounding: number, assistance: Cycle['assis
       status: 'pending',
     },
   ]
+}
+
+// ---------- 减载周 (重做第一周, 去掉最后一个上肢日) ----------
+
+export function buildDeloadWeek(oneRM: OneRM, rounding: number, assistance: Cycle['assistanceConfig'], startDate: string): TrainingDay[] {
+  // Week 1 的 D1~D4, 去掉 D5 (最后一个上肢日)
+  const offsets = [0, 1, 3, 4]
+  const types: Array<'lower' | 'upper'> = ['lower', 'upper', 'upper', 'lower']
+
+  return offsets.map((offset, i) => {
+    const date = addDays(startDate, offset)
+    const dayType = types[i]
+    const dayNumber = i + 1
+    const exercises: PlannedExercise[] = []
+
+    if (dayType === 'lower') {
+      if (i === 0) {
+        // D1: 深蹲4组 80%×6 + 硬拉2组 75%×6 + 辅助4组 [12,12,10,8]
+        exercises.push({
+          id: uuidv4(),
+          name: '深蹲',
+          type: 'main',
+          sets: mainSets(4, pct(oneRM.squat, 80, rounding), '6'),
+        })
+        exercises.push({
+          id: uuidv4(),
+          name: '硬拉',
+          type: 'main',
+          sets: mainSets(2, pct(oneRM.deadlift, 75, rounding), '6'),
+        })
+        exercises.push(...buildAssistanceExercises(assistance, 4, ['12', '12', '10', '8']))
+      } else {
+        // D4: 深蹲4组 75%×8 + 硬拉2组 70%×8 + 辅助4组 [12,12,10,8]
+        exercises.push({
+          id: uuidv4(),
+          name: '深蹲',
+          type: 'main',
+          sets: mainSets(4, pct(oneRM.squat, 75, rounding), '8'),
+        })
+        exercises.push({
+          id: uuidv4(),
+          name: '硬拉',
+          type: 'main',
+          sets: mainSets(2, pct(oneRM.deadlift, 70, rounding), '8'),
+        })
+        exercises.push(...buildAssistanceExercises(assistance, 4, ['12', '12', '10', '8']))
+      }
+    } else {
+      // D2, D3: 卧推 50%/67.5%/75%/77.5% + 辅助 3组8-12
+      exercises.push({
+        id: uuidv4(),
+        name: '卧推',
+        type: 'main',
+        sets: [
+          mainSet(1, pct(oneRM.bench, 50, rounding), '10'),
+          mainSet(2, pct(oneRM.bench, 67.5, rounding), '10'),
+          mainSet(3, pct(oneRM.bench, 75, rounding), '8'),
+          mainSet(4, pct(oneRM.bench, 77.5, rounding), '6'),
+        ],
+      })
+      exercises.push(...buildAssistanceExercises(assistance))
+    }
+
+    return { dayNumber, dayOffset: offset, type: dayType, originalDate: date, scheduledDate: date, exercises, status: 'pending' }
+  })
+}
+
+// ---------- 第6周 1RM 测试 ----------
+
+export function buildWeek6TestDays(oneRM: OneRM, rounding: number, _assistance: Cycle['assistanceConfig'], startDate: string): TrainingDay[] {
+  const offsets = [0, 2, 4]
+  const types: Array<'lower' | 'upper' | 'lower'> = ['lower', 'upper', 'lower']
+
+  return types.map((type, i) => {
+    const date = addDays(startDate, offsets[i])
+    const dayNumber = i + 1
+    const exercises: PlannedExercise[] = []
+
+    if (type === 'lower') {
+      if (i === 0) {
+        // Day 1: 深蹲测试 + 硬拉辅助
+        exercises.push({
+          id: uuidv4(),
+          name: '深蹲',
+          type: 'main',
+          sets: [
+            mainSet(1, pct(oneRM.squat, 60, rounding), '5'),
+            mainSet(2, pct(oneRM.squat, 75, rounding), '3'),
+            mainSet(3, pct(oneRM.squat, 85, rounding), '2'),
+            amrapSet(4, pct(oneRM.squat, 92.5, rounding), '1+'),
+          ],
+          notes: '测试极限重量和次数，记录结果用于计算新1RM',
+        })
+        exercises.push({
+          id: uuidv4(),
+          name: '硬拉',
+          type: 'main',
+          sets: [amrapSet(1, pct(oneRM.deadlift, 85, rounding), '3-5')],
+        })
+      } else {
+        // Day 3: 硬拉测试 + 深蹲辅助
+        exercises.push({
+          id: uuidv4(),
+          name: '硬拉',
+          type: 'main',
+          sets: [
+            mainSet(1, pct(oneRM.deadlift, 60, rounding), '5'),
+            mainSet(2, pct(oneRM.deadlift, 75, rounding), '3'),
+            mainSet(3, pct(oneRM.deadlift, 85, rounding), '2'),
+            amrapSet(4, pct(oneRM.deadlift, 92.5, rounding), '1+'),
+          ],
+          notes: '测试极限重量和次数，记录结果用于计算新1RM',
+        })
+        exercises.push({
+          id: uuidv4(),
+          name: '深蹲',
+          type: 'main',
+          sets: [amrapSet(1, pct(oneRM.squat, 85, rounding), '3-5')],
+        })
+      }
+    } else {
+      // Day 2: 卧推测试
+      exercises.push({
+        id: uuidv4(),
+        name: '卧推',
+        type: 'main',
+        sets: [
+          mainSet(1, pct(oneRM.bench, 60, rounding), '5'),
+          mainSet(2, pct(oneRM.bench, 75, rounding), '3'),
+          mainSet(3, pct(oneRM.bench, 85, rounding), '2'),
+          amrapSet(4, pct(oneRM.bench, 92.5, rounding), '1+'),
+        ],
+        notes: '测试极限重量和次数，记录结果用于计算新1RM',
+      })
+    }
+
+    return { dayNumber, dayOffset: offsets[i], type, originalDate: date, scheduledDate: date, exercises, status: 'pending' }
+  })
 }
 
 const WEEK_BUILDERS: Array<(oneRM: OneRM, rounding: number, assistance: Cycle['assistanceConfig'], startDate: string) => TrainingDay[]> = [

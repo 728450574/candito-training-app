@@ -156,6 +156,8 @@ import { ChevronLeft, Trophy, TrendingUp } from 'lucide-vue-next'
 import { useCycleStore } from '@/stores/cycleStore'
 import { useRecordStore } from '@/stores/recordStore'
 import { estimateNew1RM } from '@/services/statsService'
+import { buildDeloadWeek, buildWeek6TestDays } from '@/services/planGenerator'
+import { getToday } from '@/services/dateService'
 import type { WorkoutRecord, ExerciseRecord, SetRecord } from '@/types/record'
 import type { Week6Decision } from '@/types/cycle'
 
@@ -216,6 +218,14 @@ function getMultiplier(reps: number): number {
   }
   return parseFloat((1 + reps / 30).toFixed(2))
 }
+
+const estimated1RMMap = computed<Record<string, number>>(() => {
+  const map: Record<string, number> = {}
+  for (const item of liftData.value) {
+    map[item.key] = item.estimated1RM
+  }
+  return map
+})
 
 const liftData = computed<LiftDataItem[]>(() => {
   if (!activeCycle.value) return []
@@ -297,18 +307,60 @@ function handleDirectNewCycle(): void {
 
 function handleConfirm(): void {
   if (!activeCycle.value) return
-
-  cycleStore.updateCycle(activeCycle.value.id, {
-    week6Decision: selectedDecision.value,
-    status: 'completed',
-    completedAt: new Date().toISOString().split('T')[0],
-  })
+  const cycle = activeCycle.value
+  const today = getToday()
 
   if (selectedDecision.value === 'new_cycle') {
-    router.push({ name: 'start' })
+    // 直接开始新周期 — 标记完成，携带预估1RM跳转到创建页
+    const query: Record<string, string> = {}
+    for (const item of liftData.value) {
+      query[item.key] = String(item.estimated1RM)
+    }
+    cycleStore.updateCycle(cycle.id, {
+      week6Decision: 'new_cycle',
+      estimated1RM: {
+        squat: estimated1RMMap.value['squat'] ?? 0,
+        bench: estimated1RMMap.value['bench'] ?? 0,
+        deadlift: estimated1RMMap.value['deadlift'] ?? 0,
+      },
+      status: 'completed',
+      completedAt: today,
+    })
+    router.push({ name: 'start', query })
   } else if (selectedDecision.value === 'deload') {
+    // 减载周 — 替换第6周为减载内容，保存预估1RM到周期中，保持 active
+    const deloadDays = buildDeloadWeek(cycle.oneRM, cycle.weightRounding, cycle.assistanceConfig, today)
+    const updatedWeeks = cycle.weeks.map(w => {
+      if (w.weekNumber === 6) {
+        return { ...w, theme: '减载周', days: deloadDays }
+      }
+      return w
+    })
+    cycleStore.updateCycle(cycle.id, {
+      week6Decision: 'deload',
+      estimated1RM: {
+        squat: estimated1RMMap.value['squat'] ?? 0,
+        bench: estimated1RMMap.value['bench'] ?? 0,
+        deadlift: estimated1RMMap.value['deadlift'] ?? 0,
+      },
+      weeks: updatedWeeks,
+      status: 'active',
+    })
     router.push({ name: 'plan' })
   } else {
+    // 实测1RM — 替换第6周为测试内容，保持 active
+    const testDays = buildWeek6TestDays(cycle.oneRM, cycle.weightRounding, cycle.assistanceConfig, today)
+    const updatedWeeks = cycle.weeks.map(w => {
+      if (w.weekNumber === 6) {
+        return { ...w, theme: '实测1RM', days: testDays }
+      }
+      return w
+    })
+    cycleStore.updateCycle(cycle.id, {
+      week6Decision: 'test_1rm',
+      weeks: updatedWeeks,
+      status: 'active',
+    })
     router.push({ name: 'today' })
   }
 }
