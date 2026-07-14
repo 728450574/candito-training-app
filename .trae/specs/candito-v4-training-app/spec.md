@@ -246,6 +246,7 @@ interface WorkoutRecord {
   notes: string                                  // 训练笔记
   feeling: 1 | 2 | 3 | 4 | 5                     // 训练感受
   status: 'completed' | 'makeup'                 // 正常完成 or 补打卡
+  mr10TotalReps?: number                         // 第2周 MR10 完成的总次数
   wasPausedBefore?: boolean                      // 本次训练前是否经历暂停
   isRestartPoint?: boolean                       // 是否重新开始点
 }
