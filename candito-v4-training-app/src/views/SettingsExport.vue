@@ -100,6 +100,114 @@
     </section>
 
     <section class="px-4 mb-6">
+      <h2 class="typography-caption px-1 mb-1.5" style="text-transform: uppercase;">存储模式</h2>
+      <div class="rounded-[var(--radius-lg)] overflow-hidden" style="background: var(--color-surface); box-shadow: var(--shadow-card);">
+        <!-- 当前模式 -->
+        <div class="flex items-center justify-between px-4 py-3" style="border-bottom: 0.5px solid var(--color-border);">
+          <div class="min-w-0 flex-1 mr-3">
+            <span class="typography-body block truncate">当前模式</span>
+            <span class="typography-caption block truncate" :style="{ color: storageMode === 'cloud' ? 'var(--state-success)' : 'var(--color-primary-light)' }">
+              {{ storageMode === 'cloud' ? '云端同步' : '本地存储' }}
+            </span>
+          </div>
+          <i :data-lucide="storageMode === 'cloud' ? 'cloud' : 'hard-drive'" style="width: 18px; height: 18px; color: var(--color-primary-light);"></i>
+        </div>
+
+        <!-- 云端模式：显示用户信息 + 退出 -->
+        <template v-if="storageMode === 'cloud'">
+          <div class="flex items-center justify-between px-4 py-3" style="border-bottom: 0.5px solid var(--color-border);">
+            <div class="min-w-0 flex-1 mr-3">
+              <span class="typography-body block truncate">已登录</span>
+              <span class="typography-caption block truncate">{{ authUser?.username || authUser?.email || authUser?.uid || '未知用户' }}</span>
+            </div>
+            <span class="shrink-0" style="color: var(--state-error); font-size: var(--text-base); font-weight: var(--font-weight-medium); cursor: pointer;" @click="handleLogout">退出</span>
+          </div>
+          <div class="flex items-center justify-between px-4 py-3">
+            <div class="min-w-0 flex-1 mr-3">
+              <span class="typography-body block truncate">切换到本地存储</span>
+              <span class="typography-caption block truncate">数据将下载到本设备</span>
+            </div>
+            <span class="shrink-0" style="color: var(--color-training-main); font-size: var(--text-base); font-weight: var(--font-weight-medium); cursor: pointer;" @click="handleSwitchToLocal">切换</span>
+          </div>
+        </template>
+
+        <!-- 本地模式：切换到云端 -->
+        <template v-else>
+          <!-- CloudBase 配置（未配置时显示） -->
+          <template v-if="!isConfigured">
+            <div class="px-4 py-3" style="border-bottom: 0.5px solid var(--color-border);">
+              <span class="typography-body block mb-2">CloudBase 配置</span>
+              <input
+                v-model="cbConfig.env"
+                type="text"
+                placeholder="环境 ID (Env ID)"
+                class="w-full h-10 px-3 mb-2 rounded-[var(--radius-sm)] typography-caption"
+                style="background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-primary);"
+              />
+              <input
+                v-model="cbConfig.region"
+                type="text"
+                placeholder="区域 (如 ap-shanghai)"
+                class="w-full h-10 px-3 mb-2 rounded-[var(--radius-sm)] typography-caption"
+                style="background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-primary);"
+              />
+              <input
+                v-model="cbConfig.accessKey"
+                type="text"
+                placeholder="Publishable Key"
+                class="w-full h-10 px-3 mb-2 rounded-[var(--radius-sm)] typography-caption"
+                style="background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-primary);"
+              />
+              <button
+                @click="saveCloudBaseConfig"
+                class="w-full h-9 rounded-full text-xs font-medium"
+                style="background: var(--color-training-main); color: var(--color-surface);"
+              >
+                保存配置
+              </button>
+            </div>
+          </template>
+
+          <!-- 已配置但未登录 -->
+          <template v-else-if="!authUser">
+            <div class="flex items-center justify-between px-4 py-3">
+              <div class="min-w-0 flex-1 mr-3">
+                <span class="typography-body block truncate">登录 CloudBase</span>
+                <span class="typography-caption block truncate">登录后可同步到云端</span>
+              </div>
+              <span class="shrink-0" style="color: var(--color-training-main); font-size: var(--text-base); font-weight: var(--font-weight-medium); cursor: pointer;" @click="goLogin">前往登录</span>
+            </div>
+          </template>
+
+          <!-- 已配置且已登录：可切换 -->
+          <template v-else>
+            <div class="flex items-center justify-between px-4 py-3" style="border-bottom: 0.5px solid var(--color-border);">
+              <div class="min-w-0 flex-1 mr-3">
+                <span class="typography-body block truncate">已登录</span>
+                <span class="typography-caption block truncate">{{ authUser.username || authUser.email || authUser.uid }}</span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between px-4 py-3">
+              <div class="min-w-0 flex-1 mr-3">
+                <span class="typography-body block truncate">切换到云端同步</span>
+                <span class="typography-caption block truncate">数据将上传到云端</span>
+              </div>
+              <span class="shrink-0" style="color: var(--color-training-main); font-size: var(--text-base); font-weight: var(--font-weight-medium); cursor: pointer;" @click="handleSwitchToCloud">切换</span>
+            </div>
+          </template>
+
+          <!-- 切换确认提示 -->
+          <div v-if="switchError" class="px-4 py-3" style="border-top: 0.5px solid var(--color-border-light); background: var(--state-warning-bg);">
+            <p class="typography-caption" style="color: var(--state-warning);">{{ switchError }}</p>
+          </div>
+          <div v-if="switching" class="px-4 py-3" style="border-top: 0.5px solid var(--color-border-light);">
+            <p class="typography-caption" style="color: var(--color-primary-light);">正在迁移数据，请稍候...</p>
+          </div>
+        </template>
+      </div>
+    </section>
+
+    <section class="px-4 mb-6">
       <h2 class="typography-caption px-1 mb-1.5" style="text-transform: uppercase;">周期</h2>
       <div class="rounded-[var(--radius-lg)] overflow-hidden" style="background: var(--color-surface); box-shadow: var(--shadow-card);">
         <div class="flex items-center justify-between px-4 py-3" style="cursor: pointer;" @click="goCycle">
@@ -136,7 +244,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { createIcons, icons } from 'lucide'
 import { useSettingsStore } from '@/stores/settingsStore'
@@ -145,6 +253,10 @@ import { useRecordStore } from '@/stores/recordStore'
 import { useBodyMetricStore } from '@/stores/bodyMetricStore'
 import { exportJSON, exportCSV, importJSON } from '@/services/exportService'
 import { getToday, formatDateFull } from '@/services/dateService'
+import { useStorageMode } from '@/composables/useStorageMode'
+import { useAuth } from '@/composables/useAuth'
+import { getCloudBaseConfig, setCloudBaseConfig, isCloudBaseConfigured } from '@/services/cloudbaseConfig'
+import { resetCloudBase } from '@/services/cloudbase'
 import type { WorkoutRecord } from '@/types/record'
 
 const router = useRouter()
@@ -153,6 +265,13 @@ const settingsStore = useSettingsStore()
 const cycleStore = useCycleStore()
 const recordStore = useRecordStore()
 const bodyMetricStore = useBodyMetricStore()
+
+// 存储模式 + 认证
+const { storageMode, switching, switchError, enableCloud, enableLocal, reinitStorage, flush } = useStorageMode()
+const { user: authUser, checkAuthState, logout } = useAuth()
+
+const isConfigured = ref(isCloudBaseConfigured())
+const cbConfig = ref(getCloudBaseConfig())
 
 const fileInputRef = ref<HTMLInputElement | null>(null)
 const importConflict = ref<{ conflictType: string; conflictCount: number; data: any } | null>(null)
@@ -350,6 +469,53 @@ function goCycle() {
 function goOneRM() {
   router.push({ name: '1rm' })
 }
+
+// --- 存储模式切换 ---
+
+function saveCloudBaseConfig() {
+  setCloudBaseConfig(cbConfig.value)
+  resetCloudBase()
+  isConfigured.value = isCloudBaseConfigured()
+  void checkAuthState()
+}
+
+function goLogin() {
+  router.push({ name: 'login', query: { redirect: route.fullPath } })
+}
+
+async function handleSwitchToCloud() {
+  await flush()
+  const ok = await enableCloud()
+  if (ok) {
+    await reloadStores()
+  }
+}
+
+async function handleSwitchToLocal() {
+  await flush()
+  const ok = await enableLocal()
+  if (ok) {
+    await reloadStores()
+  }
+}
+
+async function handleLogout() {
+  await flush()
+  await logout()
+  await reinitStorage()
+  await reloadStores()
+}
+
+async function reloadStores() {
+  await cycleStore.load()
+  await recordStore.loadAll(cycleStore.cycles.map(c => c.id))
+  await bodyMetricStore.load()
+  await settingsStore.load()
+}
+
+onMounted(() => {
+  void checkAuthState()
+})
 
 watch(() => route.path, () => {
   setTimeout(() => {
