@@ -65,8 +65,8 @@ export async function getCurrentUser() {
   const auth = getAuth()
   if (!auth) return null
   try {
-    const { data } = await auth.getUser()
-    return data?.user ?? null
+    const res = await auth.getUser()
+    return (res as any)?.data ?? null
   } catch {
     return null
   }

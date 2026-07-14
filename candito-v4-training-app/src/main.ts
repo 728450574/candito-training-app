@@ -3,7 +3,7 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import './assets/theme.css'
-import { initStorage, flushStorage, getCurrentMode } from '@/services/storage'
+import { initStorage, flushStorage, getCurrentMode, getProvider } from '@/services/storage'
 import { useCycleStore } from '@/stores/cycleStore'
 import { useRecordStore } from '@/stores/recordStore'
 import { useBodyMetricStore } from '@/stores/bodyMetricStore'
@@ -34,15 +34,26 @@ async function bootstrap(): Promise<void> {
     console.error('数据加载失败，以空状态启动应用:', err)
   }
 
-  // 3. 页面关闭/隐藏时 flush 云端写入队列，防止数据丢失
-  window.addEventListener('beforeunload', () => {
+  // 3. 页面关闭/隐藏时 flush 云端写入队列并同步备份到 localStorage
+  function syncBackupBeforeUnload(): void {
     if (getCurrentMode() === 'cloud') {
+      const provider = getProvider()
+      if (provider && provider.syncBackup) {
+        const cs = useCycleStore()
+        const rs = useRecordStore()
+        const bms = useBodyMetricStore()
+        const ss = useSettingsStore()
+        provider.syncBackup(cs.cycles, cs.activeCycleId, rs.recordsByCycle, bms.metrics, ss.settings)
+      }
       void flushStorage()
     }
+  }
+  window.addEventListener('beforeunload', () => {
+    syncBackupBeforeUnload()
   })
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden' && getCurrentMode() === 'cloud') {
-      void flushStorage()
+    if (document.visibilityState === 'hidden') {
+      syncBackupBeforeUnload()
     }
   })
 

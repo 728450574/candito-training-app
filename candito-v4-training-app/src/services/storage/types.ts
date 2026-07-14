@@ -9,6 +9,7 @@ export interface StorageProvider {
   readonly mode: StorageMode
   init(): Promise<void>
   flush(): Promise<void>
+  syncBackup?(cycles: Cycle[], activeCycleId: string | null, recordsByCycle: Record<string, WorkoutRecord[]>, metrics: BodyMetric[], settings: UserSettings): void
   loadCycles(): Promise<Cycle[]>
   saveCycles(cycles: Cycle[]): void
   loadActiveCycleId(): Promise<string | null>

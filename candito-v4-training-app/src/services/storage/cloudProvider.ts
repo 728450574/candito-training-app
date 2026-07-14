@@ -17,6 +17,9 @@ import { getDb, isAuthenticated } from '@/services/cloudbase'
  * 安全规则：PRIVATE（用户只能读写自己的数据，_openid 自动注入）
  *
  * save 方法为 sync 接口，内部使用写队列 + debounce 异步同步到云端。
+ *
+ * 容错机制：每次保存时同时写入 localStorage 备份，加载时若云端为空则从备份恢复。
+ * 防止因云端写入未 flush、网络故障等导致数据丢失。
  */
 
 const COLLECTIONS = {
@@ -28,7 +31,31 @@ const COLLECTIONS = {
 
 const USER_STATE_DOC = 'state'
 
+// localStorage 备份 key（与 LocalStorageProvider 保持一致）
+const BACKUP_CYCLES_KEY = 'candito_cycles'
+const BACKUP_ACTIVE_KEY = 'candito_active_cycle'
+const BACKUP_RECORDS_PREFIX = 'candito_records_'
+const BACKUP_METRICS_KEY = 'candito_metrics'
+const BACKUP_SETTINGS_KEY = 'candito_settings'
+
 type WriteFn = () => Promise<void>
+
+function writeBackup(key: string, value: unknown): void {
+  try {
+    localStorage.setItem(key, JSON.stringify(value))
+  } catch {
+    // storage full or unavailable
+  }
+}
+
+function readBackup<T>(key: string): T | null {
+  try {
+    const raw = localStorage.getItem(key)
+    return raw ? (JSON.parse(raw) as T) : null
+  } catch {
+    return null
+  }
+}
 
 export class CloudBaseProvider implements StorageProvider {
   readonly mode = 'cloud' as const
@@ -57,6 +84,19 @@ export class CloudBaseProvider implements StorageProvider {
     await Promise.allSettled(writes.map(fn => fn()))
   }
 
+  /** 同步写入 localStorage 备份（用于页面关闭前快速保存） */
+  syncBackup(cycles: Cycle[], activeCycleId: string | null, recordsByCycle: Record<string, WorkoutRecord[]>, metrics: BodyMetric[], settings: UserSettings): void {
+    writeBackup(BACKUP_CYCLES_KEY, cycles)
+    if (activeCycleId !== null) {
+      writeBackup(BACKUP_ACTIVE_KEY, activeCycleId)
+    }
+    for (const [cycleId, records] of Object.entries(recordsByCycle)) {
+      writeBackup(BACKUP_RECORDS_PREFIX + cycleId, records)
+    }
+    writeBackup(BACKUP_METRICS_KEY, metrics)
+    writeBackup(BACKUP_SETTINGS_KEY, settings)
+  }
+
   private queueWrite(key: string, fn: WriteFn): void {
     this.writeQueue.set(key, fn)
     this.scheduleFlush()
@@ -77,10 +117,19 @@ export class CloudBaseProvider implements StorageProvider {
       const result = await db.collection(COLLECTIONS.cycles).get()
       const cycles = (result.data || []) as unknown as Cycle[]
       this.cachedCycleIds = new Set(cycles.map(c => c.id))
+      if (cycles.length > 0) {
+        writeBackup(BACKUP_CYCLES_KEY, cycles)
+      } else {
+        const backup = readBackup<Cycle[]>(BACKUP_CYCLES_KEY)
+        if (backup && backup.length > 0) {
+          return backup
+        }
+      }
       return cycles
     } catch (err) {
-      console.error('加载周期失败:', err)
-      return []
+      console.error('加载周期失败，尝试从备份恢复:', err)
+      const backup = readBackup<Cycle[]>(BACKUP_CYCLES_KEY)
+      return backup ?? []
     }
   }
 
@@ -111,6 +160,7 @@ export class CloudBaseProvider implements StorageProvider {
       }
 
       this.cachedCycleIds = newIds
+      writeBackup(BACKUP_CYCLES_KEY, cycles)
     })
   }
 
@@ -121,9 +171,16 @@ export class CloudBaseProvider implements StorageProvider {
     try {
       const result = await db.collection(COLLECTIONS.userState).doc(USER_STATE_DOC).get()
       const data = result.data as { activeCycleId?: string } | null
-      return data?.activeCycleId ?? null
+      const id = data?.activeCycleId ?? null
+      if (id) {
+        writeBackup(BACKUP_ACTIVE_KEY, id)
+      } else {
+        const backup = readBackup<string>(BACKUP_ACTIVE_KEY)
+        if (backup) return backup
+      }
+      return id
     } catch {
-      return null
+      return readBackup<string>(BACKUP_ACTIVE_KEY)
     }
   }
 
@@ -134,6 +191,15 @@ export class CloudBaseProvider implements StorageProvider {
       await db.collection(COLLECTIONS.userState).doc(USER_STATE_DOC).set({
         activeCycleId: id ?? '',
       })
+      if (id !== null) {
+        writeBackup(BACKUP_ACTIVE_KEY, id)
+      } else {
+        try {
+          localStorage.removeItem(BACKUP_ACTIVE_KEY)
+        } catch {
+          // ignore
+        }
+      }
     })
   }
 
@@ -146,10 +212,19 @@ export class CloudBaseProvider implements StorageProvider {
         .where({ cycleId })
         .get()
       const records = (result.data || []) as unknown as WorkoutRecord[]
+      if (records.length > 0) {
+        writeBackup(BACKUP_RECORDS_PREFIX + cycleId, records)
+      } else {
+        const backup = readBackup<WorkoutRecord[]>(BACKUP_RECORDS_PREFIX + cycleId)
+        if (backup && backup.length > 0) {
+          return backup
+        }
+      }
       return records
     } catch (err) {
-      console.error('加载训练记录失败:', err)
-      return []
+      console.error('加载训练记录失败，尝试从备份恢复:', err)
+      const backup = readBackup<WorkoutRecord[]>(BACKUP_RECORDS_PREFIX + cycleId)
+      return backup ?? []
     }
   }
 
@@ -159,7 +234,6 @@ export class CloudBaseProvider implements StorageProvider {
       if (!db) return
       const collection = db.collection(COLLECTIONS.records)
 
-      // 查询云端已有的该周期记录 ID
       let existingIds = new Set<string>()
       try {
         const result = await collection.where({ cycleId }).get()
@@ -168,7 +242,6 @@ export class CloudBaseProvider implements StorageProvider {
         console.error('查询云端记录失败:', err)
       }
 
-      // Upsert：逐条写入（deep clone 确保嵌套数据序列化正确）
       const newIds = new Set<string>()
       for (const record of records) {
         newIds.add(record.id)
@@ -180,7 +253,6 @@ export class CloudBaseProvider implements StorageProvider {
         }
       }
 
-      // 删除云端有但本地没有的记录
       for (const oldId of existingIds) {
         if (!newIds.has(oldId)) {
           try {
@@ -190,6 +262,8 @@ export class CloudBaseProvider implements StorageProvider {
           }
         }
       }
+
+      writeBackup(BACKUP_RECORDS_PREFIX + cycleId, records)
     })
   }
 
@@ -216,6 +290,11 @@ export class CloudBaseProvider implements StorageProvider {
       } catch (err) {
         console.error('删除周期记录失败:', err)
       }
+      try {
+        localStorage.removeItem(BACKUP_RECORDS_PREFIX + cycleId)
+      } catch {
+        // ignore
+      }
     })
   }
 
@@ -227,10 +306,19 @@ export class CloudBaseProvider implements StorageProvider {
       const result = await db.collection(COLLECTIONS.metrics).get()
       const metrics = (result.data || []) as unknown as BodyMetric[]
       this.cachedMetricIds = new Set(metrics.map(m => m.id))
+      if (metrics.length > 0) {
+        writeBackup(BACKUP_METRICS_KEY, metrics)
+      } else {
+        const backup = readBackup<BodyMetric[]>(BACKUP_METRICS_KEY)
+        if (backup && backup.length > 0) {
+          return backup
+        }
+      }
       return metrics
     } catch (err) {
-      console.error('加载体重记录失败:', err)
-      return []
+      console.error('加载体重记录失败，尝试从备份恢复:', err)
+      const backup = readBackup<BodyMetric[]>(BACKUP_METRICS_KEY)
+      return backup ?? []
     }
   }
 
@@ -261,6 +349,7 @@ export class CloudBaseProvider implements StorageProvider {
       }
 
       this.cachedMetricIds = newIds
+      writeBackup(BACKUP_METRICS_KEY, metrics)
     })
   }
 
@@ -271,9 +360,17 @@ export class CloudBaseProvider implements StorageProvider {
     try {
       const result = await db.collection(COLLECTIONS.userState).doc('settings').get()
       const data = result.data as Partial<UserSettings> | null
+      if (data && Object.keys(data).length > 0) {
+        writeBackup(BACKUP_SETTINGS_KEY, data)
+      } else {
+        const backup = readBackup<Partial<UserSettings>>(BACKUP_SETTINGS_KEY)
+        if (backup && Object.keys(backup).length > 0) {
+          return backup
+        }
+      }
       return data
     } catch {
-      return null
+      return readBackup<Partial<UserSettings>>(BACKUP_SETTINGS_KEY)
     }
   }
 
@@ -284,6 +381,7 @@ export class CloudBaseProvider implements StorageProvider {
       const payload = JSON.parse(JSON.stringify(settings))
       if (Object.keys(payload).length === 0) return
       await db.collection(COLLECTIONS.userState).doc('settings').set(payload)
+      writeBackup(BACKUP_SETTINGS_KEY, payload)
     })
   }
 }

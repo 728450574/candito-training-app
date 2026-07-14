@@ -157,16 +157,25 @@ function mergeAllRecords(
 
 // --- 体重记录合并 ---
 
-/** 合并体重记录（按 id 去重，冲突取 date 更晚的） */
+/** 合并体重记录（按 date 去重，一天只能有一条记录，冲突取 date 更晚的） */
 function mergeMetrics(local: BodyMetric[], remote: BodyMetric[]): BodyMetric[] {
   const map = new Map<string, BodyMetric>()
-  for (const m of local) map.set(m.id, m)
-  for (const m of remote) {
-    const existing = map.get(m.id)
+  for (const m of local) {
+    const key = m.date
+    const existing = map.get(key)
     if (existing) {
-      map.set(m.id, m.date >= existing.date ? m : existing)
+      map.set(key, m.date >= existing.date ? m : existing)
     } else {
-      map.set(m.id, m)
+      map.set(key, m)
+    }
+  }
+  for (const m of remote) {
+    const key = m.date
+    const existing = map.get(key)
+    if (existing) {
+      map.set(key, m.date >= existing.date ? m : existing)
+    } else {
+      map.set(key, m)
     }
   }
   return Array.from(map.values())

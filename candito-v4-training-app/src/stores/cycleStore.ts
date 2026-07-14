@@ -20,6 +20,14 @@ export const useCycleStore = defineStore('cycle', () => {
     const provider = getProvider()
     cycles.value = await provider.loadCycles()
     activeCycleId.value = await provider.loadActiveCycleId()
+    if (!activeCycleId.value) {
+      const firstActive = cycles.value.find(
+        (c: Cycle) => c.status !== 'terminated' && c.status !== 'completed',
+      )
+      if (firstActive) {
+        activeCycleId.value = firstActive.id
+      }
+    }
   }
 
   function save(): void {
