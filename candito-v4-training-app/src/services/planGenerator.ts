@@ -532,5 +532,6 @@ export function createCycle(input: CreateCycleInput) {
     batchProcessHistory: [] as [],
     isPaused: false as const,
     createdAt,
+    updatedAt: createdAt,
   }
 }

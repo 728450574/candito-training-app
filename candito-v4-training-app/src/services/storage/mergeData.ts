@@ -71,7 +71,12 @@ function mergeCycle(local: Cycle, remote: Cycle): Cycle {
   // 3. 完成数相同：比较最近完成时间
   const localDate = getLastCompletedDate(local)
   const remoteDate = getLastCompletedDate(remote)
-  return localDate >= remoteDate ? local : remote
+  if (localDate !== remoteDate) {
+    return localDate >= remoteDate ? local : remote
+  }
+
+  // 4. 完成时间相同：取 updatedAt 更晚的
+  return getUpdatedAt(local) >= getUpdatedAt(remote) ? local : remote
 }
 
 /** 合并周期列表（按 id 去重，冲突取更先进的版本） */
@@ -118,15 +123,18 @@ function mergeActiveCycleId(
 
 // --- 训练记录合并 ---
 
-/** 合并训练记录（按 id 去重，冲突取 endTime 更晚的） */
+/** 合并训练记录（按 id 去重，冲突取 endTime 更晚的，endTime 相同取 updatedAt 更晚的） */
 function mergeRecords(local: WorkoutRecord[], remote: WorkoutRecord[]): WorkoutRecord[] {
   const map = new Map<string, WorkoutRecord>()
   for (const r of local) map.set(r.id, r)
   for (const r of remote) {
     const existing = map.get(r.id)
     if (existing) {
-      // 取 endTime 更晚的
-      map.set(r.id, r.endTime >= existing.endTime ? r : existing)
+      if (r.endTime !== existing.endTime) {
+        map.set(r.id, r.endTime >= existing.endTime ? r : existing)
+      } else {
+        map.set(r.id, getUpdatedAt(r) >= getUpdatedAt(existing) ? r : existing)
+      }
     } else {
       map.set(r.id, r)
     }
@@ -157,14 +165,19 @@ function mergeAllRecords(
 
 // --- 体重记录合并 ---
 
-/** 合并体重记录（按 date 去重，一天只能有一条记录，冲突取 date 更晚的） */
+/** 获取带降级的 updatedAt（兼容旧数据） */
+function getUpdatedAt(entity: { updatedAt?: string; createdAt?: string }): string {
+  return entity.updatedAt ?? entity.createdAt ?? ''
+}
+
+/** 合并体重记录（按 date 去重，一天只能有一条记录，冲突取 updatedAt 更晚的） */
 function mergeMetrics(local: BodyMetric[], remote: BodyMetric[]): BodyMetric[] {
   const map = new Map<string, BodyMetric>()
   for (const m of local) {
     const key = m.date
     const existing = map.get(key)
     if (existing) {
-      map.set(key, m.date >= existing.date ? m : existing)
+      map.set(key, getUpdatedAt(m) >= getUpdatedAt(existing) ? m : existing)
     } else {
       map.set(key, m)
     }
@@ -173,7 +186,7 @@ function mergeMetrics(local: BodyMetric[], remote: BodyMetric[]): BodyMetric[] {
     const key = m.date
     const existing = map.get(key)
     if (existing) {
-      map.set(key, m.date >= existing.date ? m : existing)
+      map.set(key, getUpdatedAt(m) >= getUpdatedAt(existing) ? m : existing)
     } else {
       map.set(key, m)
     }

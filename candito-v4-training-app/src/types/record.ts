@@ -37,4 +37,5 @@ export interface WorkoutRecord {
   mr10TotalReps?: number
   wasPausedBefore?: boolean
   isRestartPoint?: boolean
+  updatedAt?: string
 }

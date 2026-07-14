@@ -17,11 +17,13 @@ export const useBodyMetricStore = defineStore('bodyMetric', () => {
   }
 
   function addMetric(metric: BodyMetric): void {
-    const existingIndex = metrics.value.findIndex((m: BodyMetric) => m.date === metric.date)
+    const now = new Date().toISOString()
+    const entry = { ...metric, updatedAt: now }
+    const existingIndex = metrics.value.findIndex((m: BodyMetric) => m.date === entry.date)
     if (existingIndex >= 0) {
-      metrics.value[existingIndex] = metric
+      metrics.value[existingIndex] = entry
     } else {
-      metrics.value.push(metric)
+      metrics.value.push(entry)
     }
     save()
   }

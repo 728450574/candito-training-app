@@ -51,7 +51,8 @@ export const useRecordStore = defineStore('record', () => {
       recordsByCycle.value[cycleId] = []
       loadedCycleIds.add(cycleId)
     }
-    recordsByCycle.value[cycleId].push(record)
+    const entry = { ...record, updatedAt: new Date().toISOString() }
+    recordsByCycle.value[cycleId].push(entry)
     saveRecords(cycleId)
   }
 

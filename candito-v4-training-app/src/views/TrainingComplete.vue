@@ -438,7 +438,7 @@ function submitRecord() {
   const existingRecords = recordStore.getRecordsForCycle(cycleIdVal)
   const idx = existingRecords.findIndex(r => r.id === record.value!.id)
   if (idx !== -1) {
-    existingRecords[idx] = updatedRecord
+    existingRecords[idx] = { ...updatedRecord, updatedAt: new Date().toISOString() }
     recordStore.saveRecords(cycleIdVal)
   }
 

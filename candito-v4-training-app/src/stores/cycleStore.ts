@@ -45,7 +45,7 @@ export const useCycleStore = defineStore('cycle', () => {
   function updateCycle(id: string, updates: Partial<Cycle>): void {
     const index = cycles.value.findIndex((c: Cycle) => c.id === id)
     if (index !== -1) {
-      cycles.value[index] = { ...cycles.value[index], ...updates }
+      cycles.value[index] = { ...cycles.value[index], ...updates, updatedAt: new Date().toISOString() }
       save()
     }
   }

@@ -94,4 +94,5 @@ export interface Cycle {
   terminateReason?: string
   createdAt: string
   completedAt?: string
+  updatedAt?: string
 }

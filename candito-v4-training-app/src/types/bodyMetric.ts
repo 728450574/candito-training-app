@@ -3,6 +3,7 @@ export interface BodyMetric {
   date: string
   weight: number
   unit: 'kg' | 'lb'
+  updatedAt?: string
   measurements?: {
     chest?: number
     waist?: number
