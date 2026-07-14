@@ -79,16 +79,34 @@ export async function signInWithPassword(username: string, password: string) {
   return auth.signInWithPassword({ username, password })
 }
 
-/** 手机号 OTP 登录 —— 第一步发送验证码 */
+/**
+ * 手机号 OTP 登录 —— 第一步发送验证码
+ * shouldCreateUser 默认 true，用户不存在时自动创建
+ */
 export async function signInWithOtpPhone(phone: string) {
   const auth = getAuth()
   if (!auth) throw new Error('CloudBase 未配置')
-  return auth.signInWithOtp({ phone })
+  return auth.signInWithOtp({ phone, shouldCreateUser: true })
 }
 
 /** 手机号 OTP 登录 —— 第二步验证 */
-export async function verifyOtp(verifyFn: { verifyOtp: (args: { token: string }) => Promise<unknown> }, token: string) {
+export async function verifyOtp(
+  verifyFn: { verifyOtp: (args: { token: string }) => Promise<unknown> },
+  token: string,
+) {
   return verifyFn.verifyOtp({ token })
+}
+
+/** 微信扫码登录（OAuth 重定向方式） */
+export async function signInWithWechat() {
+  const auth = getAuth()
+  if (!auth) throw new Error('CloudBase 未配置')
+  const { data, error } = await auth.signInWithOAuth({ provider: 'wechat' })
+  if (error) throw error
+  // 重定向到微信授权页，回调后 SDK 自动完成登录（detectSessionInUrl: true）
+  if (data?.url) {
+    window.location.href = data.url
+  }
 }
 
 /** 退出登录 */
