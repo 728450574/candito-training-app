@@ -241,6 +241,7 @@ import { useCycleStore } from '@/stores/cycleStore'
 import { useRecordStore } from '@/stores/recordStore'
 import { formatDateFull, getToday } from '@/services/dateService'
 import { createCycle } from '@/services/planGenerator'
+import { flushStorage } from '@/services/storage'
 import type { Cycle, PauseRecord, Week, TrainingDay } from '@/types/cycle'
 
 const router = useRouter()
@@ -454,7 +455,7 @@ function goCycleDetail(cycle: Cycle): void {
   router.push({ path: '/plan', query: { cycleId: cycle.id } })
 }
 
-function restartCurrent(): void {
+async function restartCurrent(): Promise<void> {
   if (!activeCycle.value) return
   const cycle = activeCycle.value
   const data = createCycle({
@@ -469,10 +470,15 @@ function restartCurrent(): void {
     completedAt: getToday(),
   })
   cycleStore.addCycle(data as any)
+  try {
+    await flushStorage()
+  } catch (e) {
+    console.error('存储刷新失败', e)
+  }
   router.push('/today')
 }
 
-function confirmRestart(): void {
+async function confirmRestart(): Promise<void> {
   if (!activeCycle.value) return
   const cycle = activeCycle.value
   const data = createCycle({
@@ -487,11 +493,16 @@ function confirmRestart(): void {
     completedAt: getToday(),
   })
   cycleStore.addCycle(data as any)
+  try {
+    await flushStorage()
+  } catch (e) {
+    console.error('存储刷新失败', e)
+  }
   showRestartModal.value = false
   router.push('/today')
 }
 
-function handleTerminate(): void {
+async function handleTerminate(): Promise<void> {
   if (!activeCycle.value) return
   if (confirm('确定要终止当前周期吗？终止后训练数据保留为只读。')) {
     cycleStore.updateCycle(activeCycle.value.id, {
@@ -500,6 +511,11 @@ function handleTerminate(): void {
       terminateReason: '因伤终止',
     })
     cycleStore.setActiveCycle('')
+    try {
+      await flushStorage()
+    } catch (e) {
+      console.error('存储刷新失败', e)
+    }
   }
 }
 </script>
