@@ -4,6 +4,7 @@ import type { BodyMetric } from '@/types/bodyMetric'
 import type { UserSettings } from '@/types/settings'
 import type { StorageProvider } from './types'
 import { getDb, isAuthenticated } from '@/services/cloudbase'
+import { mergeCycles } from './mergeData'
 
 /**
  * CloudBase NoSQL 云端存储提供者。
@@ -112,20 +113,21 @@ export class CloudBaseProvider implements StorageProvider {
   // --- Cycles ---
   async loadCycles(): Promise<Cycle[]> {
     const db = getDb()
-    if (!db) return []
+    if (!db) return readBackup<Cycle[]>(BACKUP_CYCLES_KEY) ?? []
     try {
       const result = await db.collection(COLLECTIONS.cycles).get()
-      const cycles = (result.data || []) as unknown as Cycle[]
-      this.cachedCycleIds = new Set(cycles.map(c => c.id))
-      if (cycles.length > 0) {
-        writeBackup(BACKUP_CYCLES_KEY, cycles)
-      } else {
-        const backup = readBackup<Cycle[]>(BACKUP_CYCLES_KEY)
-        if (backup && backup.length > 0) {
-          return backup
-        }
-      }
-      return cycles
+      const cloudCycles = (result.data || []) as unknown as Cycle[]
+      const backupCycles = readBackup<Cycle[]>(BACKUP_CYCLES_KEY) ?? []
+
+      // 合并云端与备份数据，防止云端写入未完成时备份被陈旧数据覆盖
+      // mergeCycles 按状态优先级/完成天数/更新时间择优选择，完全相同时以第一参数(backup)为准
+      const merged = cloudCycles.length > 0 || backupCycles.length > 0
+        ? mergeCycles(backupCycles, cloudCycles)
+        : []
+
+      this.cachedCycleIds = new Set(merged.map(c => c.id))
+      writeBackup(BACKUP_CYCLES_KEY, merged)
+      return merged
     } catch (err) {
       console.error('加载周期失败，尝试从备份恢复:', err)
       const backup = readBackup<Cycle[]>(BACKUP_CYCLES_KEY)

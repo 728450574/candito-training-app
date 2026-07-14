@@ -83,7 +83,7 @@ function mergeCycle(local: Cycle, remote: Cycle): Cycle {
 }
 
 /** 合并周期列表（按 id 去重，冲突取更先进的版本） */
-function mergeCycles(local: Cycle[], remote: Cycle[]): Cycle[] {
+export function mergeCycles(local: Cycle[], remote: Cycle[]): Cycle[] {
   const map = new Map<string, Cycle>()
   for (const c of local) map.set(c.id, c)
   for (const c of remote) {
