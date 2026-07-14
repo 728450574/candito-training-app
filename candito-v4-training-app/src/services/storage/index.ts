@@ -102,17 +102,21 @@ export async function switchToCloud(): Promise<void> {
 
 /**
  * 切换到本地模式。
- * 从云端下载数据到本地。
+ * 从云端下载数据到本地（若云端不可用则直接切换，保留本地已有数据）。
  */
 export async function switchToLocal(): Promise<void> {
-  const cloudProvider = new CloudBaseProvider()
-  await cloudProvider.init()
-
   const localProvider = new LocalStorageProvider()
   await localProvider.init()
 
-  const data = await exportFromProvider(cloudProvider)
-  await importToProvider(localProvider, data)
+  // 尝试从云端导出数据，失败则直接切换到本地（保留本地已有数据）
+  try {
+    const cloudProvider = new CloudBaseProvider()
+    await cloudProvider.init()
+    const data = await exportFromProvider(cloudProvider)
+    await importToProvider(localProvider, data)
+  } catch (err) {
+    console.warn('云端数据导出失败，直接切换到本地模式:', err)
+  }
 
   currentProvider = localProvider
   currentMode = 'local'

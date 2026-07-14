@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { getStorageMode, getCurrentMode } from '@/services/storage'
+import { isAuthenticated } from '@/services/cloudbase'
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -114,11 +115,16 @@ const router = createRouter({
 })
 
 // 路由守卫：偏好云端但未登录时重定向到登录页
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   if (to.name === 'login') return true
   const preferredMode = getStorageMode()
   const actualMode = getCurrentMode()
   if (preferredMode === 'cloud' && actualMode === 'local') {
+    // 检查是否实际已认证，避免登录后因模式未同步导致死循环
+    const authenticated = await isAuthenticated()
+    if (authenticated) {
+      return true
+    }
     return { name: 'login', query: { redirect: to.fullPath } }
   }
   return true

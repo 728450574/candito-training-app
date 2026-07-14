@@ -198,14 +198,19 @@ onUnmounted(() => {
 /** 登录成功后的通用处理 */
 async function onLoginSuccess() {
   await initStorage()
-  const cycleStore = useCycleStore()
-  await cycleStore.load()
-  const recordStore = useRecordStore()
-  await recordStore.loadAll(cycleStore.cycles.map(c => c.id))
-  const bodyMetricStore = useBodyMetricStore()
-  await bodyMetricStore.load()
-  const settingsStore = useSettingsStore()
-  await settingsStore.load()
+  // 容错：即使云端数据加载失败也要跳转，避免卡在登录页
+  try {
+    const cycleStore = useCycleStore()
+    await cycleStore.load()
+    const recordStore = useRecordStore()
+    await recordStore.loadAll(cycleStore.cycles.map(c => c.id))
+    const bodyMetricStore = useBodyMetricStore()
+    await bodyMetricStore.load()
+    const settingsStore = useSettingsStore()
+    await settingsStore.load()
+  } catch (err) {
+    console.error('登录后数据加载失败，以空状态继续:', err)
+  }
 
   const redirect = (route.query.redirect as string) || '/today'
   router.replace(redirect)

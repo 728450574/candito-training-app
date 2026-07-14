@@ -18,21 +18,23 @@ async function bootstrap(): Promise<void> {
   // 1. 初始化存储系统（本地或云端）
   await initStorage()
 
-  // 2. 加载所有数据到内存（在 app.mount 前完成，确保 UI 有数据）
+  // 2. 加载所有数据到内存（容错：即使云端加载失败也要挂载应用）
   const cycleStore = useCycleStore(pinia)
-  await cycleStore.load()
-
   const recordStore = useRecordStore(pinia)
-  const cycleIds = cycleStore.cycles.map(c => c.id)
-  await recordStore.loadAll(cycleIds)
-
   const bodyMetricStore = useBodyMetricStore(pinia)
-  await bodyMetricStore.load()
-
   const settingsStore = useSettingsStore(pinia)
-  await settingsStore.load()
 
-  // 3. 挂载应用
+  try {
+    await cycleStore.load()
+    const cycleIds = cycleStore.cycles.map(c => c.id)
+    await recordStore.loadAll(cycleIds)
+    await bodyMetricStore.load()
+    await settingsStore.load()
+  } catch (err) {
+    console.error('数据加载失败，以空状态启动应用:', err)
+  }
+
+  // 3. 挂载应用（无论数据加载是否成功）
   app.mount('#app')
 }
 
