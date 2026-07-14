@@ -20,7 +20,7 @@ export function useStorageMode() {
     switchError.value = null
     try {
       if (!isCloudBaseConfigured()) {
-        switchError.value = '请先配置 CloudBase 环境'
+        switchError.value = '云端存储未启用（未配置环境变量）'
         return false
       }
       const authenticated = await isAuthenticated()

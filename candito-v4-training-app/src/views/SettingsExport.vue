@@ -133,38 +133,14 @@
 
         <!-- 本地模式：切换到云端 -->
         <template v-else>
-          <!-- CloudBase 配置（未配置时显示） -->
+          <!-- 云端未配置（环境变量缺失） -->
           <template v-if="!isConfigured">
-            <div class="px-4 py-3" style="border-bottom: 0.5px solid var(--color-border);">
-              <span class="typography-body block mb-2">CloudBase 配置</span>
-              <input
-                v-model="cbConfig.env"
-                type="text"
-                placeholder="环境 ID (Env ID)"
-                class="w-full h-10 px-3 mb-2 rounded-[var(--radius-sm)] typography-caption"
-                style="background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-primary);"
-              />
-              <input
-                v-model="cbConfig.region"
-                type="text"
-                placeholder="区域 (如 ap-shanghai)"
-                class="w-full h-10 px-3 mb-2 rounded-[var(--radius-sm)] typography-caption"
-                style="background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-primary);"
-              />
-              <input
-                v-model="cbConfig.accessKey"
-                type="text"
-                placeholder="Publishable Key"
-                class="w-full h-10 px-3 mb-2 rounded-[var(--radius-sm)] typography-caption"
-                style="background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-primary);"
-              />
-              <button
-                @click="saveCloudBaseConfig"
-                class="w-full h-9 rounded-full text-xs font-medium"
-                style="background: var(--color-training-main); color: var(--color-surface);"
-              >
-                保存配置
-              </button>
+            <div class="flex items-center justify-between px-4 py-3">
+              <div class="min-w-0 flex-1 mr-3">
+                <span class="typography-body block truncate">云端同步不可用</span>
+                <span class="typography-caption block truncate">未配置 CloudBase 环境变量</span>
+              </div>
+              <i data-lucide="cloud-off" style="width: 18px; height: 18px; color: var(--color-border);"></i>
             </div>
           </template>
 
@@ -255,8 +231,7 @@ import { exportJSON, exportCSV, importJSON } from '@/services/exportService'
 import { getToday, formatDateFull } from '@/services/dateService'
 import { useStorageMode } from '@/composables/useStorageMode'
 import { useAuth } from '@/composables/useAuth'
-import { getCloudBaseConfig, setCloudBaseConfig, isCloudBaseConfigured } from '@/services/cloudbaseConfig'
-import { resetCloudBase } from '@/services/cloudbase'
+import { isCloudBaseConfigured } from '@/services/cloudbaseConfig'
 import type { WorkoutRecord } from '@/types/record'
 
 const router = useRouter()
@@ -270,8 +245,8 @@ const bodyMetricStore = useBodyMetricStore()
 const { storageMode, switching, switchError, enableCloud, enableLocal, reinitStorage, flush } = useStorageMode()
 const { user: authUser, checkAuthState, logout } = useAuth()
 
-const isConfigured = ref(isCloudBaseConfigured())
-const cbConfig = ref(getCloudBaseConfig())
+// 云端是否已通过环境变量配置（构建期固定，非响应式）
+const isConfigured = isCloudBaseConfigured()
 
 const fileInputRef = ref<HTMLInputElement | null>(null)
 const importConflict = ref<{ conflictType: string; conflictCount: number; data: any } | null>(null)
@@ -471,13 +446,6 @@ function goOneRM() {
 }
 
 // --- 存储模式切换 ---
-
-function saveCloudBaseConfig() {
-  setCloudBaseConfig(cbConfig.value)
-  resetCloudBase()
-  isConfigured.value = isCloudBaseConfigured()
-  void checkAuthState()
-}
 
 function goLogin() {
   router.push({ name: 'login', query: { redirect: route.fullPath } })

@@ -58,7 +58,7 @@ export async function initStorage(): Promise<StorageMode> {
 
   if (mode === 'cloud') {
     if (!isCloudBaseConfigured()) {
-      console.warn('CloudBase 未配置，回退到本地存储模式')
+      console.warn('CloudBase 环境变量未配置，回退到本地存储模式')
       currentProvider = new LocalStorageProvider()
       currentMode = 'local'
     } else {
