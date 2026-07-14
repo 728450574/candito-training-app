@@ -123,7 +123,7 @@ export class CloudBaseProvider implements StorageProvider {
       const db = getDb()
       if (!db) return
       await db.collection(COLLECTIONS.userState).doc(USER_STATE_DOC).set({
-        activeCycleId: id,
+        activeCycleId: id ?? '',
       })
     })
   }
@@ -245,7 +245,10 @@ export class CloudBaseProvider implements StorageProvider {
     this.queueWrite('settings', async () => {
       const db = getDb()
       if (!db) return
-      await db.collection(COLLECTIONS.userState).doc('settings').set({ ...settings })
+      // 确保至少有一个字段，避免空对象导致 API 报 "data is required"
+      const payload = { ...settings }
+      if (Object.keys(payload).length === 0) return
+      await db.collection(COLLECTIONS.userState).doc('settings').set(payload)
     })
   }
 }

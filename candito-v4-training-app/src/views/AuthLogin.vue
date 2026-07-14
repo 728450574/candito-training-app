@@ -95,25 +95,6 @@
         </button>
       </form>
 
-      <!-- 微信扫码登录 -->
-      <div v-else-if="activeTab === 'wechat'" class="mb-6 text-center">
-        <button
-          @click="handleWechatLogin"
-          :disabled="authLoading"
-          class="w-full h-12 rounded-full typography-body font-medium flex items-center justify-center gap-2"
-          style="background: #07c160; color: #fff;"
-        >
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M8.5 4C4.36 4 1 6.69 1 10c0 1.89 1.08 3.56 2.78 4.66L3 17l2.5-1.32c.96.27 1.96.42 3 .42.26 0 .51-.01.76-.03-.16-.49-.24-1.01-.24-1.55 0-3.04 2.91-5.5 6.5-5.5.23 0 .45.01.67.03C15.13 5.77 12.04 4 8.5 4zM6 9.5a1 1 0 110-2 1 1 0 010 2zm5 0a1 1 0 110-2 1 1 0 010 2z"/>
-            <path d="M23 14.5C23 11.46 20.09 9 16.5 9S10 11.46 10 14.5 12.91 20 16.5 20c.86 0 1.68-.13 2.43-.37L21 21l-.67-1.99C21.96 18.03 23 16.38 23 14.5zM14.5 13.5a.75.75 0 110-1.5.75.75 0 010 1.5zm4 0a.75.75 0 110-1.5.75.75 0 010 1.5z"/>
-          </svg>
-          {{ authLoading ? '跳转中...' : '微信扫码登录' }}
-        </button>
-        <p class="typography-caption mt-3" style="color: var(--color-primary-light);">
-          点击后跳转微信授权页面，完成后自动登录
-        </p>
-      </div>
-
       <!-- 错误提示 -->
       <p v-if="authError" class="mb-3 typography-caption text-center" style="color: var(--state-error);">
         {{ authError }}
@@ -154,18 +135,16 @@ import { useRecordStore } from '@/stores/recordStore'
 import { useBodyMetricStore } from '@/stores/bodyMetricStore'
 import { useSettingsStore } from '@/stores/settingsStore'
 
-type LoginTab = 'password' | 'sms' | 'wechat'
+type LoginTab = 'password' | 'sms'
 const tabs: { key: LoginTab; label: string }[] = [
   { key: 'password', label: '密码登录' },
   { key: 'sms', label: '短信登录' },
-  { key: 'wechat', label: '微信登录' },
 ]
 
 const router = useRouter()
 const route = useRoute()
 const {
   login,
-  loginWithWechat,
   sendSmsCode,
   loginWithSmsCode,
   loading: authLoading,
@@ -241,16 +220,6 @@ async function handleSmsLogin() {
   try {
     await loginWithSmsCode(smsCode.value)
     await onLoginSuccess()
-  } catch {
-    // 错误已在 composable 中处理
-  }
-}
-
-/** 微信扫码登录 */
-async function handleWechatLogin() {
-  try {
-    await loginWithWechat()
-    // 重定向后会自动回来，onLoginSuccess 在路由守卫或 checkAuthState 中处理
   } catch {
     // 错误已在 composable 中处理
   }

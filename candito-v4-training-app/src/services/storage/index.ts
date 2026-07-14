@@ -1,5 +1,4 @@
-import type { StorageProvider, StorageMode, ExportData } from './types'
-import type { WorkoutRecord } from '@/types/record'
+import type { StorageProvider, StorageMode } from './types'
 import type { UserSettings } from '@/types/settings'
 import { LocalStorageProvider } from './localProvider'
 import { CloudBaseProvider } from './cloudProvider'
@@ -84,6 +83,7 @@ export async function initStorage(): Promise<StorageMode> {
 /**
  * 切换到云端模式。
  * 调用前需确保 CloudBase 已配置且用户已登录。
+ * 逐项迁移数据，部分失败不阻断整体切换。
  */
 export async function switchToCloud(): Promise<void> {
   const localProvider = new LocalStorageProvider()
@@ -92,8 +92,7 @@ export async function switchToCloud(): Promise<void> {
   const cloudProvider = new CloudBaseProvider()
   await cloudProvider.init()
 
-  const data = await exportFromProvider(localProvider)
-  await importToProvider(cloudProvider, data)
+  await migrateData(localProvider, cloudProvider)
 
   currentProvider = cloudProvider
   currentMode = 'cloud'
@@ -112,8 +111,7 @@ export async function switchToLocal(): Promise<void> {
   try {
     const cloudProvider = new CloudBaseProvider()
     await cloudProvider.init()
-    const data = await exportFromProvider(cloudProvider)
-    await importToProvider(localProvider, data)
+    await migrateData(cloudProvider, localProvider)
   } catch (err) {
     console.warn('云端数据导出失败，直接切换到本地模式:', err)
   }
@@ -132,35 +130,59 @@ export async function flushStorage(): Promise<void> {
 
 // --- 内部工具 ---
 
-async function exportFromProvider(provider: StorageProvider): Promise<ExportData> {
-  const cycles = await provider.loadCycles()
-  const activeCycleId = await provider.loadActiveCycleId()
-  const cycleIds = await provider.loadAllRecordCycleIds()
-
-  const recordsByCycle: Record<string, WorkoutRecord[]> = {}
-  for (const cycleId of cycleIds) {
-    recordsByCycle[cycleId] = await provider.loadRecords(cycleId)
+/**
+ * 逐项迁移数据，每类数据独立 try-catch，部分失败不阻断整体。
+ */
+async function migrateData(from: StorageProvider, to: StorageProvider): Promise<void> {
+  // 1. 周期
+  try {
+    const cycles = await from.loadCycles()
+    to.saveCycles(cycles)
+  } catch (err) {
+    console.warn('迁移周期数据失败:', err)
   }
 
-  const metrics = await provider.loadMetrics()
-  const settings = await provider.loadSettings()
-
-  return { cycles, activeCycleId, recordsByCycle, metrics, settings }
-}
-
-async function importToProvider(provider: StorageProvider, data: ExportData): Promise<void> {
-  provider.saveCycles(data.cycles)
-  provider.saveActiveCycleId(data.activeCycleId)
-
-  for (const [cycleId, records] of Object.entries(data.recordsByCycle)) {
-    provider.saveRecords(cycleId, records)
+  // 2. 活跃周期 ID
+  try {
+    const activeCycleId = await from.loadActiveCycleId()
+    to.saveActiveCycleId(activeCycleId)
+  } catch (err) {
+    console.warn('迁移活跃周期 ID 失败:', err)
   }
 
-  provider.saveMetrics(data.metrics)
-
-  if (data.settings) {
-    provider.saveSettings(data.settings as UserSettings)
+  // 3. 训练记录
+  try {
+    const cycleIds = await from.loadAllRecordCycleIds()
+    for (const cycleId of cycleIds) {
+      try {
+        const records = await from.loadRecords(cycleId)
+        to.saveRecords(cycleId, records)
+      } catch (err) {
+        console.warn(`迁移周期 ${cycleId} 的训练记录失败:`, err)
+      }
+    }
+  } catch (err) {
+    console.warn('加载训练记录 cycleId 列表失败:', err)
   }
 
-  await provider.flush()
+  // 4. 体重记录
+  try {
+    const metrics = await from.loadMetrics()
+    to.saveMetrics(metrics)
+  } catch (err) {
+    console.warn('迁移体重记录失败:', err)
+  }
+
+  // 5. 设置
+  try {
+    const settings = await from.loadSettings()
+    if (settings && Object.keys(settings).length > 0) {
+      to.saveSettings(settings as UserSettings)
+    }
+  } catch (err) {
+    console.warn('迁移设置数据失败:', err)
+  }
+
+  // 确保所有队列写入完成
+  await to.flush()
 }
