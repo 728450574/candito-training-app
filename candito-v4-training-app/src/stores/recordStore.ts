@@ -78,6 +78,11 @@ export const useRecordStore = defineStore('record', () => {
     provider.removeAllRecordsForCycle(cycleId)
   }
 
+  function reset(): void {
+    recordsByCycle.value = {}
+    loadedCycleIds.clear()
+  }
+
   return {
     recordsByCycle,
     loadAll,
@@ -89,5 +94,6 @@ export const useRecordStore = defineStore('record', () => {
     getRecordForDay,
     getCycleIds,
     removeRecordsForCycle,
+    reset,
   }
 })

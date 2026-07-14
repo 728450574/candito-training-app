@@ -182,6 +182,7 @@ async function onLoginSuccess() {
     const cycleStore = useCycleStore()
     await cycleStore.load()
     const recordStore = useRecordStore()
+    recordStore.reset()
     await recordStore.loadAll(cycleStore.cycles.map(c => c.id))
     const bodyMetricStore = useBodyMetricStore()
     await bodyMetricStore.load()

@@ -66,7 +66,7 @@ export class CloudBaseProvider implements StorageProvider {
     if (this.flushTimer) clearTimeout(this.flushTimer)
     this.flushTimer = setTimeout(() => {
       void this.flush()
-    }, 1000)
+    }, 200)
   }
 
   // --- Cycles ---
@@ -92,12 +92,21 @@ export class CloudBaseProvider implements StorageProvider {
       const newIds = new Set(cycles.map(c => c.id))
 
       for (const cycle of cycles) {
-        await collection.doc(cycle.id).set({ ...cycle })
+        try {
+          const payload = JSON.parse(JSON.stringify(cycle))
+          await collection.doc(cycle.id).set(payload)
+        } catch (err) {
+          console.error('写入周期失败:', cycle.id, err)
+        }
       }
 
       for (const oldId of this.cachedCycleIds) {
         if (!newIds.has(oldId)) {
-          await collection.doc(oldId).remove()
+          try {
+            await collection.doc(oldId).remove()
+          } catch (err) {
+            console.error('删除旧周期失败:', oldId, err)
+          }
         }
       }
 
@@ -150,17 +159,35 @@ export class CloudBaseProvider implements StorageProvider {
       if (!db) return
       const collection = db.collection(COLLECTIONS.records)
 
+      // 查询云端已有的该周期记录 ID
+      let existingIds = new Set<string>()
       try {
-        await collection.where({ cycleId }).remove()
+        const result = await collection.where({ cycleId }).get()
+        existingIds = new Set((result.data || []).map((r: any) => r.id))
       } catch (err) {
-        console.error('删除旧记录失败:', err)
+        console.error('查询云端记录失败:', err)
       }
 
+      // Upsert：逐条写入（deep clone 确保嵌套数据序列化正确）
+      const newIds = new Set<string>()
       for (const record of records) {
+        newIds.add(record.id)
         try {
-          await collection.doc(record.id).set({ ...record, cycleId })
+          const payload = JSON.parse(JSON.stringify({ ...record, cycleId }))
+          await collection.doc(record.id).set(payload)
         } catch (err) {
           console.error('写入训练记录失败:', record.id, err)
+        }
+      }
+
+      // 删除云端有但本地没有的记录
+      for (const oldId of existingIds) {
+        if (!newIds.has(oldId)) {
+          try {
+            await collection.doc(oldId).remove()
+          } catch (err) {
+            console.error('删除旧记录失败:', oldId, err)
+          }
         }
       }
     })
@@ -215,12 +242,21 @@ export class CloudBaseProvider implements StorageProvider {
       const newIds = new Set(metrics.map(m => m.id))
 
       for (const metric of metrics) {
-        await collection.doc(metric.id).set({ ...metric })
+        try {
+          const payload = JSON.parse(JSON.stringify(metric))
+          await collection.doc(metric.id).set(payload)
+        } catch (err) {
+          console.error('写入体重记录失败:', metric.id, err)
+        }
       }
 
       for (const oldId of this.cachedMetricIds) {
         if (!newIds.has(oldId)) {
-          await collection.doc(oldId).remove()
+          try {
+            await collection.doc(oldId).remove()
+          } catch (err) {
+            console.error('删除旧体重记录失败:', oldId, err)
+          }
         }
       }
 
@@ -245,8 +281,7 @@ export class CloudBaseProvider implements StorageProvider {
     this.queueWrite('settings', async () => {
       const db = getDb()
       if (!db) return
-      // 确保至少有一个字段，避免空对象导致 API 报 "data is required"
-      const payload = { ...settings }
+      const payload = JSON.parse(JSON.stringify(settings))
       if (Object.keys(payload).length === 0) return
       await db.collection(COLLECTIONS.userState).doc('settings').set(payload)
     })

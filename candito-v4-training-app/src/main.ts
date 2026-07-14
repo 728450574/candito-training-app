@@ -3,7 +3,7 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import './assets/theme.css'
-import { initStorage } from '@/services/storage'
+import { initStorage, flushStorage, getCurrentMode } from '@/services/storage'
 import { useCycleStore } from '@/stores/cycleStore'
 import { useRecordStore } from '@/stores/recordStore'
 import { useBodyMetricStore } from '@/stores/bodyMetricStore'
@@ -34,7 +34,19 @@ async function bootstrap(): Promise<void> {
     console.error('数据加载失败，以空状态启动应用:', err)
   }
 
-  // 3. 挂载应用（无论数据加载是否成功）
+  // 3. 页面关闭/隐藏时 flush 云端写入队列，防止数据丢失
+  window.addEventListener('beforeunload', () => {
+    if (getCurrentMode() === 'cloud') {
+      void flushStorage()
+    }
+  })
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden' && getCurrentMode() === 'cloud') {
+      void flushStorage()
+    }
+  })
+
+  // 4. 挂载应用（无论数据加载是否成功）
   app.mount('#app')
 }
 

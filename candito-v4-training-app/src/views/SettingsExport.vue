@@ -475,6 +475,7 @@ async function handleLogout() {
 }
 
 async function reloadStores() {
+  recordStore.reset()
   await cycleStore.load()
   await recordStore.loadAll(cycleStore.cycles.map(c => c.id))
   await bodyMetricStore.load()
