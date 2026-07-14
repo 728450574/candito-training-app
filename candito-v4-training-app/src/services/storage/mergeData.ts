@@ -42,13 +42,16 @@ function getLastCompletedDate(cycle: Cycle): string {
   return latest || cycle.completedAt || cycle.createdAt
 }
 
-/** 周期状态优先级（数值越大越优先） */
+/**
+ * 周期状态优先级（数值越大越优先）。
+ * terminated 是用户主动终止的终态，优先级应高于 active/paused，仅次于 completed。
+ */
 const STATUS_PRIORITY: Record<string, number> = {
   active: 1,
   paused: 1,
   week6_pending: 2,
-  completed: 3,
-  terminated: 0,
+  terminated: 3,
+  completed: 4,
 }
 
 /** 比较两个同 id 的周期，返回更先进的版本 */

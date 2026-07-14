@@ -171,13 +171,12 @@ export class CloudBaseProvider implements StorageProvider {
     try {
       const result = await db.collection(COLLECTIONS.userState).doc(USER_STATE_DOC).get()
       const data = result.data as { activeCycleId?: string } | null
-      const id = data?.activeCycleId ?? null
+      const id = data?.activeCycleId || null
       if (id) {
         writeBackup(BACKUP_ACTIVE_KEY, id)
-      } else {
-        const backup = readBackup<string>(BACKUP_ACTIVE_KEY)
-        if (backup) return backup
       }
+      // 云端明确返回空时，直接返回 null，不再从备份恢复
+      // 避免"终止周期后刷新页面，云端已更新为空白但备份残留旧值"的场景
       return id
     } catch {
       return readBackup<string>(BACKUP_ACTIVE_KEY)
@@ -186,11 +185,7 @@ export class CloudBaseProvider implements StorageProvider {
 
   saveActiveCycleId(id: string | null): void {
     this.queueWrite('activeCycleId', async () => {
-      const db = getDb()
-      if (!db) return
-      await db.collection(COLLECTIONS.userState).doc(USER_STATE_DOC).set({
-        activeCycleId: id ?? '',
-      })
+      // 先更新备份，确保云端写入失败时备份仍是正确的
       if (id !== null) {
         writeBackup(BACKUP_ACTIVE_KEY, id)
       } else {
@@ -200,6 +195,11 @@ export class CloudBaseProvider implements StorageProvider {
           // ignore
         }
       }
+      const db = getDb()
+      if (!db) return
+      await db.collection(COLLECTIONS.userState).doc(USER_STATE_DOC).set({
+        activeCycleId: id ?? '',
+      })
     })
   }
 
