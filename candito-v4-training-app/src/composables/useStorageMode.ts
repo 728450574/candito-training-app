@@ -8,10 +8,27 @@ import {
 } from '@/services/storage'
 import { isCloudBaseConfigured } from '@/services/cloudbaseConfig'
 import { isAuthenticated } from '@/services/cloudbase'
+import { useCycleStore } from '@/stores/cycleStore'
+import { useRecordStore } from '@/stores/recordStore'
+import { useBodyMetricStore } from '@/stores/bodyMetricStore'
+import { useSettingsStore } from '@/stores/settingsStore'
 
 const storageMode = ref(getCurrentMode())
 const switching = ref(false)
 const switchError = ref<string | null>(null)
+
+async function reloadAllStores(): Promise<void> {
+  const cycleStore = useCycleStore()
+  const recordStore = useRecordStore()
+  const bodyMetricStore = useBodyMetricStore()
+  const settingsStore = useSettingsStore()
+  recordStore.reset()
+  await cycleStore.load()
+  const cycleIds = cycleStore.cycles.map(c => c.id)
+  await recordStore.loadAll(cycleIds)
+  await bodyMetricStore.load()
+  await settingsStore.load()
+}
 
 export function useStorageMode() {
   async function enableCloud(): Promise<boolean> {
@@ -29,6 +46,7 @@ export function useStorageMode() {
         return false
       }
       await switchToCloud()
+      await reloadAllStores()
       storageMode.value = 'cloud'
       return true
     } catch (err) {
@@ -45,6 +63,7 @@ export function useStorageMode() {
     switchError.value = null
     try {
       await switchToLocal()
+      await reloadAllStores()
       storageMode.value = 'local'
       return true
     } catch (err) {
