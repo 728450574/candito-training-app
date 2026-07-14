@@ -5,6 +5,11 @@ on:
     branches: [master]
     paths:
       - 'candito-v4-training-app/**'
+  pull_request:
+    branches: [main, master]
+    paths:
+      - 'miniprogram/**'
+      - 'candito-v4-training-app/**'
   workflow_dispatch:
 
 permissions:
@@ -44,3 +49,60 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  # ============================================================================
+  # E2E Test Job（可选 / Best-effort）
+  # ============================================================================
+  #
+  # 本 job 在 Pull Request 上运行小程序端到端测试，覆盖 CloudBase 集成场景。
+  #
+  # 重要说明：
+  # - 静态分析类测试（UI 保真对照、业务逻辑算法对照）始终会运行，不依赖 WeChat 开发者工具
+  # - 依赖 miniprogram-automator 的用例在 MP_CLI_PATH 未设置时会自动跳过
+  # - CI Linux runner 无法安装真实的微信开发者工具（官方 CLI 仅提供 macOS/Windows 版本），
+  #   因此 automator 相关用例在公共 Linux runner 上实际不会执行，此处仅作配置占位与文档说明
+  # - 真正的跨账号 CloudBase 测试需要配置 CLOUDBASE_TEST_OPENID_A 与 CLOUDBASE_TEST_OPENID_B secrets
+  # - 本 job 设置 continue-on-error: true，失败不会阻塞部署流水线
+  #
+  # ============================================================================
+  e2e-test:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'pull_request'
+    continue-on-error: true
+    env:
+      CLOUDBASE_ENV_ID: ${{ secrets.CLOUDBASE_ENV_ID || 'tnt-lxo777jrw' }}
+      MP_CLI_PATH: ${{ secrets.MP_CLI_PATH }}
+    defaults:
+      run:
+        working-directory: miniprogram/tests/e2e
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # 微信开发者工具 CLI 仅在 macOS / Windows 上可用，公共 Linux CI runner 无法安装。
+      # 此处仅作占位与文档说明；在 macOS/Windows 自托管 runner 上设置 MP_CLI_PATH secret
+      # 后，automator 相关用例才会真正执行。
+      - name: Install WeChat devtools CLI (placeholder)
+        run: |
+          echo "WeChat devtools CLI is not installable on Linux CI runners."
+          echo "Set MP_CLI_PATH secret on a macOS/Windows self-hosted runner to enable automator tests."
+          if [ -z "${MP_CLI_PATH}" ]; then
+            echo "MP_CLI_PATH is not set; automator-dependent tests will be skipped."
+          else
+            echo "MP_CLI_PATH is set: ${MP_CLI_PATH}"
+          fi
+      - name: Install dependencies
+        run: npm install
+      - name: TypeScript check
+        run: npx tsc --noEmit
+      - name: Run E2E tests
+        run: npx jest
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-reports
+          path: miniprogram/tests/e2e/reports/
+          retention-days: 14

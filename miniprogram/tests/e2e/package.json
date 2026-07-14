@@ -1,0 +1,20 @@
+{
+  "name": "candito-miniprogram-e2e",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Candito 小程序端到端测试工程（miniprogram-automator + jest + CloudBase）",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "jest": "^29.7.0",
+    "jest-html-reporter": "^3.6.0",
+    "miniprogram-automator": "latest",
+    "miniprogram-ci": "latest",
+    "ts-jest": "^29.1.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.0"
+  }
+}

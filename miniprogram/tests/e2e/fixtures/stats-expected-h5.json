@@ -1,0 +1,40 @@
+{
+  "$comment": "Expected outputs for statsService functions, keyed by input signature. Structure chosen as the cleaner 'mapping' option (option 2 from task spec): each function maps an input signature string to its expected output. Signatures: epley1RM/estimateNew1RM use '<weight>,<reps>'; calculateVolume uses the record id; calculateWeeklyCompletion uses the cycle id; bestEstimated1RM uses '<exerciseName>,<default1RM>'. Algorithms traced from /workspace/candito-v4-training-app/src/services/statsService.ts. epley1RM: reps<=0->weight, reps===1->weight, else weight*(1+reps/30). estimateNew1RM: reps<=0->weight, reps in {1:1.00,2:1.03,3:1.06,4:1.09}->Math.round(weight*mult), else Math.round(epley1RM). calculateVolume=Σ(actualWeight??targetWeight??0)*(actualReps??0). calculateWeeklyCompletion: completed=status in {completed,makeup}, percent=Math.round(completed/total*100).",
+  "epley1RM": {
+    "100,5": 116.66666666666667,
+    "100,1": 100,
+    "100,0": 100,
+    "85,3": 93.5,
+    "100,-1": 100,
+    "120,10": 160
+  },
+  "estimateNew1RM": {
+    "100,1": 100,
+    "100,2": 103,
+    "100,3": 106,
+    "100,4": 109,
+    "100,5": 117,
+    "100,0": 100,
+    "85,3": 90,
+    "85,10": 113,
+    "120,8": 152
+  },
+  "calculateVolume": {
+    "test-record-vol-001": 1635
+  },
+  "calculateWeeklyCompletion": {
+    "test-cycle-stats-001": [
+      { "weekNumber": 1, "completed": 3, "total": 5, "percent": 60 },
+      { "weekNumber": 2, "completed": 1, "total": 5, "percent": 20 },
+      { "weekNumber": 3, "completed": 4, "total": 4, "percent": 100 },
+      { "weekNumber": 4, "completed": 0, "total": 4, "percent": 0 },
+      { "weekNumber": 5, "completed": 3, "total": 3, "percent": 100 },
+      { "weekNumber": 6, "completed": 1, "total": 3, "percent": 33 }
+    ]
+  },
+  "bestEstimated1RM": {
+    "深蹲,100": 117,
+    "硬拉,120": 120,
+    "卧推,85": 87
+  }
+}

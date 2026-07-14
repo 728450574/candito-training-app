@@ -1,0 +1,272 @@
+{
+  "$comment": "Input data for statsService functions, traced from /workspace/candito-v4-training-app/src/services/statsService.ts. Algorithms: epley1RM(w,r)= r<=0?w : r===1?w : w*(1+r/30); calculateVolume=Σ(actualWeight??targetWeight??0)*(actualReps??0); calculateWeeklyCompletion per week: completed=status==='completed'||'makeup', percent=Math.round(completed/total*100); estimateNew1RM uses ONE_RM_MULTIPLIERS {1:1.00,2:1.03,3:1.06,4:1.09} then Math.round(epley1RM); bestEstimated1RM(records,exerciseName,default1RM) iterates records->exercises(name match)->sets(actualReps/actualWeight not null, actualReps>0), tracks max estimateNew1RM. Note: bestEstimated1RM is a private function taking WorkoutRecord[] (not ExerciseRecord[]); each case here includes exerciseName + default1RM so the function can be invoked.",
+  "epley1RM": [
+    { "weight": 100, "reps": 5, "expected": 116.66666666666667 },
+    { "weight": 100, "reps": 1, "expected": 100 },
+    { "weight": 100, "reps": 0, "expected": 100 },
+    { "weight": 85, "reps": 3, "expected": 93.5 },
+    { "weight": 100, "reps": -1, "expected": 100 },
+    { "weight": 120, "reps": 10, "expected": 160 }
+  ],
+  "calculateVolume": {
+    "record": {
+      "id": "test-record-vol-001",
+      "cycleId": "test-cycle-001",
+      "weekNumber": 1,
+      "dayNumber": 1,
+      "date": "2026-07-13",
+      "originalDate": "2026-07-13",
+      "scheduledDate": "2026-07-13",
+      "isRescheduled": false,
+      "startTime": "2026-07-13T09:00:00.000Z",
+      "endTime": "2026-07-13T10:00:00.000Z",
+      "duration": 3600,
+      "bodyWeight": 75,
+      "exercises": [
+        {
+          "exerciseId": "test-exercise-001",
+          "name": "深蹲",
+          "type": "main",
+          "sets": [
+            { "setNumber": 1, "targetWeight": 80, "targetReps": "6", "actualWeight": 82.5, "actualReps": 6, "isCompleted": true, "isSkipped": false },
+            { "setNumber": 2, "targetWeight": 80, "targetReps": "6", "actualWeight": 80, "actualReps": 5, "isCompleted": true, "isSkipped": false }
+          ]
+        },
+        {
+          "exerciseId": "test-exercise-002",
+          "name": "硬拉",
+          "type": "main",
+          "sets": [
+            { "setNumber": 1, "targetWeight": 90, "targetReps": "6", "isCompleted": false, "isSkipped": true },
+            { "setNumber": 2, "targetWeight": 90, "targetReps": "6", "actualWeight": 90, "actualReps": 6, "isCompleted": true, "isSkipped": false }
+          ]
+        },
+        {
+          "exerciseId": "test-exercise-004",
+          "name": "哑铃划船",
+          "type": "assistance",
+          "sets": [
+            { "setNumber": 1, "targetReps": "8-12", "actualWeight": 20, "actualReps": 10, "isCompleted": true, "isSkipped": false },
+            { "setNumber": 2, "targetReps": "8-12", "isCompleted": false, "isSkipped": false }
+          ]
+        }
+      ],
+      "notes": "测试记录",
+      "feeling": 4,
+      "status": "completed"
+    },
+    "expected": 1635
+  },
+  "calculateWeeklyCompletion": {
+    "cycle": {
+      "id": "test-cycle-stats-001",
+      "name": "统计测试周期",
+      "startDate": "2026-07-13",
+      "status": "active",
+      "oneRM": { "squat": 100, "bench": 85, "deadlift": 120 },
+      "unit": "kg",
+      "weightRounding": 2.5,
+      "assistanceConfig": {
+        "horizontalPull": "哑铃划船",
+        "shoulder": "坐姿哑铃推举",
+        "verticalPull": "负重引体向上"
+      },
+      "weeks": [
+        {
+          "weekNumber": 1,
+          "theme": "肌肉调理",
+          "days": [
+            { "dayNumber": 1, "dayOffset": 0, "type": "lower", "originalDate": "2026-07-13", "scheduledDate": "2026-07-13", "exercises": [], "status": "completed" },
+            { "dayNumber": 2, "dayOffset": 1, "type": "upper", "originalDate": "2026-07-14", "scheduledDate": "2026-07-14", "exercises": [], "status": "completed" },
+            { "dayNumber": 3, "dayOffset": 3, "type": "upper", "originalDate": "2026-07-16", "scheduledDate": "2026-07-16", "exercises": [], "status": "makeup" },
+            { "dayNumber": 4, "dayOffset": 4, "type": "lower", "originalDate": "2026-07-17", "scheduledDate": "2026-07-17", "exercises": [], "status": "pending" },
+            { "dayNumber": 5, "dayOffset": 5, "type": "upper", "originalDate": "2026-07-18", "scheduledDate": "2026-07-18", "exercises": [], "status": "skipped" }
+          ]
+        },
+        {
+          "weekNumber": 2,
+          "theme": "肌肉调理/增肌",
+          "days": [
+            { "dayNumber": 1, "dayOffset": 0, "type": "lower", "originalDate": "2026-07-20", "scheduledDate": "2026-07-20", "exercises": [], "status": "completed" },
+            { "dayNumber": 2, "dayOffset": 1, "type": "upper", "originalDate": "2026-07-21", "scheduledDate": "2026-07-21", "exercises": [], "status": "pending" },
+            { "dayNumber": 3, "dayOffset": 3, "type": "lower", "originalDate": "2026-07-23", "scheduledDate": "2026-07-23", "exercises": [], "status": "pending" },
+            { "dayNumber": 4, "dayOffset": 4, "type": "upper", "originalDate": "2026-07-24", "scheduledDate": "2026-07-24", "exercises": [], "status": "pending" },
+            { "dayNumber": 5, "dayOffset": 6, "type": "upper", "originalDate": "2026-07-26", "scheduledDate": "2026-07-26", "exercises": [], "status": "pending" }
+          ]
+        },
+        {
+          "weekNumber": 3,
+          "theme": "线性最大超负荷",
+          "days": [
+            { "dayNumber": 1, "dayOffset": 0, "type": "lower", "originalDate": "2026-07-27", "scheduledDate": "2026-07-27", "exercises": [], "status": "completed" },
+            { "dayNumber": 2, "dayOffset": 2, "type": "upper", "originalDate": "2026-07-29", "scheduledDate": "2026-07-29", "exercises": [], "status": "completed" },
+            { "dayNumber": 3, "dayOffset": 4, "type": "lower", "originalDate": "2026-07-31", "scheduledDate": "2026-07-31", "exercises": [], "status": "completed" },
+            { "dayNumber": 4, "dayOffset": 5, "type": "upper", "originalDate": "2026-08-01", "scheduledDate": "2026-08-01", "exercises": [], "status": "completed" }
+          ]
+        },
+        {
+          "weekNumber": 4,
+          "theme": "适应大重量",
+          "days": [
+            { "dayNumber": 1, "dayOffset": 0, "type": "lower", "originalDate": "2026-08-03", "scheduledDate": "2026-08-03", "exercises": [], "status": "skipped" },
+            { "dayNumber": 2, "dayOffset": 1, "type": "upper", "originalDate": "2026-08-04", "scheduledDate": "2026-08-04", "exercises": [], "status": "skipped" },
+            { "dayNumber": 3, "dayOffset": 3, "type": "lower", "originalDate": "2026-08-06", "scheduledDate": "2026-08-06", "exercises": [], "status": "skipped" },
+            { "dayNumber": 4, "dayOffset": 4, "type": "upper", "originalDate": "2026-08-07", "scheduledDate": "2026-08-07", "exercises": [], "status": "skipped" }
+          ]
+        },
+        {
+          "weekNumber": 5,
+          "theme": "高强度力量训练",
+          "days": [
+            { "dayNumber": 1, "dayOffset": 0, "type": "lower", "originalDate": "2026-08-10", "scheduledDate": "2026-08-10", "exercises": [], "status": "completed" },
+            { "dayNumber": 2, "dayOffset": 2, "type": "upper", "originalDate": "2026-08-12", "scheduledDate": "2026-08-12", "exercises": [], "status": "makeup" },
+            { "dayNumber": 3, "dayOffset": 4, "type": "lower", "originalDate": "2026-08-14", "scheduledDate": "2026-08-14", "exercises": [], "status": "completed" }
+          ]
+        },
+        {
+          "weekNumber": 6,
+          "theme": "测试/减载/跳过",
+          "days": [
+            { "dayNumber": 1, "dayOffset": 0, "type": "lower", "originalDate": "2026-08-17", "scheduledDate": "2026-08-17", "exercises": [], "status": "postponed" },
+            { "dayNumber": 2, "dayOffset": 2, "type": "upper", "originalDate": "2026-08-19", "scheduledDate": "2026-08-19", "exercises": [], "status": "completed" },
+            { "dayNumber": 3, "dayOffset": 4, "type": "lower", "originalDate": "2026-08-21", "scheduledDate": "2026-08-21", "exercises": [], "status": "pending" }
+          ]
+        }
+      ],
+      "pauseHistory": [],
+      "restartBranches": [],
+      "batchProcessHistory": [],
+      "isPaused": false,
+      "createdAt": "2026-07-13T00:00:00.000Z"
+    },
+    "expected": [
+      { "weekNumber": 1, "completed": 3, "total": 5, "percent": 60 },
+      { "weekNumber": 2, "completed": 1, "total": 5, "percent": 20 },
+      { "weekNumber": 3, "completed": 4, "total": 4, "percent": 100 },
+      { "weekNumber": 4, "completed": 0, "total": 4, "percent": 0 },
+      { "weekNumber": 5, "completed": 3, "total": 3, "percent": 100 },
+      { "weekNumber": 6, "completed": 1, "total": 3, "percent": 33 }
+    ]
+  },
+  "estimateNew1RM": [
+    { "weight": 100, "reps": 1, "expected": 100 },
+    { "weight": 100, "reps": 2, "expected": 103 },
+    { "weight": 100, "reps": 3, "expected": 106 },
+    { "weight": 100, "reps": 4, "expected": 109 },
+    { "weight": 100, "reps": 5, "expected": 117 },
+    { "weight": 100, "reps": 0, "expected": 100 },
+    { "weight": 85, "reps": 3, "expected": 90 },
+    { "weight": 85, "reps": 10, "expected": 113 },
+    { "weight": 120, "reps": 8, "expected": 152 }
+  ],
+  "bestEstimated1RM": [
+    {
+      "exerciseName": "深蹲",
+      "default1RM": 100,
+      "records": [
+        {
+          "id": "test-record-best-001",
+          "cycleId": "test-cycle-001",
+          "weekNumber": 1,
+          "dayNumber": 1,
+          "date": "2026-07-13",
+          "originalDate": "2026-07-13",
+          "scheduledDate": "2026-07-13",
+          "isRescheduled": false,
+          "startTime": "2026-07-13T09:00:00.000Z",
+          "endTime": "2026-07-13T10:00:00.000Z",
+          "duration": 3600,
+          "exercises": [
+            {
+              "exerciseId": "test-exercise-001",
+              "name": "深蹲",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 80, "targetReps": "6", "actualWeight": 90, "actualReps": 3, "isCompleted": true, "isSkipped": false },
+                { "setNumber": 2, "targetWeight": 80, "targetReps": "6", "actualWeight": 95, "actualReps": 2, "isCompleted": true, "isSkipped": false }
+              ]
+            },
+            {
+              "exerciseId": "test-exercise-003",
+              "name": "卧推",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 50, "targetReps": "10", "actualWeight": 50, "actualReps": 10, "isCompleted": true, "isSkipped": false }
+              ]
+            }
+          ],
+          "notes": "",
+          "feeling": 4,
+          "status": "completed"
+        },
+        {
+          "id": "test-record-best-002",
+          "cycleId": "test-cycle-001",
+          "weekNumber": 2,
+          "dayNumber": 1,
+          "date": "2026-07-20",
+          "originalDate": "2026-07-20",
+          "scheduledDate": "2026-07-20",
+          "isRescheduled": false,
+          "startTime": "2026-07-20T09:00:00.000Z",
+          "endTime": "2026-07-20T10:00:00.000Z",
+          "duration": 3600,
+          "exercises": [
+            {
+              "exerciseId": "test-exercise-017",
+              "name": "深蹲",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 80, "targetReps": "MR10", "actualWeight": 100, "actualReps": 5, "isCompleted": true, "isSkipped": false, "isAMRAP": true },
+                { "setNumber": 2, "targetReps": "MR10", "actualReps": 6, "isCompleted": true, "isSkipped": false }
+              ]
+            }
+          ],
+          "notes": "",
+          "feeling": 5,
+          "status": "completed"
+        }
+      ],
+      "expected": 117
+    },
+    {
+      "exerciseName": "硬拉",
+      "default1RM": 120,
+      "records": [],
+      "expected": 120
+    },
+    {
+      "exerciseName": "卧推",
+      "default1RM": 85,
+      "records": [
+        {
+          "id": "test-record-best-003",
+          "cycleId": "test-cycle-001",
+          "weekNumber": 3,
+          "dayNumber": 2,
+          "date": "2026-07-29",
+          "originalDate": "2026-07-29",
+          "scheduledDate": "2026-07-29",
+          "isRescheduled": false,
+          "startTime": "2026-07-29T09:00:00.000Z",
+          "endTime": "2026-07-29T10:00:00.000Z",
+          "duration": 3600,
+          "exercises": [
+            {
+              "exerciseId": "test-exercise-035",
+              "name": "卧推",
+              "type": "main",
+              "sets": [
+                { "setNumber": 1, "targetWeight": 65, "targetReps": "4", "actualWeight": 80, "actualReps": 4, "isCompleted": true, "isSkipped": false }
+              ]
+            }
+          ],
+          "notes": "",
+          "feeling": 3,
+          "status": "completed"
+        }
+      ],
+      "expected": 87
+    }
+  ]
+}

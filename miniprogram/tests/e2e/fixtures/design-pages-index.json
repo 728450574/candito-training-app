@@ -1,0 +1,90 @@
+{
+  "$comment": "Mapping of 17 design HTML files (under /workspace/_design_extracted/pages/) to 15 mini program pages. 17 designs map to 15 pages because '休息日.html' (rest day state) is merged into pages/today/index alongside '今日训练.html'. designHtml paths are relative to the project root (/workspace/). visualElements lists the key visual components each page must render for UI 1:1 fidelity comparison against the design HTML.",
+  "mappings": [
+    {
+      "designHtml": "_design_extracted/pages/今日训练.html",
+      "miniprogramPage": "pages/today/index",
+      "visualElements": ["背景色", "训练卡片", "开始训练按钮", "快速统计栏", "休息日提示"]
+    },
+    {
+      "designHtml": "_design_extracted/pages/休息日.html",
+      "miniprogramPage": "pages/today/index",
+      "visualElements": ["休息日提示", "下次训练倒计时", "快捷入口"]
+    },
+    {
+      "designHtml": "_design_extracted/pages/训练日历.html",
+      "miniprogramPage": "pages/calendar/index",
+      "visualElements": ["月历视图", "绿色圆点(完成)", "灰色圆点(待训练)", "橙色圆点(错过)", "蓝色高亮(今日)", "左右箭头"]
+    },
+    {
+      "designHtml": "_design_extracted/pages/进度统计.html",
+      "miniprogramPage": "pages/stats/index",
+      "visualElements": ["1RM折线图", "完成率进度条", "体重趋势图", "本周期/历史/全部切换"]
+    },
+    {
+      "designHtml": "_design_extracted/pages/设置与导出.html",
+      "miniprogramPage": "pages/settings/index",
+      "visualElements": ["数据存储区块", "导出JSON按钮", "导出CSV按钮", "导入数据按钮", "设置项列表"]
+    },
+    {
+      "designHtml": "_design_extracted/pages/开始训练.html",
+      "miniprogramPage": "pages/start/index",
+      "visualElements": ["1RM输入", "辅助动作配置", "开始按钮"]
+    },
+    {
+      "designHtml": "_design_extracted/pages/训练执行.html",
+      "miniprogramPage": "pages/training-execute/index",
+      "visualElements": ["训练总时长计时器", "当前动作", "组录入表单", "组间休息倒计时", "完成本组按钮"]
+    },
+    {
+      "designHtml": "_design_extracted/pages/训练完成总结.html",
+      "miniprogramPage": "pages/training-complete/index",
+      "visualElements": ["动作组详情", "总容量", "总时长", "平均休息", "体重输入", "训练笔记", "星级评分"]
+    },
+    {
+      "designHtml": "_design_extracted/pages/训练详情.html",
+      "miniprogramPage": "pages/training-detail/index",
+      "visualElements": ["动作列表", "组详情", "日期", "时长"]
+    },
+    {
+      "designHtml": "_design_extracted/pages/训练计划.html",
+      "miniprogramPage": "pages/plan/index",
+      "visualElements": ["6周计划概览", "周主题", "训练日列表"]
+    },
+    {
+      "designHtml": "_design_extracted/pages/周期管理.html",
+      "miniprogramPage": "pages/cycle/index",
+      "visualElements": ["周期列表", "当前周期卡片", "历史周期", "创建新周期按钮"]
+    },
+    {
+      "designHtml": "_design_extracted/pages/1RM 设置.html",
+      "miniprogramPage": "pages/onerm/index",
+      "visualElements": ["1RM输入", "+2.5/-2.5/+5/-5按钮", "周预览", "辅助训练配置", "切换按钮"]
+    },
+    {
+      "designHtml": "_design_extracted/pages/暂停周期.html",
+      "miniprogramPage": "pages/pause/index",
+      "visualElements": ["暂停原因选择", "预计天数", "受影响训练日列表", "顺延/跳过选项"]
+    },
+    {
+      "designHtml": "_design_extracted/pages/处理错过训练.html",
+      "miniprogramPage": "pages/missed/index",
+      "visualElements": ["错过训练列表", "补练/跳过/顺延选择", "出差跳过"]
+    },
+    {
+      "designHtml": "_design_extracted/pages/第6周决策.html",
+      "miniprogramPage": "pages/week6/index",
+      "visualElements": ["预估1RM展示", "直接开始新周期", "减载周", "实测1RM", "决策按钮"]
+    },
+    {
+      "designHtml": "_design_extracted/pages/体重记录.html",
+      "miniprogramPage": "pages/weight/index",
+      "visualElements": ["当前体重", "较上次变化", "趋势图", "记录输入"]
+    },
+    {
+      "designHtml": "_design_extracted/pages/自定义动作.html",
+      "miniprogramPage": "pages/custom-exercise/index",
+      "visualElements": ["动作名称输入", "动作库选择", "保存按钮"]
+    }
+  ]
+}
