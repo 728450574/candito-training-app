@@ -1,13 +1,11 @@
 <template>
   <main
-    class="flex flex-col items-center px-6 pb-6 pt-6 max-w-lg mx-auto min-h-screen"
-    style="justify-content: space-between;"
+    class="flex flex-col items-center px-6 pb-6 pt-6 max-w-lg mx-auto min-h-screen start-page"
   >
     <!-- Branding Area -->
     <div class="flex flex-col items-center text-center w-full">
       <div
-        class="flex items-center justify-center gap-2 mb-1"
-        style="color: var(--color-training-main);"
+        class="flex items-center justify-center gap-2 mb-1 brand-color"
       >
         <svg
           width="32"
@@ -23,39 +21,31 @@
           <rect x="34" y="10" width="6" height="28" rx="2" fill="currentColor" />
           <rect x="12" y="20" width="24" height="8" rx="4" fill="currentColor" />
         </svg>
-        <h1
-          style="font-family: var(--font-sans); font-size: var(--text-2xl); font-weight: var(--font-weight-bold); color: var(--color-primary); letter-spacing: -0.02em;"
-        >
+        <h1 class="brand-title">
           Candito 训练助手
         </h1>
       </div>
-      <p
-        style="font-size: var(--text-sm); color: var(--color-primary-light); font-weight: var(--font-weight-medium);"
-      >
+      <p class="brand-subtitle">
         6周力量训练计划 · 基于经典Candito6周计划
       </p>
     </div>
 
     <!-- 1RM Input Card -->
     <div
-      class="w-full rounded-xl p-4"
-      style="background: var(--color-surface); box-shadow: var(--shadow-elevated); border-radius: var(--radius-lg);"
+      class="w-full rounded-xl p-4 rm-card"
     >
       <div class="flex items-center justify-between mb-4">
-        <h2
-          style="font-family: var(--font-sans); font-size: var(--text-md); font-weight: var(--font-weight-semibold); color: var(--color-primary);"
-        >
+        <h2 class="rm-card-title">
           输入你的 1RM
         </h2>
         <!-- Unit Selector -->
         <div
-          class="flex rounded-md p-0.5"
-          style="background: var(--color-surface-muted);"
+          class="flex rounded-md p-0.5 unit-selector"
         >
           <button
             type="button"
             class="px-3 py-1 rounded text-xs font-medium whitespace-nowrap"
-            :style="unit === 'kg' ? { background: 'var(--color-surface)', color: 'var(--color-primary)', boxShadow: 'var(--shadow-card)' } : { color: 'var(--color-primary-light)' }"
+            :class="unit === 'kg' ? 'unit-btn-active' : 'unit-btn-inactive'"
             @click="unit = 'kg'"
           >
             kg
@@ -63,7 +53,7 @@
           <button
             type="button"
             class="px-3 py-1 rounded text-xs font-medium whitespace-nowrap"
-            :style="unit === 'lb' ? { background: 'var(--color-surface)', color: 'var(--color-primary)', boxShadow: 'var(--shadow-card)' } : { color: 'var(--color-primary-light)' }"
+            :class="unit === 'lb' ? 'unit-btn-active' : 'unit-btn-inactive'"
             @click="unit = 'lb'"
           >
             lb
@@ -73,90 +63,73 @@
 
       <div class="flex flex-col gap-2.5">
         <div class="flex items-center justify-between">
-          <span
-            style="font-size: var(--text-sm); font-weight: var(--font-weight-medium); color: var(--color-primary); min-width: 2.5rem;"
-          >
+          <span class="exercise-label">
             深蹲
           </span>
           <div
-            class="flex-1 mx-3 flex items-center rounded-md px-3 h-10"
-            style="background: var(--color-surface-muted);"
+            class="flex-1 mx-3 flex items-center rounded-md px-3 h-10 rm-input-wrapper"
           >
             <input
               type="number"
               v-model.number="squat"
               placeholder="100"
-              class="w-full text-right bg-transparent outline-none"
-              style="font-family: var(--font-mono); font-size: var(--text-md); font-weight: var(--font-weight-semibold); color: var(--color-primary);"
+              class="w-full text-right bg-transparent outline-none rm-input"
               inputmode="decimal"
               aria-label="深蹲1RM"
             />
             <span
-              class="ml-1 shrink-0"
-              style="font-size: var(--text-xs); color: var(--color-primary-light);"
+              class="ml-1 shrink-0 rm-unit"
             >
               {{ unitLabel }}
             </span>
           </div>
         </div>
         <div class="flex items-center justify-between">
-          <span
-            style="font-size: var(--text-sm); font-weight: var(--font-weight-medium); color: var(--color-primary); min-width: 2.5rem;"
-          >
+          <span class="exercise-label">
             卧推
           </span>
           <div
-            class="flex-1 mx-3 flex items-center rounded-md px-3 h-10"
-            style="background: var(--color-surface-muted);"
+            class="flex-1 mx-3 flex items-center rounded-md px-3 h-10 rm-input-wrapper"
           >
             <input
               type="number"
               v-model.number="bench"
               placeholder="80"
-              class="w-full text-right bg-transparent outline-none"
-              style="font-family: var(--font-mono); font-size: var(--text-md); font-weight: var(--font-weight-semibold); color: var(--color-primary);"
+              class="w-full text-right bg-transparent outline-none rm-input"
               inputmode="decimal"
               aria-label="卧推1RM"
             />
             <span
-              class="ml-1 shrink-0"
-              style="font-size: var(--text-xs); color: var(--color-primary-light);"
+              class="ml-1 shrink-0 rm-unit"
             >
               {{ unitLabel }}
             </span>
           </div>
         </div>
         <div class="flex items-center justify-between">
-          <span
-            style="font-size: var(--text-sm); font-weight: var(--font-weight-medium); color: var(--color-primary); min-width: 2.5rem;"
-          >
+          <span class="exercise-label">
             硬拉
           </span>
           <div
-            class="flex-1 mx-3 flex items-center rounded-md px-3 h-10"
-            style="background: var(--color-surface-muted);"
+            class="flex-1 mx-3 flex items-center rounded-md px-3 h-10 rm-input-wrapper"
           >
             <input
               type="number"
               v-model.number="deadlift"
               placeholder="120"
-              class="w-full text-right bg-transparent outline-none"
-              style="font-family: var(--font-mono); font-size: var(--text-md); font-weight: var(--font-weight-semibold); color: var(--color-primary);"
+              class="w-full text-right bg-transparent outline-none rm-input"
               inputmode="decimal"
               aria-label="硬拉1RM"
             />
             <span
-              class="ml-1 shrink-0"
-              style="font-size: var(--text-xs); color: var(--color-primary-light);"
+              class="ml-1 shrink-0 rm-unit"
             >
               {{ unitLabel }}
             </span>
           </div>
         </div>
       </div>
-      <p
-        style="font-size: var(--text-xs); color: var(--color-primary-light); margin-top: 8px;"
-      >
+      <p class="rm-hint">
         不确定？可输入估算值，后续随时调整
       </p>
     </div>
@@ -164,46 +137,47 @@
     <!-- Assistance Config -->
     <div class="w-full mt-6">
       <button class="flex w-full items-center justify-between py-3" type="button" @click="showAssistance = !showAssistance">
-        <h2 class="text-base font-semibold tracking-tight" style="color: var(--color-primary);">辅助训练配置</h2>
-        <ChevronDown class="h-4 w-4" :style="{ color: 'var(--color-primary-light)', transform: showAssistance ? 'rotate(180deg)' : 'none' }" />
+        <h2 class="text-base font-semibold tracking-tight section-title">辅助训练配置</h2>
+        <ChevronDown class="h-4 w-4 section-chevron" :style="{ transform: showAssistance ? 'rotate(180deg)' : 'none' }" />
       </button>
 
-      <div v-show="showAssistance" class="flex flex-col gap-0 rounded-xl" style="background: var(--color-surface); box-shadow: var(--shadow-elevated);">
-        <div v-for="(item, idx) in assistanceItems" :key="idx" class="flex items-center justify-between px-4 py-3.5" :style="idx < assistanceItems.length - 1 ? { borderBottom: '0.5px solid var(--color-border-light)' } : {}">
+      <div v-show="showAssistance" class="flex flex-col gap-0 rounded-xl assistance-card">
+        <div
+          v-for="(item, idx) in assistanceItems"
+          :key="idx"
+          class="flex items-center justify-between px-4 py-3.5"
+          :class="{ 'assistance-item-separator': idx < assistanceItems.length - 1 }"
+        >
           <div class="min-w-0 flex-1">
-            <p class="text-sm font-medium truncate" style="color: var(--color-primary);">{{ item.cn }}</p>
+            <p class="text-sm font-medium truncate assistance-item-name">{{ item.cn }}</p>
           </div>
           <button type="button" class="flex items-center gap-1 shrink-0 ml-3">
-            <span class="text-sm" style="color: var(--color-primary);">{{ item.current }}</span>
+            <span class="text-sm assistance-item-value">{{ item.current }}</span>
           </button>
-          <button type="button" class="shrink-0 text-xs font-medium ml-1" style="color: var(--color-training-main);" @click="switchAssistance(item.key)">切换</button>
+          <button type="button" class="shrink-0 text-xs font-medium ml-1 switch-btn" @click="switchAssistance(item.key)">切换</button>
         </div>
       </div>
 
       <div class="mt-2 flex justify-end">
-        <button type="button" class="text-xs font-medium" style="color: var(--color-training-main);" @click="goCustom">自定义</button>
+        <button type="button" class="text-xs font-medium custom-link" @click="goCustom">自定义</button>
       </div>
     </div>
 
     <!-- Start Date + CTA -->
     <div class="w-full">
       <div
-        class="flex items-center gap-2 mb-4"
-        style="color: var(--color-primary-light);"
+        class="flex items-center gap-2 mb-4 date-row"
       >
-        <i data-lucide="calendar" style="width: 14px; height: 14px;"></i>
-        <span style="font-size: var(--text-xs); color: var(--color-primary-light);">
+        <i data-lucide="calendar" class="date-icon"></i>
+        <span class="date-label">
           开始日期
         </span>
-        <span
-          style="font-family: var(--font-mono); font-size: var(--text-sm); font-weight: var(--font-weight-medium); color: var(--color-primary);"
-        >
+        <span class="date-value">
           {{ todayDisplay }}
         </span>
       </div>
       <button
-        class="w-full flex items-center justify-center h-12 rounded-full font-semibold whitespace-nowrap"
-        style="background: var(--color-training-main); color: var(--color-surface); border-radius: var(--radius-full); font-size: var(--text-md); font-weight: var(--font-weight-semibold);"
+        class="w-full flex items-center justify-center h-12 rounded-full font-semibold whitespace-nowrap submit-btn"
         :disabled="isSubmitting"
         @click="handleSubmit"
       >
@@ -319,3 +293,155 @@ onMounted(() => {
   createIcons({ icons })
 })
 </script>
+
+<style scoped>
+/* ===== 页面容器 ===== */
+.start-page {
+  justify-content: space-between;
+}
+
+/* ===== 品牌区域 ===== */
+.brand-color {
+  color: var(--color-training-main);
+}
+
+.brand-title {
+  font-family: var(--font-sans);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  letter-spacing: -0.02em;
+}
+
+.brand-subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-primary-light);
+  font-weight: var(--font-weight-medium);
+}
+
+/* ===== 1RM 输入卡片 ===== */
+.rm-card {
+  background: var(--color-surface);
+  box-shadow: var(--shadow-elevated);
+  border-radius: var(--radius-lg);
+}
+
+.rm-card-title {
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+/* ===== 单位选择器 ===== */
+.unit-selector {
+  background: var(--color-surface-muted);
+}
+
+.unit-btn-active {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  box-shadow: var(--shadow-card);
+}
+
+.unit-btn-inactive {
+  color: var(--color-primary-light);
+}
+
+/* ===== 动作标签 ===== */
+.exercise-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+  min-width: 2.5rem;
+}
+
+/* ===== 1RM 输入框封装 ===== */
+.rm-input-wrapper {
+  background: var(--color-surface-muted);
+}
+
+.rm-input {
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+.rm-unit {
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+}
+
+/* ===== 提示文字 ===== */
+.rm-hint {
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+  margin-top: 8px;
+}
+
+/* ===== 辅助训练配置 ===== */
+.section-title {
+  color: var(--color-primary);
+}
+
+.section-chevron {
+  color: var(--color-primary-light);
+}
+
+.assistance-card {
+  background: var(--color-surface);
+  box-shadow: var(--shadow-elevated);
+}
+
+.assistance-item-separator {
+  border-bottom: 0.5px solid var(--color-border-light);
+}
+
+.assistance-item-name {
+  color: var(--color-primary);
+}
+
+.assistance-item-value {
+  color: var(--color-primary);
+}
+
+.switch-btn {
+  color: var(--color-training-main);
+}
+
+.custom-link {
+  color: var(--color-training-main);
+}
+
+/* ===== 开始日期行 ===== */
+.date-row {
+  color: var(--color-primary-light);
+}
+
+.date-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.date-label {
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+}
+
+.date-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+}
+
+/* ===== 提交按钮 ===== */
+.submit-btn {
+  background: var(--color-training-main);
+  color: var(--color-surface);
+  border-radius: var(--radius-full);
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+}
+</style>

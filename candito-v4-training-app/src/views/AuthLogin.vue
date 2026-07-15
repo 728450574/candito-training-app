@@ -1,21 +1,19 @@
 <template>
-  <main class="min-h-screen flex flex-col items-center justify-center px-6" style="background: var(--color-surface);">
+  <main class="min-h-screen flex flex-col items-center justify-center px-6 auth-page">
     <div class="w-full max-w-sm">
       <header class="text-center mb-8">
         <h1 class="typography-hero">Candito 训练助手</h1>
-        <p class="typography-caption mt-2" style="color: var(--color-primary-light);">登录以同步数据到云端</p>
+        <p class="typography-caption mt-2 auth-subtitle">登录以同步数据到云端</p>
       </header>
 
       <!-- 登录方式切换 -->
-      <div class="flex mb-6 rounded-[var(--radius-sm)] overflow-hidden" style="border: 1px solid var(--color-border);">
+      <div class="flex mb-6 rounded-[var(--radius-sm)] overflow-hidden tab-bar">
         <button
           v-for="tab in tabs"
           :key="tab.key"
           @click="activeTab = tab.key"
           class="flex-1 h-10 typography-body font-medium transition-colors"
-          :style="activeTab === tab.key
-            ? { background: 'var(--color-training-main)', color: 'var(--color-surface)' }
-            : { background: 'transparent', color: 'var(--color-primary)' }"
+          :class="activeTab === tab.key ? 'tab-btn-active' : 'tab-btn-inactive'"
         >
           {{ tab.label }}
         </button>
@@ -28,8 +26,7 @@
             v-model="username"
             type="text"
             placeholder="用户名"
-            class="w-full h-12 px-4 rounded-[var(--radius-sm)] typography-body"
-            style="background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-primary);"
+            class="w-full h-12 px-4 rounded-[var(--radius-sm)] typography-body form-input"
             :disabled="authLoading"
           />
         </div>
@@ -38,15 +35,13 @@
             v-model="password"
             type="password"
             placeholder="密码"
-            class="w-full h-12 px-4 rounded-[var(--radius-sm)] typography-body"
-            style="background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-primary);"
+            class="w-full h-12 px-4 rounded-[var(--radius-sm)] typography-body form-input"
             :disabled="authLoading"
           />
         </div>
         <button
           type="submit"
-          class="w-full h-12 rounded-full typography-body font-medium"
-          style="background: var(--color-training-main); color: var(--color-surface);"
+          class="w-full h-12 rounded-full typography-body font-medium submit-btn"
           :disabled="authLoading || !username || !password"
         >
           {{ authLoading ? '登录中...' : '登录' }}
@@ -60,8 +55,7 @@
             v-model="phone"
             type="tel"
             placeholder="手机号"
-            class="w-full h-12 px-4 rounded-[var(--radius-sm)] typography-body"
-            style="background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-primary);"
+            class="w-full h-12 px-4 rounded-[var(--radius-sm)] typography-body form-input"
             :disabled="authLoading"
           />
         </div>
@@ -71,24 +65,21 @@
             type="text"
             placeholder="验证码"
             maxlength="6"
-            class="flex-1 h-12 px-4 rounded-[var(--radius-sm)] typography-body"
-            style="background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-primary);"
+            class="flex-1 h-12 px-4 rounded-[var(--radius-sm)] typography-body form-input"
             :disabled="authLoading"
           />
           <button
             type="button"
             @click="handleSendCode"
             :disabled="authLoading || !phone || countdown > 0"
-            class="h-12 px-4 rounded-[var(--radius-sm)] typography-body whitespace-nowrap"
-            style="background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-primary);"
+            class="h-12 px-4 rounded-[var(--radius-sm)] typography-body whitespace-nowrap send-code-btn"
           >
             {{ countdown > 0 ? `${countdown}s` : '发送验证码' }}
           </button>
         </div>
         <button
           type="submit"
-          class="w-full h-12 rounded-full typography-body font-medium"
-          style="background: var(--color-training-main); color: var(--color-surface);"
+          class="w-full h-12 rounded-full typography-body font-medium submit-btn"
           :disabled="authLoading || !phone || !smsCode"
         >
           {{ authLoading ? '登录中...' : '登录' }}
@@ -96,27 +87,26 @@
       </form>
 
       <!-- 错误提示 -->
-      <p v-if="authError" class="mb-3 typography-caption text-center" style="color: var(--state-error);">
+      <p v-if="authError" class="mb-3 typography-caption text-center auth-error">
         {{ authError }}
       </p>
 
       <!-- 分隔线 -->
       <div class="flex items-center gap-4 mb-6">
-        <div class="flex-1 h-px" style="background: var(--color-border);"></div>
-        <span class="typography-caption" style="color: var(--color-primary-light);">或</span>
-        <div class="flex-1 h-px" style="background: var(--color-border);"></div>
+        <div class="flex-1 h-px divider-line"></div>
+        <span class="typography-caption divider-text">或</span>
+        <div class="flex-1 h-px divider-line"></div>
       </div>
 
       <!-- 本地存储 -->
       <div class="text-center">
         <button
           @click="useLocalOnly"
-          class="w-full h-11 rounded-full typography-body"
-          style="background: transparent; color: var(--color-primary); border: 1px solid var(--color-border);"
+          class="w-full h-11 rounded-full typography-body local-btn"
         >
           使用本地存储（不登录）
         </button>
-        <p class="typography-caption mt-3" style="color: var(--color-primary-light);">
+        <p class="typography-caption mt-3 local-hint">
           数据仅保存在本设备，不会上传云端
         </p>
       </div>
@@ -233,3 +223,74 @@ async function useLocalOnly() {
   router.replace(redirect)
 }
 </script>
+
+<style scoped>
+/* ===== 页面容器 ===== */
+.auth-page {
+  background: var(--color-surface);
+}
+
+.auth-subtitle {
+  color: var(--color-primary-light);
+}
+
+/* ===== 登录方式切换标签栏 ===== */
+.tab-bar {
+  border: 1px solid var(--color-border);
+}
+
+.tab-btn-active {
+  background: var(--color-training-main);
+  color: var(--color-surface);
+}
+
+.tab-btn-inactive {
+  background: transparent;
+  color: var(--color-primary);
+}
+
+/* ===== 表单输入框 ===== */
+.form-input {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary);
+}
+
+/* ===== 提交按钮 ===== */
+.submit-btn {
+  background: var(--color-training-main);
+  color: var(--color-surface);
+}
+
+/* ===== 发送验证码按钮 ===== */
+.send-code-btn {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary);
+}
+
+/* ===== 错误提示 ===== */
+.auth-error {
+  color: var(--state-error);
+}
+
+/* ===== 分隔线 ===== */
+.divider-line {
+  background: var(--color-border);
+}
+
+.divider-text {
+  color: var(--color-primary-light);
+}
+
+/* ===== 本地存储按钮 ===== */
+.local-btn {
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-border);
+}
+
+.local-hint {
+  color: var(--color-primary-light);
+}
+</style>

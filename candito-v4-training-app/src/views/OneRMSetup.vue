@@ -1,54 +1,56 @@
 <template>
   <main class="pb-8 max-w-lg mx-auto px-4">
-    <header
-      class="sticky top-0 z-30 flex h-11 items-center justify-between border-b px-4 -mx-4"
-      style="background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border-color: var(--color-border);"
-    >
-      <button class="flex h-9 w-9 items-center justify-center" style="border-radius: var(--radius-md);" aria-label="返回" @click="goBack">
-        <ChevronLeft class="h-5 w-5" style="color: var(--color-primary);" />
+    <header class="sticky top-0 z-30 flex h-11 items-center justify-between border-b px-4 -mx-4 onerm-header">
+      <button class="flex h-9 w-9 items-center justify-center rounded-md" aria-label="返回" @click="goBack">
+        <ChevronLeft class="h-5 w-5 icon-primary" />
       </button>
-      <h1 class="text-base font-semibold tracking-tight" style="color: var(--color-primary);">设置 1RM</h1>
+      <h1 class="text-base font-semibold tracking-tight header-title">设置 1RM</h1>
       <div class="w-9"></div>
     </header>
 
     <div class="px-4 pt-4 -mx-4">
-      <div class="flex rounded-lg p-1" style="background: var(--color-surface-muted); box-shadow: var(--shadow-card);">
+      <!-- 单位切换 -->
+      <div class="flex rounded-lg p-1 unit-toggle-bar">
         <button
-          class="flex-1 py-2 text-center text-sm font-semibold"
-          :style="unit === 'kg' ? { background: 'var(--color-surface)', color: 'var(--color-training-main)', borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-elevated)', fontFamily: 'var(--font-mono)' } : { color: 'var(--color-primary-light)', borderRadius: 'var(--radius-md)' }"
+          class="flex-1 py-2 text-center text-sm font-semibold rounded-md"
+          :class="unit === 'kg' ? 'unit-btn-active' : 'unit-btn-inactive'"
           @click="unit = 'kg'"
         >kg</button>
         <button
-          class="flex-1 py-2 text-center text-sm font-medium"
-          :style="unit === 'lb' ? { background: 'var(--color-surface)', color: 'var(--color-training-main)', borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-elevated)', fontFamily: 'var(--font-mono)' } : { color: 'var(--color-primary-light)', borderRadius: 'var(--radius-md)' }"
+          class="flex-1 py-2 text-center text-sm font-medium rounded-md"
+          :class="unit === 'lb' ? 'unit-btn-active' : 'unit-btn-inactive'"
           @click="unit = 'lb'"
         >lb</button>
       </div>
 
+      <!-- 三大项1RM输入 -->
       <div class="mt-5 flex flex-col gap-3">
-        <div v-for="lift in lifts" :key="lift.key" class="rounded-xl p-4" style="background: var(--color-surface); box-shadow: var(--shadow-elevated);">
+        <div v-for="lift in lifts" :key="lift.key" class="rounded-xl p-4 lift-card">
           <div class="flex items-center gap-3">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center" style="background: var(--state-info-bg); border-radius: var(--radius-md);">
-              <div v-if="lift.key === 'squat'" class="flex flex-col items-center" style="color: var(--color-training-main);">
-                <div class="h-3 w-3 rounded-full border-2" style="border-color: var(--color-training-main);"></div>
-                <ArrowDown class="-mt-1.5 h-3.5 w-3.5" style="color: var(--color-training-main);" />
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center lift-icon-bg">
+              <!-- 深蹲图标 -->
+              <div v-if="lift.key === 'squat'" class="flex flex-col items-center icon-training">
+                <div class="h-3 w-3 rounded-full border-2 squat-circle"></div>
+                <ArrowDown class="-mt-1.5 h-3.5 w-3.5 icon-training" />
               </div>
-              <div v-else-if="lift.key === 'bench'" class="flex items-center gap-0.5" style="color: var(--color-training-main);">
-                <div class="h-0.5 w-5" style="background: var(--color-training-main);"></div>
-                <div class="h-2.5 w-2.5 rounded-sm" style="background: var(--color-training-main); opacity: 0.6;"></div>
+              <!-- 卧推图标 -->
+              <div v-else-if="lift.key === 'bench'" class="flex items-center gap-0.5 icon-training">
+                <div class="h-0.5 w-5 bench-bar"></div>
+                <div class="h-2.5 w-2.5 rounded-sm bench-plate"></div>
               </div>
-              <div v-else class="flex flex-col items-center" style="color: var(--color-training-main);">
-                <div class="h-4 w-0.5" style="background: var(--color-training-main);"></div>
-                <div class="h-2.5 w-2.5 rounded-sm -mt-0.5" style="background: var(--color-training-main); opacity: 0.6;"></div>
+              <!-- 硬拉图标 -->
+              <div v-else class="flex flex-col items-center icon-training">
+                <div class="h-4 w-0.5 deadlift-bar"></div>
+                <div class="h-2.5 w-2.5 rounded-sm -mt-0.5 deadlift-plate"></div>
               </div>
             </div>
             <div>
-              <p class="text-sm font-semibold" style="color: var(--color-primary);">{{ lift.cn }}</p>
-              <p class="text-xs" style="color: var(--color-primary-light);">{{ lift.en }}</p>
+              <p class="text-sm font-semibold lift-name">{{ lift.cn }}</p>
+              <p class="text-xs lift-en">{{ lift.en }}</p>
             </div>
           </div>
 
-          <div class="mt-4 pb-1" style="border-bottom: 1.5px solid var(--color-primary);">
+          <div class="mt-4 pb-1 weight-input-row">
             <div class="flex items-baseline gap-1.5">
               <input
                 type="number"
@@ -56,92 +58,95 @@
                 @input="handleWeightInput(lift.key, ($event.target as HTMLInputElement).value)"
                 step="0.5"
                 min="0"
-                class="w-full bg-transparent border-none outline-none text-4xl font-bold tracking-tight"
-                style="font-family: var(--font-mono); color: var(--color-primary); line-height: 1.1;"
+                class="w-full bg-transparent border-none outline-none text-4xl font-bold tracking-tight weight-input"
                 :aria-label="lift.cn + '1RM'"
               />
-              <span class="text-sm font-medium" style="color: var(--color-primary-light); font-family: var(--font-mono);">{{ unit }}</span>
+              <span class="text-sm font-medium weight-unit">{{ unit }}</span>
             </div>
           </div>
 
+          <!-- 微调按钮 -->
           <div class="mt-3 flex items-center justify-center gap-2">
-            <button class="flex h-8 w-14 items-center justify-center text-xs font-semibold" style="border-radius: var(--radius-md); background: var(--color-surface-muted); color: var(--state-error); font-family: var(--font-mono);" @click="adjustWeight(lift.key, -5)">-5</button>
-            <button class="flex h-8 w-14 items-center justify-center text-xs font-semibold" style="border-radius: var(--radius-md); background: var(--color-surface-muted); color: var(--state-error); font-family: var(--font-mono);" @click="adjustWeight(lift.key, -2.5)">-2.5</button>
-            <button class="flex h-8 w-14 items-center justify-center text-xs font-semibold" style="border-radius: var(--radius-md); background: var(--color-surface-muted); color: var(--color-primary); font-family: var(--font-mono);" @click="adjustWeight(lift.key, 2.5)">+2.5</button>
-            <button class="flex h-8 w-14 items-center justify-center text-xs font-semibold" style="border-radius: var(--radius-md); background: var(--color-surface-muted); color: var(--state-success); font-family: var(--font-mono);" @click="adjustWeight(lift.key, 5)">+5</button>
+            <button class="flex h-8 w-14 items-center justify-center text-xs font-semibold adj-btn adj-btn-neg" @click="adjustWeight(lift.key, -5)">-5</button>
+            <button class="flex h-8 w-14 items-center justify-center text-xs font-semibold adj-btn adj-btn-neg" @click="adjustWeight(lift.key, -2.5)">-2.5</button>
+            <button class="flex h-8 w-14 items-center justify-center text-xs font-semibold adj-btn adj-btn-pos" @click="adjustWeight(lift.key, 2.5)">+2.5</button>
+            <button class="flex h-8 w-14 items-center justify-center text-xs font-semibold adj-btn adj-btn-pos-secure" @click="adjustWeight(lift.key, 5)">+5</button>
           </div>
 
-          <div class="mt-3 flex items-center gap-1 text-xs" style="color: var(--color-primary-light); font-family: var(--font-mono);">
+          <!-- 每周重量预览 -->
+          <div class="mt-3 flex items-center gap-1 text-xs week-preview">
             <span>W1: {{ weekWeight(lift.key, WEEK_PCTS[lift.key][0]) }}{{ unit }}</span>
-            <span style="color: var(--color-border);">|</span>
+            <span class="preview-sep">|</span>
             <span>W3: {{ weekWeight(lift.key, WEEK_PCTS[lift.key][2]) }}{{ unit }}</span>
-            <span style="color: var(--color-border);">|</span>
+            <span class="preview-sep">|</span>
             <span>W5: {{ weekWeight(lift.key, WEEK_PCTS[lift.key][4]) }}{{ unit }}</span>
           </div>
         </div>
       </div>
 
+      <!-- 辅助训练配置 -->
       <div class="mt-6">
         <button type="button" class="flex w-full items-center justify-between py-3" @click="showAssistance = !showAssistance">
-          <h2 class="text-base font-semibold tracking-tight" style="color: var(--color-primary);">辅助训练配置</h2>
-          <ChevronDown class="h-4 w-4" :style="{ color: 'var(--color-primary-light)', transform: showAssistance ? 'rotate(180deg)' : 'none' }" />
+          <h2 class="text-base font-semibold tracking-tight section-title">辅助训练配置</h2>
+          <ChevronDown class="h-4 w-4 icon-light" :style="{ transform: showAssistance ? 'rotate(180deg)' : 'none' }" />
         </button>
 
-        <div v-show="showAssistance" class="flex flex-col gap-0 rounded-xl" style="background: var(--color-surface); box-shadow: var(--shadow-elevated);">
-          <div v-for="(item, idx) in assistanceItems" :key="idx" class="flex items-center justify-between px-4 py-3.5" :style="idx < assistanceItems.length - 1 ? { borderBottom: '0.5px solid var(--color-border-light)' } : {}">
+        <div v-show="showAssistance" class="flex flex-col gap-0 rounded-xl assistance-panel">
+          <div v-for="(item, idx) in assistanceItems" :key="idx" class="flex items-center justify-between px-4 py-3.5" :class="{ 'assistance-divider': idx < assistanceItems.length - 1 }">
             <div class="min-w-0 flex-1">
-              <p class="text-sm font-medium truncate" style="color: var(--color-primary);">{{ item.cn }}</p>
-              <p class="text-xs" style="color: var(--color-primary-light);">{{ item.en }}</p>
+              <p class="text-sm font-medium truncate assistance-name">{{ item.cn }}</p>
+              <p class="text-xs assistance-en">{{ item.en }}</p>
             </div>
             <button type="button" class="flex items-center gap-1 shrink-0 ml-3">
-            <span class="text-sm" style="color: var(--color-primary);">{{ item.current }}</span>
-          </button>
-          <button type="button" class="shrink-0 text-xs font-medium ml-1" style="color: var(--color-training-main);" @click="switchAssistance(item.key)">切换</button>
+              <span class="text-sm assistance-current">{{ item.current }}</span>
+            </button>
+            <button type="button" class="shrink-0 text-xs font-medium ml-1 switch-btn" @click="switchAssistance(item.key)">切换</button>
           </div>
         </div>
 
         <div class="mt-2 flex justify-end">
-          <button type="button" class="text-xs font-medium" style="color: var(--color-training-main);" @click="goCustom">自定义</button>
+          <button type="button" class="text-xs font-medium custom-btn" @click="goCustom">自定义</button>
         </div>
       </div>
 
+      <!-- 6周计划预览 -->
       <div class="mt-6">
-        <h2 class="mb-3 text-base font-semibold tracking-tight" style="color: var(--color-primary);">6周计划预览</h2>
-        <div class="rounded-xl p-4" style="background: var(--color-surface); box-shadow: var(--shadow-elevated);">
+        <h2 class="mb-3 text-base font-semibold tracking-tight section-title">6周计划预览</h2>
+        <div class="rounded-xl p-4 preview-card">
           <div class="overflow-x-auto">
-            <table class="w-full" style="min-width: 280px;">
+            <table class="w-full preview-table">
               <thead>
-                <tr style="border-bottom: 1px solid var(--color-border);">
-                  <th class="py-2 pr-3 text-left text-xs font-medium" style="color: var(--color-primary-light); width: 56px;"></th>
-                  <th v-for="w in 5" :key="w" class="py-2 px-2 text-center text-xs font-medium" style="color: var(--color-primary-light); font-family: var(--font-mono);">W{{ w }}</th>
+                <tr class="preview-thead-row">
+                  <th class="py-2 pr-3 text-left text-xs font-medium preview-th-label"></th>
+                  <th v-for="w in 5" :key="w" class="py-2 px-2 text-center text-xs font-medium preview-th-week">W{{ w }}</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(lift, li) in previewLifts" :key="lift.key" style="border-bottom: 0.5px solid var(--color-border-light);">
-                  <td class="py-2.5 pr-3 text-xs font-medium" style="color: var(--color-primary);">{{ lift.cn }}</td>
-                  <td v-for="w in 5" :key="w" class="py-2.5 px-2 text-center text-xs font-semibold whitespace-nowrap" :style="w === 5 ? { color: 'var(--color-training-main)', fontFamily: 'var(--font-mono)' } : { color: 'var(--color-primary)', fontFamily: 'var(--font-mono)' }">{{ previewCellValue(lift.key, w - 1) }}</td>
+                <tr v-for="(lift, li) in previewLifts" :key="lift.key" class="preview-tbody-row">
+                  <td class="py-2.5 pr-3 text-xs font-medium preview-td-label">{{ lift.cn }}</td>
+                  <td v-for="w in 5" :key="w" class="py-2.5 px-2 text-center text-xs font-semibold whitespace-nowrap" :class="['preview-cell', w === 5 ? 'preview-cell-intensity' : 'preview-cell-normal']">{{ previewCellValue(lift.key, w - 1) }}</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <div class="mt-2 flex items-center justify-center gap-3 text-xs" style="color: var(--color-primary-light); font-family: var(--font-mono);">
+          <div class="mt-2 flex items-center justify-center gap-3 text-xs preview-legend">
             <span class="flex items-center gap-1">
-              <span class="inline-block h-1.5 w-1.5 rounded-full" style="background: var(--color-primary);"></span>
+              <span class="inline-block h-1.5 w-1.5 rounded-full legend-dot-normal"></span>
               累积周
             </span>
             <span class="flex items-center gap-1">
-              <span class="inline-block h-1.5 w-1.5 rounded-full" style="background: var(--color-training-main);"></span>
+              <span class="inline-block h-1.5 w-1.5 rounded-full legend-dot-intensity"></span>
               强度周
             </span>
           </div>
         </div>
       </div>
 
+      <!-- 保存按钮 -->
       <div class="mt-6">
         <button
-          class="flex w-full items-center justify-center py-3.5 text-base font-semibold"
-          style="background: var(--color-training-main); color: var(--color-surface); border-radius: var(--radius-full);"
+          class="flex w-full items-center justify-center py-3.5 text-base font-semibold save-btn"
           @click="handleSave"
         >
           保存并生成计划
@@ -294,3 +299,234 @@ function handleSave(): void {
   router.push('/today')
 }
 </script>
+
+<style scoped>
+/* ===== 顶部导航栏 ===== */
+.onerm-header {
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  border-color: var(--color-border);
+}
+
+.icon-primary {
+  color: var(--color-primary);
+}
+
+.icon-light {
+  color: var(--color-primary-light);
+}
+
+.icon-training {
+  color: var(--color-training-main);
+}
+
+.header-title {
+  color: var(--color-primary);
+}
+
+.section-title {
+  color: var(--color-primary);
+}
+
+/* ===== 单位切换 ===== */
+.unit-toggle-bar {
+  background: var(--color-surface-muted);
+  box-shadow: var(--shadow-card);
+}
+
+.unit-btn-active {
+  background: var(--color-surface);
+  color: var(--color-training-main);
+  box-shadow: var(--shadow-elevated);
+  font-family: var(--font-mono);
+}
+
+.unit-btn-inactive {
+  color: var(--color-primary-light);
+}
+
+/* ===== 举重项卡片 ===== */
+.lift-card {
+  background: var(--color-surface);
+  box-shadow: var(--shadow-elevated);
+}
+
+.lift-icon-bg {
+  background: var(--state-info-bg);
+  border-radius: var(--radius-md);
+}
+
+/* 深蹲图标 */
+.squat-circle {
+  border-color: var(--color-training-main);
+}
+
+/* 卧推图标 */
+.bench-bar {
+  background: var(--color-training-main);
+}
+
+.bench-plate {
+  background: var(--color-training-main);
+  opacity: 0.6;
+}
+
+/* 硬拉图标 */
+.deadlift-bar {
+  background: var(--color-training-main);
+}
+
+.deadlift-plate {
+  background: var(--color-training-main);
+  opacity: 0.6;
+}
+
+/* 举重项名称 */
+.lift-name {
+  color: var(--color-primary);
+}
+
+.lift-en {
+  color: var(--color-primary-light);
+}
+
+/* ===== 重量输入区 ===== */
+.weight-input-row {
+  border-bottom: 1.5px solid var(--color-primary);
+}
+
+.weight-input {
+  font-family: var(--font-mono);
+  color: var(--color-primary);
+  line-height: 1.1;
+}
+
+.weight-unit {
+  color: var(--color-primary-light);
+  font-family: var(--font-mono);
+}
+
+/* ===== 微调按钮 ===== */
+.adj-btn {
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  font-family: var(--font-mono);
+}
+
+.adj-btn-neg {
+  color: var(--state-error);
+}
+
+.adj-btn-pos {
+  color: var(--color-primary);
+}
+
+.adj-btn-pos-secure {
+  color: var(--state-success);
+}
+
+/* ===== 每周重量预览 ===== */
+.week-preview {
+  color: var(--color-primary-light);
+  font-family: var(--font-mono);
+}
+
+.preview-sep {
+  color: var(--color-border);
+}
+
+/* ===== 辅助训练配置 ===== */
+.assistance-panel {
+  background: var(--color-surface);
+  box-shadow: var(--shadow-elevated);
+}
+
+.assistance-divider {
+  border-bottom: 0.5px solid var(--color-border-light);
+}
+
+.assistance-name {
+  color: var(--color-primary);
+}
+
+.assistance-en {
+  color: var(--color-primary-light);
+}
+
+.assistance-current {
+  color: var(--color-primary);
+}
+
+.switch-btn {
+  color: var(--color-training-main);
+}
+
+.custom-btn {
+  color: var(--color-training-main);
+}
+
+/* ===== 6周预览卡片 ===== */
+.preview-card {
+  background: var(--color-surface);
+  box-shadow: var(--shadow-elevated);
+}
+
+.preview-table {
+  min-width: 280px;
+}
+
+.preview-thead-row {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.preview-th-label {
+  color: var(--color-primary-light);
+  width: 56px;
+}
+
+.preview-th-week {
+  color: var(--color-primary-light);
+  font-family: var(--font-mono);
+}
+
+.preview-tbody-row {
+  border-bottom: 0.5px solid var(--color-border-light);
+}
+
+.preview-td-label {
+  color: var(--color-primary);
+}
+
+.preview-cell {
+  font-family: var(--font-mono);
+}
+
+.preview-cell-normal {
+  color: var(--color-primary);
+}
+
+.preview-cell-intensity {
+  color: var(--color-training-main);
+}
+
+/* ===== 预览图例 ===== */
+.preview-legend {
+  color: var(--color-primary-light);
+  font-family: var(--font-mono);
+}
+
+.legend-dot-normal {
+  background: var(--color-primary);
+}
+
+.legend-dot-intensity {
+  background: var(--color-training-main);
+}
+
+/* ===== 保存按钮 ===== */
+.save-btn {
+  background: var(--color-training-main);
+  color: var(--color-surface);
+  border-radius: var(--radius-full);
+}
+</style>

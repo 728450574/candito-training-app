@@ -280,6 +280,7 @@ import { useCycleStore } from '@/stores/cycleStore'
 import { useRecordStore } from '@/stores/recordStore'
 import { useBodyMetricStore } from '@/stores/bodyMetricStore'
 import { calculateTotalVolume, getAverageFeeling, get1rmTrend, calculateWeeklyCompletion } from '@/services/statsService'
+import type { WorkoutRecord } from '@/types/record'
 import { formatDate } from '@/services/dateService'
 
 const router = useRouter()
@@ -322,16 +323,18 @@ const relevantCycles = computed(() => {
   return cycleStore.cycles
 })
 
-const relevantRecords = computed(() => {
-  const result: Record<string, any[]> = {}
+/** 当前视图范围内的周期对应的训练记录映射（cycleId → records） */
+const relevantRecords = computed<Record<string, WorkoutRecord[]>>(() => {
+  const result: Record<string, WorkoutRecord[]> = {}
   for (const c of relevantCycles.value) {
     result[c.id] = recordStore.getRecordsForCycle(c.id)
   }
   return result
 })
 
-const allRecords = computed(() => {
-  const all: any[] = []
+/** 当前视图范围内的所有训练记录（扁平化列表） */
+const allRecords = computed<WorkoutRecord[]>(() => {
+  const all: WorkoutRecord[] = []
   for (const c of relevantCycles.value) {
     all.push(...recordStore.getRecordsForCycle(c.id))
   }
@@ -359,46 +362,19 @@ function starColor(starIndex: number) {
   return 'var(--state-warning)'
 }
 
+/**
+ * 1RM 趋势数据，委托 statsService.get1rmTrend() 计算。
+ * 将服务返回的 { cycleName } 映射为图表渲染所需的 { label }。
+ */
 const rmTrend = computed(() => {
-  const cycles = relevantCycles.value
-  const records = relevantRecords.value
-  return buildTrendData(cycles, records)
+  const raw = get1rmTrend(relevantCycles.value, relevantRecords.value)
+  return {
+    squat: raw.squat.map((pt) => ({ label: pt.cycleName, value: pt.value })),
+    bench: raw.bench.map((pt) => ({ label: pt.cycleName, value: pt.value })),
+    deadlift: raw.deadlift.map((pt) => ({ label: pt.cycleName, value: pt.value })),
+    cycleLabels: raw.squat.map((pt) => pt.cycleName),
+  }
 })
-
-function buildTrendData(cycles: any[], records: Record<string, any[]>) {
-  const squat: { label: string; value: number }[] = []
-  const bench: { label: string; value: number }[] = []
-  const deadlift: { label: string; value: number }[] = []
-  const cycleLabels: string[] = []
-
-  for (const cycle of cycles) {
-    const label = cycle.name || `C${cycleLabels.length + 1}`
-    cycleLabels.push(label)
-    const cycleRecords = records[cycle.id] ?? []
-    squat.push({ label, value: findBest1RM(cycleRecords, '深蹲', cycle.oneRM?.squat || 0) })
-    bench.push({ label, value: findBest1RM(cycleRecords, '卧推', cycle.oneRM?.bench || 0) })
-    deadlift.push({ label, value: findBest1RM(cycleRecords, '硬拉', cycle.oneRM?.deadlift || 0) })
-  }
-
-  return { squat, bench, deadlift, cycleLabels }
-}
-
-function findBest1RM(records: any[], exerciseName: string, default1RM: number): number {
-  let best = default1RM
-  for (const record of records) {
-    for (const exercise of record.exercises) {
-      if (exercise.name !== exerciseName) continue
-      for (const set of exercise.sets) {
-        const reps = set.actualReps
-        const weight = set.actualWeight
-        if (reps == null || weight == null || reps <= 0) continue
-        const estimated = weight * (1 + reps / 30)
-        if (estimated > best) best = Math.round(estimated)
-      }
-    }
-  }
-  return best
-}
 
 const allValues1RM = computed(() => {
   const v: number[] = []

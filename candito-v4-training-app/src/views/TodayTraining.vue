@@ -1,27 +1,16 @@
 <template>
-  <main class="pb-[100px] max-w-lg mx-auto px-4">
+  <main class="page">
     <div class="h-11"></div>
 
     <!-- ========== No Active Cycle ========== -->
     <template v-if="!activeCycle">
       <section class="px-5 pt-8 pb-4 text-center">
-        <div
-          class="flex items-center justify-center w-16 h-16 mx-auto rounded-full"
-          style="background: var(--color-training-main); opacity: 0.1;"
-        >
-          <i data-lucide="dumbbell" style="width: 28px; height: 28px; color: var(--color-training-main);"></i>
+        <div class="no-cycle-icon-bg">
+          <i data-lucide="dumbbell" class="lucide-2xl icon-training"></i>
         </div>
         <h1 class="typography-title mt-5">还没有训练周期</h1>
-        <p class="typography-caption mt-2" style="color: var(--color-primary-light);">
-          开始你的第一个 Candito 6周训练计划
-        </p>
-        <button
-          class="mt-8 w-full flex items-center justify-center h-12 rounded-full font-semibold"
-          style="background: var(--color-training-main); color: var(--color-surface); font-size: var(--text-md);"
-          @click="goStart"
-        >
-          创建训练周期
-        </button>
+        <p class="typography-caption mt-2 caption-light">开始你的第一个 Candito 6周训练计划</p>
+        <button class="create-cycle-btn" @click="goStart">创建训练周期</button>
       </section>
     </template>
 
@@ -32,19 +21,19 @@
         <h1 class="typography-title mt-1">周期已暂停</h1>
       </section>
       <section class="px-5">
-        <div class="rounded-[var(--radius-lg)] bg-[var(--color-surface)] p-5" style="box-shadow: var(--shadow-elevated);">
+        <div class="elevated-card">
           <div class="flex items-center gap-3 mb-3">
-            <div class="flex items-center justify-center w-10 h-10 rounded-full" style="background: var(--state-warning-bg);">
-              <i data-lucide="pause" style="width: 20px; height: 20px; color: var(--state-warning);"></i>
+            <div class="status-icon-bg warning">
+              <i data-lucide="pause" class="lucide-xl icon-warning"></i>
             </div>
             <div>
               <h2 class="typography-subtitle" style="font-size: var(--text-lg);">当前训练周期已暂停</h2>
-              <p style="font-size: var(--text-sm); color: var(--color-primary-light);">恢复后即可继续训练</p>
+              <p class="text-sm text-light">恢复后即可继续训练</p>
             </div>
           </div>
-          <div class="pt-3" style="border-top: 1px solid var(--color-border-light);">
-            <button class="w-full flex items-center justify-center h-11 rounded-full font-semibold" style="background: var(--color-surface-muted); color: var(--color-primary); font-size: var(--text-sm);" @click="goCycle">
-              <i data-lucide="settings" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+          <div class="pt-3 divider-top">
+            <button class="muted-action-btn" @click="goCycle">
+              <i data-lucide="settings" class="lucide-md mr-1.5"></i>
               前往周期管理
             </button>
           </div>
@@ -52,103 +41,70 @@
       </section>
       <section class="px-5 mt-6">
         <div class="flex gap-3">
-          <button class="flex-1 rounded-lg p-3 text-center" style="background: var(--color-surface); box-shadow: var(--shadow-card);" @click="goWeight">
-            <i data-lucide="scale" style="width: 18px; height: 18px; color: var(--color-training-main); margin-bottom: 4px;"></i>
-            <p style="font-size: var(--text-xs); color: var(--color-primary);">记录体重</p>
+          <button class="quick-action-btn" @click="goWeight">
+            <i data-lucide="scale" class="lucide-lg mb-1 icon-training"></i>
+            <p class="quick-action-label">记录体重</p>
           </button>
-          <button class="flex-1 rounded-lg p-3 text-center" style="background: var(--color-surface); box-shadow: var(--shadow-card);" @click="goStats">
-            <i data-lucide="bar-chart-3" style="width: 18px; height: 18px; color: var(--color-training-main); margin-bottom: 4px;"></i>
-            <p style="font-size: var(--text-xs); color: var(--color-primary);">查看统计</p>
+          <button class="quick-action-btn" @click="goStats">
+            <i data-lucide="bar-chart-3" class="lucide-lg mb-1 icon-training"></i>
+            <p class="quick-action-label">查看统计</p>
           </button>
-          <button class="flex-1 rounded-lg p-3 text-center" style="background: var(--color-surface); box-shadow: var(--shadow-card);" @click="goCycle">
-            <i data-lucide="list" style="width: 18px; height: 18px; color: var(--color-training-main); margin-bottom: 4px;"></i>
-            <p style="font-size: var(--text-xs); color: var(--color-primary);">周期管理</p>
+          <button class="quick-action-btn" @click="goCycle">
+            <i data-lucide="list" class="lucide-lg mb-1 icon-training"></i>
+            <p class="quick-action-label">周期管理</p>
           </button>
         </div>
       </section>
     </template>
 
     <template v-else>
-      <!-- ========== STATE 3: Rest Day ========== -->
+      <!-- ========== STATE: Rest Day ========== -->
       <template v-if="pageState === 'rest'">
         <section class="px-5">
           <div class="pb-4">
             <h1 class="typography-title">今天是休息日</h1>
-            <p class="typography-caption mt-1.5" style="color: var(--color-primary-light);">
-              充分休息，为下次训练做好准备
-            </p>
+            <p class="typography-caption mt-1.5 caption-light">充分休息，为下次训练做好准备</p>
           </div>
 
-          <div
-            class="rounded-[var(--radius-lg)] border-l-[3px] border-l-[var(--color-training-main)] bg-[var(--color-surface)] p-5"
-            style="box-shadow: var(--shadow-elevated);"
-          >
-            <template v-if="nextTrainingDay">
-              <p class="typography-caption mb-3">下次训练</p>
-              <h2 class="typography-subtitle mb-1">
-                {{ workoutTypeLabel(nextTrainingDay.type) }} · W{{ nextTrainingDay.weekNumber }}D{{ nextTrainingDay.dayNumber }}
-              </h2>
-              <p class="typography-caption mb-5">{{ formatDateDisplay(nextTrainingDay.scheduledDate) }}</p>
-              <p
-                class="mb-5"
-                style="font-family: var(--font-mono); font-size: 2.25rem; font-weight: var(--font-weight-bold); color: var(--color-training-main); letter-spacing: -0.02em; line-height: var(--leading-tight);"
-              >
-                还有 {{ countdownDays }} 天
-              </p>
-              <div class="pt-4 border-t" style="border-color: var(--color-border-light);">
-                <p class="typography-caption mb-2">训练内容</p>
-                <ul class="space-y-2">
-                  <li
-                    v-for="ex in nextTrainingDay.exercises"
-                    :key="ex.id"
-                    class="flex items-center gap-2"
-                  >
-                    <span
-                      class="inline-flex items-center justify-center w-1.5 h-1.5 rounded-full shrink-0"
-                      :style="{ backgroundColor: ex.type === 'optional' ? 'var(--color-training-optional)' : 'var(--color-training-main)' }"
-                    ></span>
-                    <span class="typography-body truncate">{{ ex.name }}</span>
-                  </li>
-                </ul>
-              </div>
-            </template>
-            <template v-else>
-              <p class="typography-caption">没有安排训练</p>
-            </template>
+          <div v-if="nextTrainingDay" class="training-card">
+            <p class="typography-caption mb-3">下次训练</p>
+            <h2 class="typography-subtitle mb-1">{{ workoutTypeLabel(nextTrainingDay.type) }} · W{{ nextTrainingDay.weekNumber }}D{{ nextTrainingDay.dayNumber }}</h2>
+            <p class="typography-caption mb-5">{{ formatDateDisplay(nextTrainingDay.scheduledDate) }}</p>
+            <p class="countdown-number">还有 {{ countdownDays }} 天</p>
+            <div class="pt-4 divider-top">
+              <p class="typography-caption mb-2">训练内容</p>
+              <ul class="space-y-2">
+                <li v-for="ex in nextTrainingDay.exercises" :key="ex.id" class="flex items-center gap-2">
+                  <span :class="['exercise-dot', ex.type]"></span>
+                  <span class="typography-body truncate">{{ ex.name }}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div v-else class="training-card">
+            <p class="typography-caption">没有安排训练</p>
           </div>
         </section>
 
         <section class="px-5 mt-6">
           <div class="flex gap-3">
-            <button
-              class="flex-1 rounded-lg p-3 text-center"
-              style="background: var(--color-surface); box-shadow: var(--shadow-card);"
-              @click="goWeight"
-            >
-              <i data-lucide="scale" style="width: 18px; height: 18px; color: var(--color-training-main); margin-bottom: 4px;"></i>
-              <p style="font-size: var(--text-xs); color: var(--color-primary);">记录体重</p>
+            <button class="quick-action-btn" @click="goWeight">
+              <i data-lucide="scale" class="lucide-lg mb-1 icon-training"></i>
+              <p class="quick-action-label">记录体重</p>
             </button>
-            <button
-              class="flex-1 rounded-lg p-3 text-center"
-              style="background: var(--color-surface); box-shadow: var(--shadow-card);"
-              @click="goStats"
-            >
-              <i data-lucide="bar-chart-3" style="width: 18px; height: 18px; color: var(--color-training-main); margin-bottom: 4px;"></i>
-              <p style="font-size: var(--text-xs); color: var(--color-primary);">查看统计</p>
+            <button class="quick-action-btn" @click="goStats">
+              <i data-lucide="bar-chart-3" class="lucide-lg mb-1 icon-training"></i>
+              <p class="quick-action-label">查看统计</p>
             </button>
-            <button
-              class="flex-1 rounded-lg p-3 text-center"
-              style="background: var(--color-surface); box-shadow: var(--shadow-card);"
-              @click="goPlan"
-            >
-              <i data-lucide="pen-line" style="width: 18px; height: 18px; color: var(--color-training-main); margin-bottom: 4px;"></i>
-              <p style="font-size: var(--text-xs); color: var(--color-primary);">训练笔记</p>
+            <button class="quick-action-btn" @click="goPlan">
+              <i data-lucide="pen-line" class="lucide-lg mb-1 icon-training"></i>
+              <p class="quick-action-label">训练笔记</p>
             </button>
           </div>
         </section>
       </template>
 
-      <!-- ========== STATE 1: Training Day - Not Yet Done ========== -->
+      <!-- ========== STATE: Training Day - Not Yet Done ========== -->
       <template v-else-if="pageState === 'pending'">
         <section class="px-5 pt-2 pb-4">
           <p class="typography-caption">{{ greetingDate }}</p>
@@ -156,17 +112,9 @@
         </section>
 
         <section class="px-5">
-          <div
-            class="rounded-[var(--radius-lg)] border-l-[3px] border-l-[var(--color-warm)] bg-[var(--color-surface)] p-5"
-            style="box-shadow: var(--shadow-elevated);"
-          >
+          <div class="training-card-warm">
             <div class="flex items-center justify-between mb-4">
-              <span
-                class="inline-flex items-center rounded-[var(--radius-sm)] px-2.5 py-1"
-                style="background: var(--color-primary-subtle); font-size: var(--text-sm); font-weight: var(--font-weight-medium); color: var(--color-primary); font-family: var(--font-sans);"
-              >
-                第{{ todayDayInfo.weekNumber }}周 · {{ todayDayInfo.weekTheme }}
-              </span>
+              <span class="week-badge">第{{ todayDayInfo.weekNumber }}周 · {{ todayDayInfo.weekTheme }}</span>
               <span class="typography-caption flex items-center gap-1">
                 <i data-lucide="clock" class="w-3.5 h-3.5"></i>
                 预计 {{ estimatedDuration }} 分钟
@@ -174,59 +122,35 @@
             </div>
             <h2 class="typography-subtitle mb-4">{{ workoutTypeLabel(todayDayInfo.type) }}</h2>
             <ul class="space-y-3 mb-6">
-              <li
-                v-for="ex in todayDayInfo.exercises"
-                :key="ex.id"
-                class="flex items-center gap-3"
-              >
-                <span
-                  class="inline-flex items-center justify-center w-2 h-2 rounded-full shrink-0"
-                  :style="{ backgroundColor: ex.type === 'optional' ? 'var(--color-training-optional)' : 'var(--color-training-main)' }"
-                ></span>
+              <li v-for="ex in todayDayInfo.exercises" :key="ex.id" class="flex items-center gap-3">
+                <span :class="['exercise-dot', ex.type]"></span>
                 <span class="typography-body truncate">{{ ex.name }}</span>
               </li>
             </ul>
-            <button
-              class="w-full flex items-center justify-center rounded-[var(--radius-full)] px-6 py-3.5 font-semibold"
-              style="background-color: var(--color-training-main); color: var(--color-surface); font-family: var(--font-sans); font-size: var(--text-md);"
-              @click="goExecute"
-            >
-              开始训练
-            </button>
+            <button class="start-training-btn" @click="goExecute">开始训练</button>
           </div>
         </section>
 
+        <!-- Stats Bar -->
         <section class="px-5 mt-6">
-          <div
-            class="flex items-stretch rounded-[var(--radius-lg)] overflow-hidden"
-            style="box-shadow: var(--shadow-card);"
-          >
-            <div class="flex-1 flex flex-col items-center justify-center py-4 px-3">
-              <span
-                class="whitespace-nowrap"
-                style="font-family: var(--font-mono); font-size: var(--text-xl); font-weight: var(--font-weight-bold); color: var(--color-primary);"
-              >
-                {{ weekCompletedCount }}<span style="color: var(--color-primary-light);">/{{ weekTotalDays }}</span>
+          <div class="stats-bar">
+            <div class="stats-item">
+              <span class="mono-stat">
+                {{ weekCompletedCount }}<span class="stat-fraction">/{{ weekTotalDays }}</span>
               </span>
               <span class="typography-caption mt-1">本周完成</span>
             </div>
-            <div class="w-px self-stretch" style="background: var(--color-border);"></div>
-            <div class="flex-1 flex flex-col items-center justify-center py-4 px-3">
-              <span
-                class="whitespace-nowrap"
-                style="font-family: var(--font-mono); font-size: var(--text-xl); font-weight: var(--font-weight-bold); color: var(--color-primary);"
-              >
-                {{ todayDayInfo.weekNumber }}<span style="color: var(--color-primary-light);">/6</span>
+            <div class="stats-divider"></div>
+            <div class="stats-item">
+              <span class="mono-stat">
+                {{ todayDayInfo.weekNumber }}<span class="stat-fraction">/6</span>
               </span>
               <span class="typography-caption mt-1">当前周期</span>
             </div>
-            <div class="w-px self-stretch" style="background: var(--color-border);"></div>
-            <div class="flex-1 flex flex-col items-center justify-center py-4 px-3">
-              <span
-                class="whitespace-nowrap"
-                style="font-family: var(--font-mono); font-size: var(--text-xl); font-weight: var(--font-weight-bold); color: var(--color-training-main);"
-              >
-                {{ streakDays }}<span class="typography-caption" style="font-size: var(--text-sm);">天</span>
+            <div class="stats-divider"></div>
+            <div class="stats-item">
+              <span class="mono-stat-accent">
+                {{ streakDays }}<span class="stat-unit">天</span>
               </span>
               <span class="typography-caption mt-1">连续训练</span>
             </div>
@@ -234,34 +158,22 @@
         </section>
 
         <div v-if="todayDayInfo.weekNumber === 6" class="flex justify-center mt-4">
-          <button
-            class="inline-flex items-center gap-1.5"
-            style="font-size: var(--text-sm); color: var(--color-training-main);"
-            @click="goWeek6"
-          >
-            <i data-lucide="trophy" style="width: 14px; height: 14px;"></i>
+          <button class="text-link accent" @click="goWeek6">
+            <i data-lucide="trophy" class="lucide-sm"></i>
             第6周决策
           </button>
         </div>
 
         <div class="flex justify-center mt-2">
-          <button
-            class="inline-flex items-center gap-1.5"
-            style="font-size: var(--text-sm); color: var(--color-primary-light);"
-            @click="handleSkipTraining"
-          >
-            <i data-lucide="skip-forward" style="width: 14px; height: 14px;"></i>
+          <button class="text-link muted" @click="handleSkipTraining">
+            <i data-lucide="skip-forward" class="lucide-sm"></i>
             跳过本次训练
           </button>
         </div>
 
         <div class="flex justify-center mt-1">
-          <button
-            class="inline-flex items-center gap-1.5"
-            style="font-size: var(--text-sm); color: var(--state-warning);"
-            @click="goMissed"
-          >
-            <i data-lucide="alert-triangle" style="width: 14px; height: 14px;"></i>
+          <button class="text-link warning" @click="goMissed">
+            <i data-lucide="alert-triangle" class="lucide-sm"></i>
             处理错过训练
           </button>
         </div>
@@ -274,150 +186,101 @@
           <h1 class="typography-title mt-1">今日已跳过</h1>
         </section>
         <section class="px-5">
-          <div class="rounded-[var(--radius-lg)] border-l-[3px] border-l-[var(--color-primary-light)] bg-[var(--color-surface)] p-5" style="box-shadow: var(--shadow-elevated);">
+          <div class="training-card-muted">
             <div class="flex items-center gap-3 mb-3">
-              <div class="flex items-center justify-center w-10 h-10 rounded-full" style="background: var(--color-primary-subtle);">
-                <i data-lucide="skip-forward" style="width: 20px; height: 20px; color: var(--color-primary-light);"></i>
+              <div class="status-icon-bg subtle">
+                <i data-lucide="skip-forward" class="lucide-xl icon-light"></i>
               </div>
               <div>
                 <h2 class="typography-subtitle" style="font-size: var(--text-lg);">本次训练已跳过</h2>
-                <p style="font-size: var(--text-sm); color: var(--color-primary-light);">{{ workoutTypeLabel(todayDayInfo.type) }} · W{{ todayDayInfo.weekNumber }}D{{ todayDayInfo.dayNumber }}</p>
+                <p class="text-sm text-light">{{ workoutTypeLabel(todayDayInfo.type) }} · W{{ todayDayInfo.weekNumber }}D{{ todayDayInfo.dayNumber }}</p>
               </div>
             </div>
-            <div class="pt-3" style="border-top: 1px solid var(--color-border-light);">
+            <div class="pt-3 divider-top">
               <p class="typography-caption" style="font-size: var(--text-xs);">已标记为跳过，不会影响后续训练计划</p>
             </div>
           </div>
         </section>
         <section class="px-5 mt-6">
           <div class="flex gap-3">
-            <button class="flex-1 rounded-lg p-3 text-center" style="background: var(--color-surface); box-shadow: var(--shadow-card);" @click="goWeight">
-              <i data-lucide="scale" style="width: 18px; height: 18px; color: var(--color-training-main); margin-bottom: 4px;"></i>
-              <p style="font-size: var(--text-xs); color: var(--color-primary);">记录体重</p>
+            <button class="quick-action-btn" @click="goWeight">
+              <i data-lucide="scale" class="lucide-lg mb-1 icon-training"></i>
+              <p class="quick-action-label">记录体重</p>
             </button>
-            <button class="flex-1 rounded-lg p-3 text-center" style="background: var(--color-surface); box-shadow: var(--shadow-card);" @click="goStats">
-              <i data-lucide="bar-chart-3" style="width: 18px; height: 18px; color: var(--color-training-main); margin-bottom: 4px;"></i>
-              <p style="font-size: var(--text-xs); color: var(--color-primary);">查看统计</p>
+            <button class="quick-action-btn" @click="goStats">
+              <i data-lucide="bar-chart-3" class="lucide-lg mb-1 icon-training"></i>
+              <p class="quick-action-label">查看统计</p>
             </button>
-            <button class="flex-1 rounded-lg p-3 text-center" style="background: var(--color-surface); box-shadow: var(--shadow-card);" @click="goPlan">
-              <i data-lucide="pen-line" style="width: 18px; height: 18px; color: var(--color-training-main); margin-bottom: 4px;"></i>
-              <p style="font-size: var(--text-xs); color: var(--color-primary);">训练计划</p>
+            <button class="quick-action-btn" @click="goPlan">
+              <i data-lucide="pen-line" class="lucide-lg mb-1 icon-training"></i>
+              <p class="quick-action-label">训练计划</p>
             </button>
           </div>
         </section>
       </template>
 
-      <!-- ========== STATE 2: Training Day - Completed ========== -->
+      <!-- ========== STATE: Training Day - Completed ========== -->
       <template v-else>
         <section class="px-5">
           <div class="flex items-center gap-3 mb-4">
-            <div
-              class="flex items-center justify-center w-10 h-10 rounded-full"
-              style="background: var(--state-success-bg);"
-            >
-              <i data-lucide="check" style="width: 20px; height: 20px; color: var(--state-success);"></i>
+            <div class="status-icon-bg success">
+              <i data-lucide="check" class="lucide-xl icon-success"></i>
             </div>
             <div>
               <h2 class="typography-subtitle" style="font-size: var(--text-lg);">今日训练已完成</h2>
-              <p style="font-size: var(--text-sm); color: var(--color-primary-light);">
-                {{ completedInfo }}
-              </p>
+              <p class="text-sm text-light">{{ completedInfo }}</p>
             </div>
           </div>
 
-          <div
-            class="rounded-xl p-5 mb-4"
-            style="background: var(--color-surface); box-shadow: var(--shadow-elevated);"
-          >
+          <!-- Today's Data Card -->
+          <div class="elevated-card mb-4">
             <div class="flex items-center justify-between mb-3">
-              <span
-                style="font-size: var(--text-sm); font-weight: var(--font-weight-medium); color: var(--color-primary);"
-              >
-                本次训练数据
-              </span>
-              <button
-                class="inline-flex items-center gap-1"
-                style="font-size: var(--text-xs); color: var(--color-training-main);"
-                @click="goDetail"
-              >
+              <span class="section-title">本次训练数据</span>
+              <button class="detail-link" @click="goDetail">
                 查看详情
-                <i data-lucide="chevron-right" style="width: 12px; height: 12px;"></i>
+                <i data-lucide="chevron-right" class="lucide-xs"></i>
               </button>
             </div>
-            <div
-              class="flex items-stretch divide-x"
-              style="border-color: var(--color-border-light);"
-            >
-              <div class="flex-1 flex flex-col items-center py-2">
-                <span
-                  style="font-family: var(--font-mono); font-size: var(--text-xl); font-weight: var(--font-weight-bold); color: var(--color-primary);"
-                >
-                  {{ totalVolume }}
-                </span>
-                <span style="font-size: var(--text-xs); color: var(--color-primary-light);">总容量 kg</span>
+            <div class="data-row">
+              <div class="data-item">
+                <span class="mono-stat">{{ totalVolume }}</span>
+                <span class="data-label">总容量 kg</span>
               </div>
-              <div class="flex-1 flex flex-col items-center py-2">
-                <span
-                  style="font-family: var(--font-mono); font-size: var(--text-xl); font-weight: var(--font-weight-bold); color: var(--color-primary);"
-                >
-                  {{ totalCompletedSets }}
-                </span>
-                <span style="font-size: var(--text-xs); color: var(--color-primary-light);">总组数</span>
+              <div class="data-item">
+                <span class="mono-stat">{{ totalCompletedSets }}</span>
+                <span class="data-label">总组数</span>
               </div>
-              <div class="flex-1 flex flex-col items-center py-2">
-                <span
-                  style="font-family: var(--font-mono); font-size: var(--text-xl); font-weight: var(--font-weight-bold); color: var(--color-primary);"
-                >
-                  {{ durationMinutes }}
-                </span>
-                <span style="font-size: var(--text-xs); color: var(--color-primary-light);">分钟</span>
+              <div class="data-item">
+                <span class="mono-stat">{{ durationMinutes }}</span>
+                <span class="data-label">分钟</span>
               </div>
             </div>
-            <div
-              class="flex items-center gap-2 mt-3 pt-3"
-              style="border-top: 1px solid var(--color-border-light);"
-            >
-              <span style="font-size: var(--text-xs); color: var(--color-primary-light);">训练感受</span>
-              <span style="font-size: var(--text-sm); color: var(--color-primary);">
-                {{ feelingStars }} {{ feelingLabel }}
-              </span>
+            <div class="feeling-row">
+              <span class="data-label">训练感受</span>
+              <span class="feeling-value">{{ feelingStars }} {{ feelingLabel }}</span>
             </div>
           </div>
 
           <div class="space-y-2">
-            <div
-              class="flex items-center justify-between rounded-lg p-3"
-              style="background: var(--color-surface-muted);"
-            >
-              <span style="font-size: var(--text-sm); color: var(--color-primary);">记录今日体重</span>
-              <span
-                style="font-family: var(--font-mono); font-size: var(--text-sm); font-weight: var(--font-weight-medium); color: var(--color-training-main);"
-              >
-                {{ bodyWeightDisplay || '--' }}
-              </span>
+            <div class="muted-row">
+              <span class="text-sm text-primary">记录今日体重</span>
+              <span class="body-weight-value">{{ bodyWeightDisplay || '--' }}</span>
             </div>
           </div>
 
-          <button
-            v-if="nextTrainingDay"
-            class="w-full rounded-xl p-4 mt-4 text-left"
-            style="background: var(--color-surface); box-shadow: var(--shadow-card);"
-            @click="goPlan"
-          >
+          <button v-if="nextTrainingDay" class="next-training-card" @click="goPlan">
             <div class="flex items-center justify-between mb-2">
-              <span style="font-size: var(--text-sm); font-weight: var(--font-weight-medium); color: var(--color-primary);">下次训练</span>
-              <span style="font-size: var(--text-xs); color: var(--color-training-main);">明天</span>
+              <span class="section-title">下次训练</span>
+              <span class="next-badge">明天</span>
             </div>
             <div class="flex items-center justify-between">
               <div>
-                <span style="font-size: var(--text-base); font-weight: var(--font-weight-medium); color: var(--color-primary);">
+                <span class="next-training-title">
                   {{ workoutTypeLabel(nextTrainingDay.type) }} · W{{ nextTrainingDay.weekNumber }}D{{ nextTrainingDay.dayNumber }}
                 </span>
-                <p style="font-size: var(--text-xs); color: var(--color-primary-light); margin-top: 2px;">
-                  {{ formatDateDisplay(nextTrainingDay.scheduledDate) }} · 预计 {{ estimateDuration(nextTrainingDay.exercises) }} 分钟
-                </p>
+                <p class="next-training-detail">{{ formatDateDisplay(nextTrainingDay.scheduledDate) }} · 预计 {{ estimateDuration(nextTrainingDay.exercises) }} 分钟</p>
               </div>
-              <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--color-primary-light);"></i>
+              <i data-lucide="chevron-right" class="lucide-md icon-light"></i>
             </div>
           </button>
         </section>
@@ -604,79 +467,375 @@ function estimateDuration(exercises: PlannedExercise[]): number {
   return total
 }
 
-function goStart() {
-  router.push('/start')
-}
-
+function goStart() { router.push('/start') }
 function goExecute() {
   if (!todayDayInfo.value || !activeCycle.value) return
-  router.push({
-    name: 'training-execute',
-    query: {
-      week: todayDayInfo.value.weekNumber,
-      day: todayDayInfo.value.dayNumber,
-      cycleId: activeCycle.value.id,
-    },
-  })
+  router.push({ name: 'training-execute', query: { week: todayDayInfo.value.weekNumber, day: todayDayInfo.value.dayNumber, cycleId: activeCycle.value.id } })
 }
-
 function goDetail() {
   if (!todayDayInfo.value) return
-  router.push({
-    name: 'training-detail',
-    query: {
-      week: todayDayInfo.value.weekNumber,
-      day: todayDayInfo.value.dayNumber,
-    },
-  })
+  router.push({ name: 'training-detail', query: { week: todayDayInfo.value.weekNumber, day: todayDayInfo.value.dayNumber } })
 }
-
-function goWeek6() {
-  router.push({ name: 'week6' })
-}
-
-function goMissed() {
-  router.push({ name: 'missed' })
-}
-
-function goWeight() {
-  router.push({ name: 'weight' })
-}
-
-function goCycle() {
-  router.push('/cycle')
-}
-
-function goStats() {
-  router.push({ name: 'stats' })
-}
-
-function goPlan() {
-  router.push({ name: 'plan' })
-}
+function goWeek6() { router.push({ name: 'week6' }) }
+function goMissed() { router.push({ name: 'missed' }) }
+function goWeight() { router.push({ name: 'weight' }) }
+function goCycle() { router.push('/cycle') }
+function goStats() { router.push({ name: 'stats' }) }
+function goPlan() { router.push({ name: 'plan' }) }
 
 function handleSkipTraining() {
   if (!activeCycle.value || !todayDayInfo.value) return
-  const updatedWeeks = activeCycle.value.weeks.map(week => {
-    if (week.weekNumber !== todayDayInfo.value!.weekNumber) return week
-    return {
-      ...week,
-      days: week.days.map(day => {
-        if (day.dayNumber !== todayDayInfo.value!.dayNumber) return day
-        return { ...day, status: 'skipped' as const }
-      }),
-    }
-  })
-  cycleStore.updateCycle(activeCycle.value.id, { weeks: updatedWeeks })
+  cycleStore.skipDay(activeCycle.value.id, todayDayInfo.value.weekNumber, todayDayInfo.value.dayNumber)
 }
 
-watch(
-  () => route.path,
-  () => {
-    setTimeout(() => {
-      createIcons({ icons })
-    }, 50)
-  },
-  { immediate: true }
-)
+watch(() => route.path, () => {
+  setTimeout(() => { createIcons({ icons }) }, 50)
+}, { immediate: true })
 </script>
+
+<style scoped>
+/* ===== 页面容器 ===== */
+.page {
+  padding-bottom: 100px;
+  max-width: 32rem;
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* ===== 共享工具类 ===== */
+.text-sm { font-size: var(--text-sm); }
+.text-light { color: var(--color-primary-light); }
+.text-primary { color: var(--color-primary); }
+.caption-light { color: var(--color-primary-light); }
+.divider-top { border-top: 1px solid var(--color-border-light); }
+
+/* ===== Lucide 图标尺寸 ===== */
+.lucide-xs { width: 12px; height: 12px; }
+.lucide-sm { width: 14px; height: 14px; }
+.lucide-md { width: 16px; height: 16px; }
+.lucide-lg { width: 18px; height: 18px; }
+.lucide-xl { width: 20px; height: 20px; }
+.lucide-2xl { width: 28px; height: 28px; }
+
+/* 图标颜色 */
+.icon-training { color: var(--color-training-main); }
+.icon-warning { color: var(--state-warning); }
+.icon-success { color: var(--state-success); }
+.icon-light { color: var(--color-primary-light); }
+
+/* ===== 无周期状态 ===== */
+.no-cycle-icon-bg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  margin: 0 auto;
+  border-radius: var(--radius-full);
+  background: var(--color-training-main);
+  opacity: 0.1;
+}
+
+.create-cycle-btn {
+  margin-top: 2rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 3rem;
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-semibold);
+  background: var(--color-training-main);
+  color: var(--color-surface);
+  font-size: var(--text-md);
+}
+
+/* ===== 状态图标背景 ===== */
+.status-icon-bg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-full);
+}
+
+.status-icon-bg.warning { background: var(--state-warning-bg); }
+.status-icon-bg.success { background: var(--state-success-bg); }
+.status-icon-bg.subtle { background: var(--color-primary-subtle); }
+
+/* ===== 高亮卡片 ===== */
+.elevated-card {
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-elevated);
+}
+
+/* ===== 操作按钮 ===== */
+.muted-action-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.75rem;
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-semibold);
+  background: var(--color-surface-muted);
+  color: var(--color-primary);
+  font-size: var(--text-sm);
+}
+
+/* ===== 快捷入口按钮（记录体重/查看统计/周期管理） ===== */
+.quick-action-btn {
+  flex: 1;
+  border-radius: var(--radius-lg);
+  padding: 0.75rem;
+  text-align: center;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.quick-action-label {
+  font-size: var(--text-xs);
+  color: var(--color-primary);
+}
+
+/* ===== 训练卡片 ===== */
+.training-card {
+  border-radius: var(--radius-lg);
+  border-left: 3px solid var(--color-training-main);
+  background: var(--color-surface);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-elevated);
+}
+
+.training-card-warm {
+  border-radius: var(--radius-lg);
+  border-left: 3px solid var(--color-warm);
+  background: var(--color-surface);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-elevated);
+}
+
+.training-card-muted {
+  border-radius: var(--radius-lg);
+  border-left: 3px solid var(--color-primary-light);
+  background: var(--color-surface);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-elevated);
+}
+
+/* ===== 倒计时数字 ===== */
+.countdown-number {
+  margin-bottom: 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 2.25rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-training-main);
+  letter-spacing: -0.02em;
+  line-height: var(--leading-tight);
+}
+
+/* ===== 动作类型圆点 ===== */
+.exercise-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+  background-color: var(--color-training-main);
+}
+
+.exercise-dot.optional {
+  background-color: var(--color-training-optional);
+}
+
+/* ===== 周标签 ===== */
+.week-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-sm);
+  padding: 0.25rem 0.625rem;
+  background: var(--color-primary-subtle);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+  font-family: var(--font-sans);
+}
+
+/* ===== 开始训练按钮 ===== */
+.start-training-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  padding: 0.875rem 1.5rem;
+  font-weight: var(--font-weight-semibold);
+  background-color: var(--color-training-main);
+  color: var(--color-surface);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+}
+
+/* ===== 统计栏 ===== */
+.stats-bar {
+  display: flex;
+  align-items: stretch;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.stats-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0.75rem;
+}
+
+.stats-divider {
+  width: 1px;
+  align-self: stretch;
+  background: var(--color-border);
+}
+
+/* ===== 等宽统计数字 ===== */
+.mono-stat {
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+
+.mono-stat-accent {
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-training-main);
+}
+
+.stat-fraction {
+  color: var(--color-primary-light);
+}
+
+.stat-unit {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-primary-light);
+  font-weight: var(--font-weight-normal);
+}
+
+/* ===== 文字链接按钮 ===== */
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: var(--text-sm);
+}
+
+.text-link.accent { color: var(--color-training-main); }
+.text-link.muted { color: var(--color-primary-light); }
+.text-link.warning { color: var(--state-warning); }
+
+/* ===== 完成状态 - 数据卡片 ===== */
+.section-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+}
+
+.detail-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: var(--text-xs);
+  color: var(--color-training-main);
+}
+
+.data-row {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.data-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.data-label {
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+}
+
+.feeling-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border-light);
+}
+
+.feeling-value {
+  font-size: var(--text-sm);
+  color: var(--color-primary);
+}
+
+/* ===== 体重行 ===== */
+.muted-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: var(--radius-lg);
+  padding: 0.75rem;
+  background: var(--color-surface-muted);
+}
+
+.body-weight-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-training-main);
+}
+
+/* ===== 下次训练卡片 ===== */
+.next-training-card {
+  width: 100%;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-top: 1rem;
+  text-align: left;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.next-badge {
+  font-size: var(--text-xs);
+  color: var(--color-training-main);
+}
+
+.next-training-title {
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+}
+
+.next-training-detail {
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+  margin-top: 2px;
+}
+</style>

@@ -1,79 +1,92 @@
 <template>
-  <main class="min-h-screen pb-24 max-w-lg mx-auto px-4" style="font-family: var(--font-sans);">
+  <main class="min-h-screen pb-24 max-w-lg mx-auto px-4 cal-page">
     <div class="h-11"></div>
 
     <header class="px-5 pt-2 pb-1">
-      <h1 class="typography-hero" style="font-size: var(--text-2xl); letter-spacing: -0.01em;">训练日历</h1>
+      <h1 class="typography-hero cal-title">训练日历</h1>
       <div class="flex items-center justify-between mt-3">
-        <button class="inline-flex h-8 w-8 items-center justify-center rounded-md" style="color: var(--color-primary-light);" aria-label="上个月" @click="prevMonth">
+        <button class="inline-flex h-8 w-8 items-center justify-center rounded-md cal-nav-btn" aria-label="上个月" @click="prevMonth">
           <ChevronLeft style="width:18px; height:18px;" />
         </button>
-        <h2 class="typography-subtitle" style="font-size: var(--text-md); font-weight: var(--font-weight-semibold); color: var(--color-primary);">{{ currentYear }}年{{ currentMonth + 1 }}月</h2>
-        <button class="inline-flex h-8 w-8 items-center justify-center rounded-md" style="color: var(--color-primary-light);" aria-label="下个月" @click="nextMonth">
+        <h2 class="typography-subtitle cal-month-title">{{ currentYear }}年{{ currentMonth + 1 }}月</h2>
+        <button class="inline-flex h-8 w-8 items-center justify-center rounded-md cal-nav-btn" aria-label="下个月" @click="nextMonth">
           <ChevronRight style="width:18px; height:18px;" />
         </button>
       </div>
       <div class="flex justify-center mt-3" v-if="activeCycle">
-        <span class="inline-flex items-center px-3 py-1 whitespace-nowrap" style="font-size: var(--text-sm); font-weight: var(--font-weight-medium); color: var(--color-training-main); background: var(--state-info-bg); border-radius: var(--radius-full);">{{ cycleStatusText }}</span>
+        <span class="inline-flex items-center px-3 py-1 whitespace-nowrap cycle-status-badge">{{ cycleStatusText }}</span>
       </div>
     </header>
 
-    <section class="mx-5 mt-3 mb-1 px-2 py-2" style="background: rgba(255,255,255,0.72); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: var(--radius-lg); border: 1px solid var(--color-border-light);">
-      <div class="grid grid-cols-7 text-center" style="gap: 0;">
+    <!-- 周行（横向滚动条风格） -->
+    <section class="mx-5 mt-3 mb-1 px-2 py-2 week-row-panel">
+      <div class="grid grid-cols-7 text-center week-row-grid">
         <div v-for="(day, idx) in weekRowDays" :key="idx" class="flex flex-col items-center py-1">
-          <span class="truncate" style="font-size: var(--text-xs); color: var(--color-primary-light); line-height: 1;">{{ day.abbr }}</span>
-          <span class="mt-1 truncate" :style="weekRowDateStyle(day)" :class="day.isToday ? 'inline-flex h-7 w-7 items-center justify-center rounded-full' : ''">{{ day.date }}</span>
-          <span v-if="day.hasTraining" class="mt-0.5 h-1 w-1 rounded-full" :style="weekRowDotStyle(day)"></span>
+          <span class="truncate week-row-abbr">{{ day.abbr }}</span>
+          <span
+            class="mt-1 truncate"
+            :class="weekRowDateClass(day)"
+          >{{ day.date }}</span>
+          <span v-if="day.hasTraining" class="mt-0.5 h-1 w-1 rounded-full" :class="weekRowDotClass(day)"></span>
         </div>
       </div>
     </section>
 
-    <section class="mx-5 mt-2 px-1 pb-1" style="border: 1px solid var(--color-border-light); border-radius: var(--radius-lg);">
-      <div class="grid grid-cols-7 text-center py-2" style="border-bottom: 1px solid var(--color-border-light);">
-        <span v-for="wd in weekdayHeaders" :key="wd" class="truncate" style="font-size: var(--text-xs); color: var(--color-primary-light); font-weight: var(--font-weight-medium);">{{ wd }}</span>
+    <!-- 月历网格 -->
+    <section class="mx-5 mt-2 px-1 pb-1 cal-grid-panel">
+      <div class="grid grid-cols-7 text-center py-2 cal-grid-header">
+        <span v-for="wd in weekdayHeaders" :key="wd" class="truncate wd-header">{{ wd }}</span>
       </div>
 
       <div v-for="(row, rowIdx) in calendarRows" :key="rowIdx" class="grid grid-cols-7 text-center">
-        <div v-for="(cell, cellIdx) in row" :key="cellIdx" class="flex flex-col items-center" :style="cellContainerStyle(rowIdx, cellIdx, row.length)" @click="selectDay(cell)">
-          <span class="truncate" :style="cellDateStyle(cell)">{{ cell.day }}</span>
-          <span v-if="cell.trainingStatus" class="mt-0.5 h-1.5 w-1.5 rounded-full" :style="cellDotStyle(cell)"></span>
+        <div
+          v-for="(cell, cellIdx) in row"
+          :key="cellIdx"
+          class="flex flex-col items-center cal-cell"
+          :class="cellContainerClass(rowIdx)"
+          @click="selectDay(cell)"
+        >
+          <span class="truncate" :class="cellDateClass(cell)">{{ cell.day }}</span>
+          <span v-if="cell.trainingStatus" class="mt-0.5 h-1.5 w-1.5 rounded-full" :class="cellDotClass(cell.trainingStatus)"></span>
         </div>
       </div>
     </section>
 
+    <!-- 图例 -->
     <div class="flex items-center justify-center gap-4 mt-3 px-5">
       <div class="flex items-center gap-1">
-        <span class="h-1.5 w-1.5 rounded-full" style="background: var(--state-success);"></span>
-        <span class="truncate" style="font-size: var(--text-xs); color: var(--color-primary-light);">已完成</span>
+        <span class="h-1.5 w-1.5 rounded-full legend-dot-success"></span>
+        <span class="truncate legend-label">已完成</span>
       </div>
       <div class="flex items-center gap-1">
-        <span class="h-1.5 w-1.5 rounded-full" style="background: var(--color-training-main);"></span>
-        <span class="truncate" style="font-size: var(--text-xs); color: var(--color-primary-light);">今日</span>
+        <span class="h-1.5 w-1.5 rounded-full legend-dot-today"></span>
+        <span class="truncate legend-label">今日</span>
       </div>
       <div class="flex items-center gap-1">
-        <span class="h-1.5 w-1.5 rounded-full" style="background: var(--color-primary-light);"></span>
-        <span class="truncate" style="font-size: var(--text-xs); color: var(--color-primary-light);">待训练</span>
+        <span class="h-1.5 w-1.5 rounded-full legend-dot-upcoming"></span>
+        <span class="truncate legend-label">待训练</span>
       </div>
       <div class="flex items-center gap-1">
-        <span class="h-1.5 w-1.5 rounded-full" style="background: var(--state-warning);"></span>
-        <span class="truncate" style="font-size: var(--text-xs); color: var(--color-primary-light);">未完成</span>
+        <span class="h-1.5 w-1.5 rounded-full legend-dot-missed"></span>
+        <span class="truncate legend-label">未完成</span>
       </div>
     </div>
 
-    <section v-if="selectedDayInfo" class="mx-5 mt-4 p-4" style="background: var(--color-surface); border: 1px solid var(--color-border-light); border-radius: var(--radius-lg); box-shadow: var(--shadow-card);">
+    <!-- 选中日期详情 -->
+    <section v-if="selectedDayInfo" class="mx-5 mt-4 p-4 day-detail-panel">
       <div class="flex items-center justify-between">
         <div>
-          <h3 class="typography-subtitle" style="font-size: var(--text-md); font-weight: var(--font-weight-semibold); color: var(--color-primary);">{{ selectedDayInfo.displayDate }}</h3>
+          <h3 class="typography-subtitle day-detail-title">{{ selectedDayInfo.displayDate }}</h3>
         </div>
-        <span class="inline-flex items-center px-2.5 py-0.5 whitespace-nowrap" style="font-size: var(--text-sm); font-weight: var(--font-weight-medium); border-radius: var(--radius-full);" :style="selectedDayPillStyle">{{ selectedDayInfo.statusLabel }}</span>
+        <span class="inline-flex items-center px-2.5 py-0.5 whitespace-nowrap day-detail-pill" :class="selectedDayPillClass">{{ selectedDayInfo.statusLabel }}</span>
       </div>
-      <div class="mt-3" style="border-top: 1px solid var(--color-border-light); padding-top: var(--space-3);">
+      <div class="mt-3 day-detail-content">
         <template v-if="selectedDayInfo.workoutType">
           <div class="flex items-center gap-2">
-            <span class="typography-body" style="font-size: var(--text-base); font-weight: var(--font-weight-semibold); color: var(--color-primary);">{{ selectedDayInfo.workoutType }} · W{{ selectedDayInfo.weekNum }}D{{ selectedDayInfo.dayNum }}</span>
+            <span class="typography-body day-detail-workout">{{ selectedDayInfo.workoutType }} · W{{ selectedDayInfo.weekNum }}D{{ selectedDayInfo.dayNum }}</span>
           </div>
-          <p class="mt-2 truncate" style="font-size: var(--text-base); color: var(--color-primary-light); line-height: var(--leading-relaxed);">{{ selectedDayInfo.exercisesSummary }}</p>
-          <button class="mt-3 inline-flex items-center gap-1 px-3 py-1.5" style="font-size: var(--text-xs); font-weight: var(--font-weight-medium); color: var(--color-training-main); background: var(--state-info-bg); border-radius: var(--radius-full);" @click="goToDetail(selectedDayInfo)">
+          <p class="mt-2 truncate day-detail-exercises">{{ selectedDayInfo.exercisesSummary }}</p>
+          <button class="mt-3 inline-flex items-center gap-1 px-3 py-1.5 day-detail-btn" @click="goToDetail(selectedDayInfo)">
             查看详情
             <ChevronRight style="width: 12px; height: 12px;" />
           </button>
@@ -343,12 +356,14 @@ const selectedDayInfo = computed<SelectedDayInfo | null>(() => {
   }
 })
 
-const selectedDayPillStyle = computed(() => {
-  if (!selectedDayInfo.value) return {}
-  return {
-    color: selectedDayInfo.value.statusPillColor,
-    background: selectedDayInfo.value.statusPillBg,
-  }
+/**
+ * 选中日期标签的状态CSS类（替代原来的 selectedDayPillStyle 样式函数）
+ */
+const selectedDayPillClass = computed(() => {
+  if (!selectedDayInfo.value) return ''
+  if (selectedDayInfo.value.statusLabel === '休息日') return 'day-pill-rest'
+  if (selectedDayInfo.value.statusLabel === '已完成') return 'day-pill-completed'
+  return 'day-pill-upcoming'
 })
 
 const cycleStatusText = computed(() => {
@@ -369,77 +384,74 @@ function currentWeekNumber(): number {
   return 1
 }
 
-function weekRowDateStyle(day: WeekRowDay): Record<string, string> {
+/**
+ * 周行日期CSS类（替代原来的 weekRowDateStyle 样式函数）
+ */
+function weekRowDateClass(day: WeekRowDay): string[] {
   if (day.isToday) {
-    return {
-      fontSize: 'var(--text-sm)',
-      color: 'var(--color-surface)',
-      fontWeight: 'var(--font-weight-bold)',
-      background: 'var(--color-training-main)',
-    }
+    return ['week-date-today', 'inline-flex', 'h-7', 'w-7', 'items-center', 'justify-center', 'rounded-full']
   }
-  return {
-    fontSize: 'var(--text-sm)',
-    color: day.dateStr.startsWith(todayStr.slice(0, 7)) ? 'var(--color-primary)' : 'var(--color-border)',
-    fontWeight: 'var(--font-weight-medium)',
+  const isCurrentMonth = day.dateStr.startsWith(todayStr.slice(0, 7))
+  if (isCurrentMonth) {
+    return ['week-date-current']
   }
+  return ['week-date-other']
 }
 
-function weekRowDotStyle(day: WeekRowDay): Record<string, string> {
-  if (day.isToday) return { background: 'var(--color-surface)' }
-  if (day.trainingStatus === 'completed') return { background: 'var(--state-success)' }
-  return { background: 'var(--color-primary-light)' }
+/**
+ * 周行圆点CSS类（替代原来的 weekRowDotStyle 样式函数）
+ */
+function weekRowDotClass(day: WeekRowDay): string {
+  if (day.isToday) return 'week-dot-today'
+  if (day.trainingStatus === 'completed') return 'week-dot-completed'
+  return 'week-dot-upcoming'
 }
 
-function cellContainerStyle(rowIdx: number, cellIdx: number, totalCells: number): Record<string, string> {
+/**
+ * 日历单元格容器CSS类（替代原来的 cellContainerStyle 样式函数）
+ * 非最后一行的单元格添加底边框；同行右边框由 CSS :not(:last-child) 处理
+ */
+function cellContainerClass(rowIdx: number): string[] {
+  const classes: string[] = []
   const isLastRow = rowIdx === calendarRows.value.length - 1
-  const base: Record<string, string> = {
-    paddingTop: '8px',
-    paddingBottom: '8px',
-  }
   if (!isLastRow) {
-    base.borderBottom = '1px solid var(--color-border-light)'
+    classes.push('cell-border-bottom')
   }
-  if (cellIdx < totalCells - 1) {
-    base.borderRight = '1px solid var(--color-border-light)'
-  }
-  return base
+  return classes
 }
 
-function cellDateStyle(cell: CalendarCell): Record<string, string> {
-  const base: Record<string, string> = {
-    fontSize: 'var(--text-sm)',
-  }
+/**
+ * 日历单元格日期CSS类（替代原来的 cellDateStyle 样式函数）
+ */
+function cellDateClass(cell: CalendarCell): string[] {
+  const classes: string[] = ['cell-date']
   if (cell.isToday) {
-    base.color = 'var(--color-surface)'
-    base.fontWeight = 'var(--font-weight-bold)'
-    base.background = 'var(--color-training-main)'
-    base.borderRadius = 'var(--radius-full)'
-    base.padding = '2px 6px'
-    base.display = 'inline-block'
-    base.minWidth = '24px'
-  } else if (cell.isCurrentMonth) {
-    base.color = 'var(--color-primary)'
-    base.fontWeight = cell.trainingStatus ? 'var(--font-weight-semibold)' : 'var(--font-weight-regular)'
-  } else {
-    base.color = 'var(--color-border)'
+    classes.push('cell-date-today')
+    return classes
   }
-  if (selectedDate.value === cell.dateStr && !cell.isToday) {
-    base.background = 'var(--state-info-bg)'
-    base.borderRadius = 'var(--radius-sm)'
-    base.padding = '2px 6px'
-    base.display = 'inline-block'
+  if (!cell.isCurrentMonth) {
+    classes.push('cell-date-other-month')
+    return classes
   }
-  return base
+  if (selectedDate.value === cell.dateStr) {
+    classes.push('cell-date-selected')
+  }
+  if (cell.trainingStatus) {
+    classes.push('cell-date-has-training')
+  }
+  return classes
 }
 
-function cellDotStyle(cell: CalendarCell): Record<string, string> {
-  switch (cell.trainingStatus) {
-    case 'completed': return { background: 'var(--state-success)' }
-    case 'today': return { background: 'var(--color-training-main)' }
-    case 'upcoming': return { background: 'var(--color-primary-light)' }
-    case 'missed': return { background: 'var(--state-warning)' }
-    default: return {}
+/**
+ * 日历单元格圆点CSS类（替代原来的 cellDotStyle 样式函数）
+ */
+function cellDotClass(status: string | null): string {
+  switch (status) {
+    case 'completed': return 'cell-dot-completed'
+    case 'today': return 'cell-dot-today'
+    case 'upcoming': return 'cell-dot-upcoming'
+    case 'missed': return 'cell-dot-missed'
+    default: return ''
   }
 }
 
@@ -489,3 +501,223 @@ function goToDetail(info: SelectedDayInfo) {
   }
 }
 </script>
+
+<style scoped>
+/* ===== 页面容器 ===== */
+.cal-page {
+  font-family: var(--font-sans);
+}
+
+/* ===== 标题 ===== */
+.cal-title {
+  font-size: var(--text-2xl);
+  letter-spacing: -0.01em;
+}
+
+/* ===== 导航按钮 ===== */
+.cal-nav-btn {
+  color: var(--color-primary-light);
+}
+
+/* ===== 月标题 ===== */
+.cal-month-title {
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+/* ===== 周期状态标签 ===== */
+.cycle-status-badge {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-training-main);
+  background: var(--state-info-bg);
+  border-radius: var(--radius-full);
+}
+
+/* ===== 周行面板 ===== */
+.week-row-panel {
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-light);
+}
+
+.week-row-grid {
+  gap: 0;
+}
+
+.week-row-abbr {
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+  line-height: 1;
+}
+
+.week-date-today {
+  font-size: var(--text-sm);
+  color: var(--color-surface);
+  font-weight: var(--font-weight-bold);
+  background: var(--color-training-main);
+}
+
+.week-date-current {
+  font-size: var(--text-sm);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.week-date-other {
+  font-size: var(--text-sm);
+  color: var(--color-border);
+  font-weight: var(--font-weight-medium);
+}
+
+.week-dot-today { background: var(--color-surface); }
+.week-dot-completed { background: var(--state-success); }
+.week-dot-upcoming { background: var(--color-primary-light); }
+
+/* ===== 月历网格面板 ===== */
+.cal-grid-panel {
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+}
+
+.cal-grid-header {
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.wd-header {
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+  font-weight: var(--font-weight-medium);
+}
+
+/* ===== 日历单元格 ===== */
+.cal-cell {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.cal-cell:not(:last-child) {
+  border-right: 1px solid var(--color-border-light);
+}
+
+.cell-border-bottom {
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.cell-date {
+  font-size: var(--text-sm);
+}
+
+/* 今日 */
+.cell-date-today {
+  color: var(--color-surface);
+  font-weight: var(--font-weight-bold);
+  background: var(--color-training-main);
+  border-radius: var(--radius-full);
+  padding: 2px 6px;
+  display: inline-block;
+  min-width: 24px;
+}
+
+/* 当月（非今日、带训练） */
+.cell-date-has-training {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* 当月（非今日、无训练）—— 未匹配到 cell-date-has-training 时的默认样式 */
+/* 当月默认颜色为 color-primary，由下方 cell 默认样式覆盖 */
+
+/* 选中日期 */
+.cell-date-selected {
+  background: var(--state-info-bg);
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  display: inline-block;
+}
+
+/* 非当月 */
+.cell-date-other-month {
+  color: var(--color-border);
+}
+
+/* 圆点颜色 */
+.cell-dot-completed { background: var(--state-success); }
+.cell-dot-today { background: var(--color-training-main); }
+.cell-dot-upcoming { background: var(--color-primary-light); }
+.cell-dot-missed { background: var(--state-warning); }
+
+/* ===== 图例 ===== */
+.legend-dot-success { background: var(--state-success); }
+.legend-dot-today { background: var(--color-training-main); }
+.legend-dot-upcoming { background: var(--color-primary-light); }
+.legend-dot-missed { background: var(--state-warning); }
+
+.legend-label {
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+}
+
+/* ===== 选中日期详情面板 ===== */
+.day-detail-panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.day-detail-title {
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+.day-detail-pill {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-full);
+}
+
+.day-pill-rest {
+  color: var(--color-primary-light);
+  background: var(--color-primary-subtle);
+}
+
+.day-pill-completed {
+  color: var(--state-success);
+  background: var(--state-success-bg);
+}
+
+.day-pill-upcoming {
+  color: var(--color-training-main);
+  background: var(--state-info-bg);
+}
+
+.day-detail-content {
+  border-top: 1px solid var(--color-border-light);
+  padding-top: var(--space-3);
+}
+
+.day-detail-workout {
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+.day-detail-exercises {
+  font-size: var(--text-base);
+  color: var(--color-primary-light);
+  line-height: var(--leading-relaxed);
+}
+
+.day-detail-btn {
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-training-main);
+  background: var(--state-info-bg);
+  border-radius: var(--radius-full);
+}
+</style>

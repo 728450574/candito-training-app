@@ -1,3 +1,21 @@
+/**
+ * Candito 6周训练计划生成器。
+ *
+ * 根据用户输入的 1RM（One Rep Max，单次最大重量），按 Candito 训练体系
+ * 自动计算并生成完整的 6 周训练计划。每周有不同的训练主题和强度百分比：
+ *
+ * 第1周：肌肉调理（80%-77.5% 1RM，高次数 6-10 reps）
+ * 第2周：肌肉调理/增肌（80%-82.5% 1RM，MR10 自适应机制）
+ * 第3周：线性最大超负荷（85%-90% 1RM，低次数 3-6 reps）
+ * 第4周：适应大重量（87.5%-95% 1RM，1-4 reps）
+ * 第5周：高强度力量训练（97.5% 1RM，1-4 reps，AMRAP）
+ * 第6周：测试/减载/跳过（根据用户决策调整）
+ *
+ * 重量计算公式：目标重量 = 1RM × 强度百分比，按 weightRounding 步长取整
+ *
+ * 类比 Java：这是一个领域服务（Domain Service），纯计算逻辑，无副作用。
+ */
+
 import { v4 as uuidv4 } from 'uuid'
 import type { Cycle, Week, TrainingDay, PlannedExercise } from '@/types/cycle'
 import type { PlannedSet } from '@/types/cycle'
@@ -21,7 +39,15 @@ interface WeekTemplate {
   dayBuilder: (oneRM: OneRM, rounding: number, assistance: Cycle['assistanceConfig'], startDate: string) => TrainingDay[]
 }
 
-function roundWeight(weight: number, rounding: number): number {
+/**
+ * 按指定步长对重量取整，确保训练重量为可用杠铃片的整数倍。
+ * 类比 Java 中的工具方法，如 MathUtils.roundToNearest()。
+ *
+ * @param weight - 原始计算重量（kg/lb）
+ * @param rounding - 取整步长，通常为 2.5（kg）或 5（lb）
+ * @returns 取整后的训练可用重量
+ */
+export function roundWeight(weight: number, rounding: number): number {
   return Math.round(weight / rounding) * rounding
 }
 
@@ -662,6 +688,15 @@ const WEEK_OFFSETS = [
   35, // week 6 starts at startDate + 35
 ]
 
+/**
+ * 根据 1RM 和训练体系规则生成完整的 6 周训练计划。
+ *
+ * @param oneRM - 用户的三大项 1RM 重量
+ * @param weightRounding - 重量取整步长
+ * @param assistanceConfig - 辅助动作配置
+ * @param startDate - 周期开始日期
+ * @returns 完整的 6 周计划（Week[]）
+ */
 export function buildWeeks(oneRM: CreateCycleInput['oneRM'], weightRounding: number, assistanceConfig: CreateCycleInput['assistanceConfig'], startDate: string): Week[] {
   return WEEK_BUILDERS.map((builder, index) => {
     const weekNumber = index + 1

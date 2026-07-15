@@ -1,55 +1,52 @@
 <template>
   <main class="pb-8 px-4 pt-3 max-w-lg mx-auto">
     <header class="flex items-center justify-between mb-5 h-11">
-      <button class="inline-flex items-center justify-center w-8 h-8 rounded-lg" style="color:var(--color-primary);" aria-label="返回" @click="goBack">
+      <button class="inline-flex items-center justify-center w-8 h-8 rounded-lg back-btn" aria-label="返回" @click="goBack">
         <i data-lucide="chevron-left" class="w-5 h-5"></i>
       </button>
-      <h1 class="typography-title" style="letter-spacing:-0.01em;">体重记录</h1>
+      <h1 class="typography-title page-title">体重记录</h1>
       <div class="w-8"></div>
     </header>
 
-    <section class="rounded-lg p-5 mb-4" style="background:var(--color-surface); box-shadow:var(--shadow-card);" aria-label="当前体重">
+    <section class="rounded-lg p-5 mb-4 record-card" aria-label="当前体重">
       <span class="typography-caption block mb-1">当前体重</span>
       <div class="flex items-baseline gap-1.5 mb-2">
-        <span class="whitespace-nowrap" style="font-family:var(--font-mono); font-size:3rem; font-weight:var(--font-weight-bold); color:var(--color-primary); letter-spacing:-0.03em; line-height:1.1;">{{ currentWeight }}</span>
-        <span class="typography-caption" style="font-size:var(--text-sm); color:var(--color-primary-light);">kg</span>
+        <span class="whitespace-nowrap current-weight-value">{{ currentWeight }}</span>
+        <span class="typography-caption weight-unit">kg</span>
       </div>
       <div class="flex items-center gap-1.5 mb-1.5">
-        <span style="font-family:var(--font-mono); font-size:var(--text-sm); font-weight:var(--font-weight-medium);" :style="{ color: changeColor }">{{ changeIndicator }}</span>
+        <span class="change-text" :style="{ color: changeColor }">{{ changeIndicator }}</span>
         <span class="typography-caption">较上次</span>
       </div>
       <span class="typography-caption">最后记录: {{ lastRecordDate }}</span>
     </section>
 
-    <section class="rounded-lg p-4 mb-4" style="background:var(--color-surface); box-shadow:var(--shadow-card);" aria-label="记录体重">
-      <h2 class="typography-subtitle mb-3" style="font-size:var(--text-md);">记录体重</h2>
+    <section class="rounded-lg p-4 mb-4 record-card" aria-label="记录体重">
+      <h2 class="typography-subtitle mb-3 section-subtitle">记录体重</h2>
       <div class="flex items-center gap-3 mb-3">
-        <div class="flex-1 min-w-0 flex items-center rounded-lg px-3 h-12" style="background:var(--color-surface-muted);">
+        <div class="flex-1 min-w-0 flex items-center rounded-lg px-3 h-12 input-wrapper">
           <input
             v-model="weightInput"
             type="number"
             step="0.1"
             placeholder="81.5"
-            class="w-full bg-transparent border-none outline-none"
-            style="font-family:var(--font-mono); font-size:var(--text-lg); font-weight:var(--font-weight-semibold); color:var(--color-primary); min-width:0;"
+            class="w-full bg-transparent border-none outline-none weight-input"
             aria-label="输入体重"
           >
-          <span class="typography-caption whitespace-nowrap ml-1" style="color:var(--color-primary-light);">kg</span>
+          <span class="typography-caption whitespace-nowrap ml-1 input-unit">kg</span>
         </div>
       </div>
       <div class="flex items-center gap-3">
-        <div class="flex-1 min-w-0 flex items-center rounded-lg px-3 h-11" style="background:var(--color-surface-muted);">
+        <div class="flex-1 min-w-0 flex items-center rounded-lg px-3 h-11 input-wrapper">
           <input
             v-model="recordDate"
             type="date"
-            class="w-full bg-transparent border-none outline-none"
-            style="font-family:var(--font-mono); font-size:var(--text-sm); font-weight:var(--font-weight-semibold); color:var(--color-primary); min-width:0;"
+            class="w-full bg-transparent border-none outline-none date-input"
             aria-label="选择日期"
           >
         </div>
         <button
-          class="shrink-0 h-11 px-6 rounded-lg whitespace-nowrap"
-          style="background:var(--color-training-main); color:var(--color-surface); font-family:var(--font-sans); font-size:var(--text-base); font-weight:var(--font-weight-semibold);"
+          class="shrink-0 h-11 px-6 rounded-lg whitespace-nowrap save-btn"
           @click="handleSave"
         >
           保存
@@ -57,12 +54,12 @@
       </div>
     </section>
 
-    <section class="rounded-lg p-4 mb-4" style="background:var(--color-surface); box-shadow:var(--shadow-card);" aria-label="体重趋势">
+    <section class="rounded-lg p-4 mb-4 record-card" aria-label="体重趋势">
       <div class="flex items-center justify-between mb-4">
-        <h2 class="typography-subtitle" style="font-size:var(--text-md);">体重趋势</h2>
+        <h2 class="typography-subtitle section-subtitle">体重趋势</h2>
         <span class="typography-caption">近30天</span>
       </div>
-      <div class="relative" style="aspect-ratio:16/10;">
+      <div class="relative chart-container">
         <svg viewBox="0 0 320 200" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" aria-label="体重趋势折线图">
           <text x="28" y="42" font-family="var(--font-mono)" font-size="10" fill="var(--color-primary-light)" text-anchor="end">{{ chartYMax }}</text>
           <text x="28" y="82" font-family="var(--font-mono)" font-size="10" fill="var(--color-primary-light)" text-anchor="end">{{ chartYMidHigh }}</text>
@@ -88,7 +85,7 @@
           <polyline
             v-if="chartPoints.length > 1"
             :points="chartLinePoints"
-            style="fill: none; stroke: var(--color-training-main); stroke-width: 2.5px; stroke-linecap: round; stroke-linejoin: round;"
+            class="chart-line"
           />
 
           <circle
@@ -97,7 +94,7 @@
             :cx="chartX(i)"
             :cy="chartY(pt.value)"
             :r="i === chartPoints.length - 1 ? 4.5 : 4"
-            style="fill: var(--color-training-main); stroke: var(--color-surface); stroke-width: 2px;"
+            class="chart-dot"
           />
 
           <text
@@ -115,26 +112,25 @@
       </div>
     </section>
 
-    <section class="rounded-lg overflow-hidden mb-5" style="background:var(--color-surface); box-shadow:var(--shadow-card);" aria-label="历史记录">
-      <h2 class="typography-subtitle px-4 pt-4 pb-1" style="font-size:var(--text-md);">历史记录</h2>
+    <section class="rounded-lg overflow-hidden mb-5 record-card" aria-label="历史记录">
+      <h2 class="typography-subtitle px-4 pt-4 pb-1 section-subtitle">历史记录</h2>
 
       <div
         v-for="(item, i) in displayHistory"
         :key="item.id"
         class="flex items-center justify-between px-4 py-3"
-        :style="{ borderBottom: i < displayHistory.length - 1 ? '1px solid var(--color-border-light)' : 'none' }"
+        :class="{ 'history-item-separator': i < displayHistory.length - 1 }"
       >
         <div class="flex items-center gap-3">
-          <span class="typography-caption whitespace-nowrap" style="font-family:var(--font-mono); color:var(--color-primary);">{{ item.dateLabel }}</span>
-          <span class="typography-data whitespace-nowrap" style="font-size:var(--text-base);">{{ item.weightLabel }}</span>
+          <span class="typography-caption whitespace-nowrap history-date">{{ item.dateLabel }}</span>
+          <span class="typography-data whitespace-nowrap history-weight">{{ item.weightLabel }}</span>
         </div>
-        <span class="whitespace-nowrap" style="font-family:var(--font-mono); font-size:var(--text-sm); font-weight:var(--font-weight-medium);" :style="{ color: item.changeColor }">{{ item.changeLabel }}</span>
+        <span class="whitespace-nowrap history-change" :style="{ color: item.changeColor }">{{ item.changeLabel }}</span>
       </div>
 
-      <div class="px-4 py-3" style="border-top:1px solid var(--color-border-light);">
+      <div class="px-4 py-3 history-footer">
         <span
-          class="typography-caption block text-center whitespace-nowrap"
-          style="color:var(--color-training-main); font-size:var(--text-sm); cursor: pointer;"
+          class="typography-caption block text-center whitespace-nowrap toggle-all-btn"
           @click="toggleShowAll"
         >{{ showAllHistory ? '收起' : '查看全部' }}</span>
       </div>
@@ -287,3 +283,127 @@ watch(() => route.path, () => {
   }, 50)
 }, { immediate: true })
 </script>
+
+<style scoped>
+/* ===== 顶部导航栏 ===== */
+.back-btn {
+  color: var(--color-primary);
+}
+
+.page-title {
+  letter-spacing: -0.01em;
+}
+
+/* ===== 卡片通用 ===== */
+.record-card {
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.section-subtitle {
+  font-size: var(--text-md);
+}
+
+/* ===== 当前体重卡片 ===== */
+.current-weight-value {
+  font-family: var(--font-mono);
+  font-size: 3rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.weight-unit {
+  font-size: var(--text-sm);
+  color: var(--color-primary-light);
+}
+
+.change-text {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+/* ===== 输入区域 ===== */
+.input-wrapper {
+  background: var(--color-surface-muted);
+}
+
+.weight-input {
+  font-family: var(--font-mono);
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+  min-width: 0;
+}
+
+.input-unit {
+  color: var(--color-primary-light);
+}
+
+.date-input {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+  min-width: 0;
+}
+
+.save-btn {
+  background: var(--color-training-main);
+  color: var(--color-surface);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ===== 趋势图 ===== */
+.chart-container {
+  aspect-ratio: 16/10;
+}
+
+.chart-line {
+  fill: none;
+  stroke: var(--color-training-main);
+  stroke-width: 2.5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.chart-dot {
+  fill: var(--color-training-main);
+  stroke: var(--color-surface);
+  stroke-width: 2px;
+}
+
+/* ===== 历史记录 ===== */
+.history-item-separator {
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.history-date {
+  font-family: var(--font-mono);
+  color: var(--color-primary);
+}
+
+.history-weight {
+  font-size: var(--text-base);
+}
+
+.history-change {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.history-footer {
+  border-top: 1px solid var(--color-border-light);
+}
+
+.toggle-all-btn {
+  color: var(--color-training-main);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+</style>

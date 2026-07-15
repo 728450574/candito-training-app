@@ -9,11 +9,7 @@
     <template v-else-if="!record">
       <div class="flex flex-col items-center justify-center py-20 px-4">
         <p class="typography-body mb-4">未找到训练记录</p>
-        <button
-          class="px-6 py-2 rounded-full"
-          style="background: var(--color-training-main); color: var(--color-surface); font-size: var(--text-sm); font-weight: var(--font-weight-semibold);"
-          @click="goToday"
-        >
+        <button class="return-btn px-6 py-2 rounded-full" @click="goToday">
           返回今日
         </button>
       </div>
@@ -22,18 +18,12 @@
     <template v-else>
       <!-- Completion Header -->
       <section class="flex flex-col items-center pt-4 pb-6" aria-label="训练完成">
-        <div
-          class="w-16 h-16 rounded-full flex items-center justify-center mb-4"
-          style="background: var(--state-success);"
-        >
+        <div class="complete-icon w-16 h-16 rounded-full flex items-center justify-center mb-4">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
         </div>
-        <h1
-          class="typography-hero text-center"
-          style="text-wrap: balance; word-break: keep-all; overflow-wrap: break-word;"
-        >
+        <h1 class="typography-hero text-center complete-title">
           训练完成！
         </h1>
         <p class="typography-caption mt-2 text-center">{{ workoutSubtitle }}</p>
@@ -41,8 +31,7 @@
 
       <!-- Training Summary Card -->
       <section
-        class="rounded-xl p-4 mb-4"
-        style="background: var(--color-surface); box-shadow: var(--shadow-card);"
+        class="surface-card rounded-xl p-4 mb-4"
         aria-label="训练摘要"
       >
         <h2 class="typography-subtitle mb-3">本次训练</h2>
@@ -51,11 +40,11 @@
           <div class="flex items-center justify-between mb-1.5">
             <span
               class="typography-body font-semibold"
-              :style="exercise.type === 'main' ? {} : { color: 'var(--color-primary-light)' }"
+              :class="['exercise-name', { 'exercise-name-secondary': exercise.type !== 'main' }]"
             >
               {{ exercise.name }}
             </span>
-            <span class="typography-caption" :style="{ color: 'var(--state-success)' }">
+            <span class="typography-caption set-complete-text">
               {{ completedSetCount(exercise) }}组 完成
             </span>
           </div>
@@ -63,8 +52,7 @@
             <div
               v-for="set in exercise.sets"
               :key="set.setNumber"
-              class="flex items-center justify-between text-xs"
-              :style="setSummaryStyle(set)"
+              :class="['flex items-center justify-between text-xs set-summary', isBelowTarget(set) ? 'set-summary-below' : 'set-summary-normal']"
             >
               <span :class="setSummaryOpacity(set)">S{{ set.setNumber }}</span>
               <span>
@@ -105,8 +93,7 @@
 
           <div
             v-if="exIdx < record.exercises.length - 1"
-            class="h-px mb-3"
-            style="background: var(--color-border-light);"
+            class="summary-separator h-px mb-3"
           ></div>
         </div>
       </section>
@@ -116,16 +103,16 @@
         class="grid grid-cols-3 gap-2 mb-4"
         aria-label="训练统计"
       >
-        <div class="rounded-xl p-3 text-center" style="background: var(--color-surface-muted);">
-          <div class="typography-data-lg" style="font-size: 1.125rem;">{{ totalVolume }}</div>
+        <div class="stat-card rounded-xl p-3 text-center">
+          <div class="typography-data-lg stat-value">{{ totalVolume }}</div>
           <div class="typography-caption mt-0.5">总容量 kg</div>
         </div>
-        <div class="rounded-xl p-3 text-center" style="background: var(--color-surface-muted);">
-          <div class="typography-data-lg" style="font-size: 1.125rem;">{{ durationMinutes }}</div>
+        <div class="stat-card rounded-xl p-3 text-center">
+          <div class="typography-data-lg stat-value">{{ durationMinutes }}</div>
           <div class="typography-caption mt-0.5">时长 分钟</div>
         </div>
-        <div class="rounded-xl p-3 text-center" style="background: var(--color-surface-muted);">
-          <div class="typography-data-lg" style="font-size: 1.125rem;">{{ averageRest }}</div>
+        <div class="stat-card rounded-xl p-3 text-center">
+          <div class="typography-data-lg stat-value">{{ averageRest }}</div>
           <div class="typography-caption mt-0.5">平均休息 秒</div>
         </div>
       </section>
@@ -133,15 +120,11 @@
       <!-- MR10 Special Notice -->
       <section
         v-if="showMR10"
-        class="rounded-xl p-4 mb-4"
-        style="background: var(--state-info-bg); box-shadow: var(--shadow-card);"
+        class="info-card rounded-xl p-4 mb-4"
         aria-label="MR10 提示"
       >
         <div class="flex items-start gap-3">
-          <div
-            class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5"
-            style="background: var(--state-info);"
-          >
+          <div class="info-icon-bg w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="10"></circle>
               <line x1="12" y1="16" x2="12" y2="12"></line>
@@ -149,7 +132,7 @@
             </svg>
           </div>
           <div>
-            <p class="typography-body font-semibold" style="color: var(--state-info);">
+            <p class="typography-body font-semibold info-title">
               {{ mr10Title }}
             </p>
             <p class="typography-caption mt-1">{{ mr10Description }}</p>
@@ -159,36 +142,30 @@
 
       <!-- Body Weight Record -->
       <section
-        class="rounded-xl p-4 mb-4"
-        style="background: var(--color-surface); box-shadow: var(--shadow-card);"
+        class="surface-card rounded-xl p-4 mb-4"
         aria-label="体重记录"
       >
         <h2 class="typography-subtitle mb-3">记录今日体重</h2>
         <div class="flex items-center gap-3">
-          <div
-            class="flex-1 flex items-center rounded-lg px-3 h-10"
-            style="background: var(--color-surface-muted); border: 1px solid var(--color-border-light);"
-          >
+          <div class="input-container flex-1 flex items-center rounded-lg px-3 h-10">
             <input
               type="number"
               v-model.number="bodyWeight"
               step="0.1"
               inputmode="decimal"
-              class="flex-1 bg-transparent outline-none typography-data"
-              style="font-size: var(--text-lg);"
+              class="flex-1 bg-transparent outline-none typography-data input-lg"
               aria-label="体重"
               placeholder="--"
             />
           </div>
           <span class="typography-caption shrink-0">kg</span>
         </div>
-        <p class="typography-caption mt-2" style="font-size: var(--text-xs);">选填，帮助追踪体重变化趋势</p>
+        <p class="typography-caption mt-2 text-xs">选填，帮助追踪体重变化趋势</p>
       </section>
 
       <!-- Training Notes -->
       <section
-        class="rounded-xl p-4 mb-4"
-        style="background: var(--color-surface); box-shadow: var(--shadow-card);"
+        class="surface-card rounded-xl p-4 mb-4"
         aria-label="训练笔记"
       >
         <h2 class="typography-subtitle mb-3">训练笔记</h2>
@@ -196,16 +173,14 @@
           v-model="notes"
           rows="3"
           placeholder="今天感觉怎么样？有什么想记录的..."
-          class="w-full bg-transparent outline-none resize-none typography-body rounded-lg p-3"
-          style="background: var(--color-surface-muted); border: 1px solid var(--color-border-light);"
+          class="w-full bg-transparent outline-none resize-none typography-body rounded-lg p-3 input-container"
           aria-label="训练笔记"
         ></textarea>
       </section>
 
       <!-- Feeling Rating -->
       <section
-        class="rounded-xl p-4 mb-6"
-        style="background: var(--color-surface); box-shadow: var(--shadow-card);"
+        class="surface-card rounded-xl p-4 mb-6"
         aria-label="训练感受"
       >
         <h2 class="typography-subtitle mb-3">训练感受</h2>
@@ -213,8 +188,7 @@
           <button
             v-for="star in 5"
             :key="star"
-            class="w-10 h-10 flex items-center justify-center rounded-lg transition-colors"
-            :style="{ color: feeling >= star ? 'var(--color-warm)' : 'var(--color-border)' }"
+            :class="['w-10 h-10 flex items-center justify-center rounded-lg transition-colors star-btn', { 'star-btn-active': feeling >= star }]"
             :aria-label="feelingLabels[star - 1]"
             :aria-checked="feeling === star"
             @click="feeling = star"
@@ -231,7 +205,7 @@
             </svg>
           </button>
         </div>
-        <div class="flex justify-between typography-caption" style="font-size: var(--text-xs);">
+        <div class="flex justify-between typography-caption text-xs">
           <span>很差</span>
           <span>很棒</span>
         </div>
@@ -240,15 +214,13 @@
       <!-- Action Buttons -->
       <section class="flex flex-col items-center gap-3" aria-label="操作">
         <button
-          class="w-full h-12 rounded-full text-white font-semibold transition-all"
-          style="background: var(--state-success); font-family: var(--font-sans); font-size: var(--text-md);"
+          class="submit-btn w-full h-12 rounded-full text-white font-semibold transition-all"
           @click="submitRecord"
         >
           完成打卡
         </button>
         <button
-          class="typography-caption underline-offset-2"
-          style="font-size: var(--text-sm); color: var(--color-primary-light); background: none; border: none; cursor: pointer;"
+          class="back-link typography-caption underline-offset-2"
           @click="goToday"
         >
           返回今日
@@ -391,19 +363,6 @@ function isBelowTarget(set: SetRecord): boolean {
   return (set.actualReps ?? 0) < targetNum
 }
 
-function setSummaryStyle(set: SetRecord) {
-  if (isBelowTarget(set)) {
-    return {
-      fontFamily: 'var(--font-mono)',
-      color: 'var(--state-warning)',
-    }
-  }
-  return {
-    fontFamily: 'var(--font-mono)',
-    color: 'var(--color-primary)',
-  }
-}
-
 function setSummaryOpacity(set: SetRecord) {
   if (isBelowTarget(set)) {
     return 'opacity-70'
@@ -415,7 +374,6 @@ function submitRecord() {
   if (isSubmitting.value || !record.value) return
   isSubmitting.value = true
 
-  // Update record with notes and feeling
   const updatedRecord: WorkoutRecord = {
     ...record.value,
     notes: notes.value,
@@ -423,7 +381,6 @@ function submitRecord() {
     bodyWeight: bodyWeight.value ?? undefined,
   }
 
-  // Save body weight to bodyMetricStore if provided
   if (bodyWeight.value) {
     bodyMetricStore.addMetric({
       id: uuid(),
@@ -433,7 +390,6 @@ function submitRecord() {
     })
   }
 
-  // Update record in store
   const cycleIdVal = cycleId.value || record.value.cycleId
   const existingRecords = recordStore.getRecordsForCycle(cycleIdVal)
   const idx = existingRecords.findIndex(r => r.id === record.value!.id)
@@ -470,3 +426,122 @@ onMounted(() => {
   loading.value = false
 })
 </script>
+
+<style scoped>
+/* ===== 返回按钮（无记录时） ===== */
+.return-btn {
+  background: var(--color-training-main);
+  color: var(--color-surface);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ===== 完成图标 ===== */
+.complete-icon {
+  background: var(--state-success);
+}
+
+/* ===== 完成标题 ===== */
+.complete-title {
+  text-wrap: balance;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+/* ===== 卡片（统一白色背景+阴影） ===== */
+.surface-card {
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+/* ===== 训练动作名称 ===== */
+.exercise-name-secondary {
+  color: var(--color-primary-light);
+}
+
+/* ===== 完成组数文字 ===== */
+.set-complete-text {
+  color: var(--state-success);
+}
+
+/* ===== 组摘要行 ===== */
+.set-summary {
+  font-family: var(--font-mono);
+}
+
+.set-summary-below {
+  color: var(--state-warning);
+}
+
+.set-summary-normal {
+  color: var(--color-primary);
+}
+
+/* ===== 训练项分隔线 ===== */
+.summary-separator {
+  background: var(--color-border-light);
+}
+
+/* ===== 统计卡片 ===== */
+.stat-card {
+  background: var(--color-surface-muted);
+}
+
+.stat-value {
+  font-size: 1.125rem;
+}
+
+/* ===== MR10 提示卡片 ===== */
+.info-card {
+  background: var(--state-info-bg);
+  box-shadow: var(--shadow-card);
+}
+
+.info-icon-bg {
+  background: var(--state-info);
+}
+
+.info-title {
+  color: var(--state-info);
+}
+
+/* ===== 输入控件容器 ===== */
+.input-container {
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border-light);
+}
+
+.input-lg {
+  font-size: var(--text-lg);
+}
+
+/* ===== 星星评分按钮 ===== */
+.star-btn {
+  color: var(--color-border);
+}
+
+.star-btn-active {
+  color: var(--color-warm);
+}
+
+/* ===== 通用文字大小 ===== */
+.text-xs {
+  font-size: var(--text-xs);
+}
+
+/* ===== 提交按钮 ===== */
+.submit-btn {
+  background: var(--state-success);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+}
+
+/* ===== 返回链接 ===== */
+.back-link {
+  font-size: var(--text-sm);
+  color: var(--color-primary-light);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+</style>

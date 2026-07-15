@@ -1,15 +1,12 @@
 <template>
   <main class="pb-8 max-w-lg mx-auto px-4">
-    <header
-      class="sticky top-0 z-30 border-b flex h-11 items-center px-4 -mx-4 mb-2"
-      style="background: var(--color-surface)/95; backdrop-filter: blur(12px); border-color: var(--color-border);"
-    >
+    <header class="sticky top-0 z-30 border-b flex h-11 items-center px-4 -mx-4 mb-2 fix-header">
       <div class="flex items-center justify-start w-[88px]">
         <button class="inline-flex h-8 w-8 items-center justify-center rounded-[var(--radius-md)]" aria-label="返回" @click="router.back()">
-          <ChevronLeft class="w-5 h-5" style="color: var(--color-primary);" />
+          <ChevronLeft class="w-5 h-5 icon-primary" />
         </button>
       </div>
-      <div class="min-w-0 flex-1 text-center truncate" style="font-family: var(--font-sans); font-size: var(--text-md); font-weight: var(--font-weight-semibold); color: var(--color-primary);">第6周决策</div>
+      <div class="min-w-0 flex-1 text-center truncate header-title">第6周决策</div>
       <div class="w-[88px]"></div>
     </header>
 
@@ -22,11 +19,7 @@
     <template v-else-if="liftData.length === 0">
       <div class="flex flex-col items-center justify-center py-20 px-4">
         <p class="typography-caption mb-4">未找到第5周训练数据</p>
-        <button
-          class="px-6 py-2 rounded-full font-semibold"
-          style="background: var(--color-training-main); color: var(--color-surface); font-size: var(--text-sm);"
-          @click="handleDirectNewCycle"
-        >
+        <button class="px-6 py-2 rounded-full font-semibold action-btn" @click="handleDirectNewCycle">
           直接开始新周期
         </button>
       </div>
@@ -35,8 +28,8 @@
     <template v-else>
       <section class="px-5 pt-4 pb-2">
         <div class="flex items-center gap-2 mb-1">
-          <Trophy class="w-5 h-5 shrink-0" style="color: var(--state-success);" />
-          <p class="typography-title" style="font-size: var(--text-2xl);">恭喜完成第5周！</p>
+          <Trophy class="w-5 h-5 shrink-0 icon-success" />
+          <p class="typography-title text-2xl">恭喜完成第5周！</p>
         </div>
         <p class="typography-caption">第5周训练数据回顾</p>
       </section>
@@ -46,22 +39,21 @@
           <div
             v-for="lift in liftData"
             :key="lift.key"
-            class="flex-1 flex flex-col items-center rounded-[var(--radius-lg)] py-3 px-2"
-            style="background: var(--color-surface-muted); box-shadow: var(--shadow-card);"
+            class="flex-1 flex flex-col items-center rounded-[var(--radius-lg)] py-3 px-2 lift-card"
           >
             <span class="typography-caption mb-1.5">{{ lift.name }}</span>
-            <span class="whitespace-nowrap" style="font-family: var(--font-mono); font-size: var(--text-lg); font-weight: var(--font-weight-bold); color: var(--color-primary);">{{ formatWeight(lift.weight) }}</span>
-            <span class="whitespace-nowrap" style="font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-primary-light);">x {{ lift.reps }}次</span>
+            <span class="whitespace-nowrap weight-display">{{ formatWeight(lift.weight) }}</span>
+            <span class="whitespace-nowrap reps-display">x {{ lift.reps }}次</span>
           </div>
         </div>
       </section>
 
       <section class="px-5 mt-5">
-        <div class="rounded-[var(--radius-xl)] p-5" style="background: var(--color-surface); box-shadow: var(--shadow-elevated);">
+        <div class="rounded-[var(--radius-xl)] p-5 surface-elevated">
           <div class="flex items-center justify-between mb-1">
             <div class="flex items-center gap-2">
-              <TrendingUp class="w-4 h-4 shrink-0" style="color: var(--color-training-main);" />
-              <span class="typography-subtitle" style="font-size: var(--text-md);">预估新 1RM</span>
+              <TrendingUp class="w-4 h-4 shrink-0 icon-training" />
+              <span class="typography-subtitle text-md">预估新 1RM</span>
             </div>
           </div>
           <p class="typography-caption mb-4">基于第5周完成次数自动预估</p>
@@ -70,17 +62,16 @@
               v-for="lift in liftData"
               :key="lift.key"
               class="flex items-center justify-between py-2.5"
-              :class="{ 'border-b': lift.key !== liftData[liftData.length - 1].key }"
-              style="border-color: var(--color-border-light);"
+              :class="{ 'estimate-divider': lift.key !== liftData[liftData.length - 1].key }"
             >
               <span class="typography-body">{{ lift.name }}</span>
               <div class="flex items-baseline gap-1.5">
-                <span class="whitespace-nowrap" style="font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-primary-light);">{{ formatWeight(lift.weight) }} x {{ lift.multiplier }} =</span>
-                <span class="whitespace-nowrap" style="font-family: var(--font-mono); font-size: var(--text-xl); font-weight: var(--font-weight-bold); color: var(--color-training-main);">{{ formatWeight(lift.estimated1RM) }} {{ activeCycle.unit }}</span>
+                <span class="whitespace-nowrap estimate-formula">{{ formatWeight(lift.weight) }} x {{ lift.multiplier }} =</span>
+                <span class="whitespace-nowrap estimate-result">{{ formatWeight(lift.estimated1RM) }} {{ activeCycle.unit }}</span>
               </div>
             </div>
           </div>
-          <p class="mt-3" style="font-family: var(--font-sans); font-size: var(--text-xs); color: var(--color-primary-light);">完成2次 x 1.03, 3次 x 1.06, 4次 x 1.09</p>
+          <p class="mt-3 multiplier-hint">完成2次 x 1.03, 3次 x 1.06, 4次 x 1.09</p>
         </div>
       </section>
 
@@ -88,18 +79,20 @@
         <p class="typography-body mb-3">选择你的下一步</p>
         <div class="space-y-3">
           <button
-            class="w-full text-left rounded-[var(--radius-lg)] p-4 border-l-[3px] transition-opacity"
-            :style="decisionCardStyle('new_cycle')"
+            class="w-full text-left rounded-[var(--radius-lg)] p-4 border-l-[3px] transition-opacity decision-card"
+            :class="{ 'decision-card-selected': selectedDecision === 'new_cycle' }"
             @click="selectedDecision = 'new_cycle'"
           >
             <div class="flex items-start gap-3">
-              <div class="flex items-center justify-center w-5 h-5 mt-0.5 shrink-0 rounded-full" :style="radioStyle('new_cycle')">
+              <div
+                :class="['flex items-center justify-center w-5 h-5 mt-0.5 shrink-0 rounded-full radio-btn', selectedDecision === 'new_cycle' ? 'radio-btn-selected' : '']"
+              >
                 <div v-if="selectedDecision === 'new_cycle'" class="w-2 h-2 rounded-full bg-white"></div>
               </div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 mb-1">
-                  <span class="typography-subtitle truncate" style="font-size: var(--text-base);">直接开始新周期</span>
-                  <span class="inline-flex items-center rounded-[var(--radius-sm)] px-2 py-0.5 whitespace-nowrap" style="background-color: var(--state-info-bg); font-family: var(--font-sans); font-size: var(--text-xs); font-weight: var(--font-weight-medium); color: var(--color-training-main);">推荐</span>
+                  <span class="typography-subtitle truncate text-base">直接开始新周期</span>
+                  <span class="inline-flex items-center rounded-[var(--radius-sm)] px-2 py-0.5 whitespace-nowrap recommend-badge">推荐</span>
                 </div>
                 <p class="typography-caption">使用预估1RM直接开始下一轮6周计划</p>
               </div>
@@ -107,28 +100,32 @@
           </button>
 
           <button
-            class="w-full text-left rounded-[var(--radius-lg)] p-4 border-l-[3px] transition-opacity"
-            :style="decisionCardStyle('deload')"
+            class="w-full text-left rounded-[var(--radius-lg)] p-4 border-l-[3px] transition-opacity decision-card"
+            :class="{ 'decision-card-selected': selectedDecision === 'deload' }"
             @click="selectedDecision = 'deload'"
           >
             <div class="flex items-start gap-3">
-              <div class="flex items-center justify-center w-5 h-5 mt-0.5 shrink-0 rounded-full border-2" :style="radioStyle('deload')"></div>
+              <div
+                :class="['flex items-center justify-center w-5 h-5 mt-0.5 shrink-0 rounded-full border-2 radio-btn', selectedDecision === 'deload' ? 'radio-btn-selected' : '']"
+              ></div>
               <div class="flex-1 min-w-0">
-                <span class="typography-subtitle block mb-1 truncate" style="font-size: var(--text-base);">减载周</span>
+                <span class="typography-subtitle block mb-1 truncate text-base">减载周</span>
                 <p class="typography-caption">先做一周减载训练（重做第1周，降低容量），再开始新周期</p>
               </div>
             </div>
           </button>
 
           <button
-            class="w-full text-left rounded-[var(--radius-lg)] p-4 border-l-[3px] transition-opacity"
-            :style="decisionCardStyle('test_1rm')"
+            class="w-full text-left rounded-[var(--radius-lg)] p-4 border-l-[3px] transition-opacity decision-card"
+            :class="{ 'decision-card-selected': selectedDecision === 'test_1rm' }"
             @click="selectedDecision = 'test_1rm'"
           >
             <div class="flex items-start gap-3">
-              <div class="flex items-center justify-center w-5 h-5 mt-0.5 shrink-0 rounded-full border-2" :style="radioStyle('test_1rm')"></div>
+              <div
+                :class="['flex items-center justify-center w-5 h-5 mt-0.5 shrink-0 rounded-full border-2 radio-btn', selectedDecision === 'test_1rm' ? 'radio-btn-selected' : '']"
+              ></div>
               <div class="flex-1 min-w-0">
-                <span class="typography-subtitle block mb-1 truncate" style="font-size: var(--text-base);">实测1RM</span>
+                <span class="typography-subtitle block mb-1 truncate text-base">实测1RM</span>
                 <p class="typography-caption">本周实测最大重量，获得准确新1RM后再决定</p>
               </div>
             </div>
@@ -138,8 +135,7 @@
 
       <section class="px-5 mt-6">
         <button
-          class="w-full flex items-center justify-center rounded-[var(--radius-full)] px-6 py-3.5 font-semibold"
-          style="background-color: var(--color-training-main); color: var(--color-surface); font-family: var(--font-sans); font-size: var(--text-md);"
+          class="w-full flex items-center justify-center rounded-[var(--radius-full)] px-6 py-3.5 font-semibold confirm-btn"
           @click="handleConfirm"
         >
           确认选择
@@ -155,10 +151,9 @@ import { useRouter } from 'vue-router'
 import { ChevronLeft, Trophy, TrendingUp } from 'lucide-vue-next'
 import { useCycleStore } from '@/stores/cycleStore'
 import { useRecordStore } from '@/stores/recordStore'
-import { estimateNew1RM } from '@/services/statsService'
-import { buildDeloadWeek, buildWeek6TestDays } from '@/services/planGenerator'
+import { estimateNewOneRepMax, getOneRepMaxMultiplier, findBestSetFromExerciseRecords } from '@/services/statsService'
 import { getToday } from '@/services/dateService'
-import type { WorkoutRecord, ExerciseRecord, SetRecord } from '@/types/record'
+import type { ExerciseRecord } from '@/types/record'
 import type { Week6Decision } from '@/types/cycle'
 
 const router = useRouter()
@@ -168,13 +163,6 @@ const recordStore = useRecordStore()
 const activeCycle = computed(() => cycleStore.activeCycle)
 
 const selectedDecision = ref<Week6Decision>('new_cycle')
-
-const ONE_RM_MULTIPLIERS: Record<number, number> = {
-  1: 1.00,
-  2: 1.03,
-  3: 1.06,
-  4: 1.09,
-}
 
 interface LiftDataItem {
   key: string
@@ -189,34 +177,6 @@ const liftNames: Record<string, string> = {
   squat: '深蹲',
   bench: '卧推',
   deadlift: '硬拉',
-}
-
-function findBestSet(exerciseRecords: ExerciseRecord[]): { weight: number; reps: number } | null {
-  let bestWeight = 0
-  let bestReps = 0
-  for (const ex of exerciseRecords) {
-    for (const set of ex.sets) {
-      const w = set.actualWeight ?? 0
-      const r = set.actualReps ?? 0
-      if (w > 0 && r > 0 && set.isCompleted) {
-        if (w > bestWeight || (w === bestWeight && r > bestReps)) {
-          bestWeight = w
-          bestReps = r
-        }
-      }
-    }
-  }
-  if (bestWeight > 0 && bestReps > 0) {
-    return { weight: bestWeight, reps: bestReps }
-  }
-  return null
-}
-
-function getMultiplier(reps: number): number {
-  if (reps in ONE_RM_MULTIPLIERS) {
-    return ONE_RM_MULTIPLIERS[reps]
-  }
-  return parseFloat((1 + reps / 30).toFixed(2))
 }
 
 const estimated1RMMap = computed<Record<string, number>>(() => {
@@ -246,10 +206,10 @@ const liftData = computed<LiftDataItem[]>(() => {
   for (const [key, name] of Object.entries(liftNames)) {
     const exRecords = exerciseRecordsByName[name]
     if (!exRecords || exRecords.length === 0) continue
-    const best = findBestSet(exRecords)
+    const best = findBestSetFromExerciseRecords(exRecords)
     if (!best) continue
-    const multiplier = getMultiplier(best.reps)
-    const estimated = Math.round(estimateNew1RM(best.weight, best.reps) * 10) / 10
+    const multiplier = getOneRepMaxMultiplier(best.reps)
+    const estimated = Math.round(estimateNewOneRepMax(best.weight, best.reps) * 10) / 10
     result.push({
       key,
       name,
@@ -268,100 +228,177 @@ function formatWeight(value: number): string {
   return value.toFixed(1)
 }
 
-function decisionCardStyle(value: Week6Decision) {
-  if (selectedDecision.value === value) {
-    return {
-      boxShadow: 'var(--shadow-card)',
-      background: 'var(--color-surface)',
-      borderLeftColor: 'var(--color-training-main)',
-    }
-  }
-  return {
-    boxShadow: 'var(--shadow-card)',
-    background: 'var(--color-surface)',
-    borderLeftColor: 'transparent',
-  }
-}
-
-function radioStyle(value: Week6Decision) {
-  if (selectedDecision.value === value) {
-    return {
-      backgroundColor: 'var(--color-training-main)',
-      borderColor: 'var(--color-training-main)',
-    }
-  }
-  return {
-    borderColor: 'var(--color-border)',
-  }
-}
-
 function handleDirectNewCycle(): void {
   if (!activeCycle.value) return
-  cycleStore.updateCycle(activeCycle.value.id, {
-    week6Decision: 'new_cycle',
-    status: 'completed',
-    completedAt: new Date().toISOString().split('T')[0],
-  })
+  cycleStore.applyWeek6Decision(activeCycle.value.id, 'new_cycle', {
+    squat: estimated1RMMap.value['squat'] ?? 0,
+    bench: estimated1RMMap.value['bench'] ?? 0,
+    deadlift: estimated1RMMap.value['deadlift'] ?? 0,
+  }, getToday().split('T')[0])
   router.push({ name: 'start' })
 }
 
+/**
+ * 确认第6周决策，委托 cycleStore 处理周期状态的更新。
+ * 视图仅根据决策类型决定页面跳转。
+ */
 function handleConfirm(): void {
   if (!activeCycle.value) return
   const cycle = activeCycle.value
   const today = getToday()
+  const estimated1RM = {
+    squat: estimated1RMMap.value['squat'] ?? 0,
+    bench: estimated1RMMap.value['bench'] ?? 0,
+    deadlift: estimated1RMMap.value['deadlift'] ?? 0,
+  }
+
+  cycleStore.applyWeek6Decision(cycle.id, selectedDecision.value, estimated1RM, today)
 
   if (selectedDecision.value === 'new_cycle') {
-    // 直接开始新周期 — 标记完成，携带预估1RM跳转到创建页
     const query: Record<string, string> = {}
     for (const item of liftData.value) {
       query[item.key] = String(item.estimated1RM)
     }
-    cycleStore.updateCycle(cycle.id, {
-      week6Decision: 'new_cycle',
-      estimated1RM: {
-        squat: estimated1RMMap.value['squat'] ?? 0,
-        bench: estimated1RMMap.value['bench'] ?? 0,
-        deadlift: estimated1RMMap.value['deadlift'] ?? 0,
-      },
-      status: 'completed',
-      completedAt: today,
-    })
     router.push({ name: 'start', query })
   } else if (selectedDecision.value === 'deload') {
-    // 减载周 — 替换第6周为减载内容，保存预估1RM到周期中，保持 active
-    const deloadDays = buildDeloadWeek(cycle.oneRM, cycle.weightRounding, cycle.assistanceConfig, today)
-    const updatedWeeks = cycle.weeks.map(w => {
-      if (w.weekNumber === 6) {
-        return { ...w, theme: '减载周', days: deloadDays }
-      }
-      return w
-    })
-    cycleStore.updateCycle(cycle.id, {
-      week6Decision: 'deload',
-      estimated1RM: {
-        squat: estimated1RMMap.value['squat'] ?? 0,
-        bench: estimated1RMMap.value['bench'] ?? 0,
-        deadlift: estimated1RMMap.value['deadlift'] ?? 0,
-      },
-      weeks: updatedWeeks,
-      status: 'active',
-    })
     router.push({ name: 'plan' })
   } else {
-    // 实测1RM — 替换第6周为测试内容，保持 active
-    const testDays = buildWeek6TestDays(cycle.oneRM, cycle.weightRounding, cycle.assistanceConfig, today)
-    const updatedWeeks = cycle.weeks.map(w => {
-      if (w.weekNumber === 6) {
-        return { ...w, theme: '实测1RM', days: testDays }
-      }
-      return w
-    })
-    cycleStore.updateCycle(cycle.id, {
-      week6Decision: 'test_1rm',
-      weeks: updatedWeeks,
-      status: 'active',
-    })
     router.push({ name: 'today' })
   }
 }
 </script>
+
+<style scoped>
+/* ===== 顶部导航栏 ===== */
+.fix-header {
+  background: var(--color-surface)/95;
+  backdrop-filter: blur(12px);
+  border-color: var(--color-border);
+}
+
+.icon-primary {
+  color: var(--color-primary);
+}
+
+.header-title {
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+/* ===== 通用按钮 ===== */
+.action-btn {
+  background: var(--color-training-main);
+  color: var(--color-surface);
+  font-size: var(--text-sm);
+}
+
+/* ===== 图标颜色 ===== */
+.icon-success {
+  color: var(--state-success);
+}
+
+.icon-training {
+  color: var(--color-training-main);
+}
+
+/* ===== 文字大小 ===== */
+.text-2xl {
+  font-size: var(--text-2xl);
+}
+
+.text-md {
+  font-size: var(--text-md);
+}
+
+.text-base {
+  font-size: var(--text-base);
+}
+
+/* ===== 举重数据卡片 ===== */
+.lift-card {
+  background: var(--color-surface-muted);
+  box-shadow: var(--shadow-card);
+}
+
+.weight-display {
+  font-family: var(--font-mono);
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+
+.reps-display {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-primary-light);
+}
+
+/* ===== 预估1RM区域 ===== */
+.surface-elevated {
+  background: var(--color-surface);
+  box-shadow: var(--shadow-elevated);
+}
+
+.estimate-divider {
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.estimate-formula {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-primary-light);
+}
+
+.estimate-result {
+  font-family: var(--font-mono);
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-training-main);
+}
+
+.multiplier-hint {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  color: var(--color-primary-light);
+}
+
+/* ===== 决策卡片 ===== */
+.decision-card {
+  box-shadow: var(--shadow-card);
+  background: var(--color-surface);
+  border-left-color: transparent;
+}
+
+.decision-card-selected {
+  border-left-color: var(--color-training-main);
+}
+
+/* ===== 推荐标签 ===== */
+.recommend-badge {
+  background-color: var(--state-info-bg);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-training-main);
+}
+
+/* ===== 单选按钮 ===== */
+.radio-btn {
+  border-color: var(--color-border);
+}
+
+.radio-btn-selected {
+  background-color: var(--color-training-main);
+  border-color: var(--color-training-main);
+}
+
+/* ===== 确认按钮 ===== */
+.confirm-btn {
+  background-color: var(--color-training-main);
+  color: var(--color-surface);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+}
+</style>
